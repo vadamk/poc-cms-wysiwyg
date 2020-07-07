@@ -1,8 +1,29 @@
+$breakpointLG: 1096px;
+$breakpointMD: 838px;
+$breakpointSM: 576px;
+
+body {
+  font-size: 100%;
+
+  @media screen and (max-width: $breakpointMD) {
+    font-size: 14px;
+  }
+
+  @media screen and (max-width: $breakpointSM) {
+    font-size: 12px;
+  }
+}
+
 .half {
   float: left;
   padding: 10px;
   width: 50%;
   box-sizing: border-box;
+
+
+  @media screen and (max-width: $breakpointMD) {
+    width: 100%;
+  }
 }
 
 .full {
@@ -30,14 +51,19 @@ code {
   }
 
   .content {
+    margin: 0;
     padding: 5px 20px;
   }
 
   p, li {
-    font-family: 'PT Serif';
-    font-size: 15px;
-    line-height: 22px;
+    font-family: 'PT serif', Arial;
+    font-size: 1.25rem;
+    line-height: 1.45rem;
     color: #555D5D;
+  }
+
+  p {
+    margin: 1.3rem 0;
   }
 
   p a {
@@ -49,21 +75,29 @@ code {
     width: 100%;
   }
 
-  ul > li {
-    position: relative;
-    list-style: none;
+  ul, ol {
+    margin-bottom: 36px;
+
+    li {
+      position: relative;
+      list-style: none;
+      margin-bottom: 0.875rem;
+
+      &:before {
+        left: -2rem;
+      }
+    }
   }
 
   ul > li:before {
     display: block;
-    width: 9px;
-    height: 9px;
+    width: .75rem;
+    height: .75rem;
     border-radius: 50%;
     background-color: #19C2C6;
 
     position: absolute;
-    left: -21px;
-    top: 7px;
+    top: 0.4375rem;
     content: '';
   }
 
@@ -73,8 +107,6 @@ code {
 
   ol > li {
     counter-increment: list;
-    position: relative;
-    list-style: none;
   }
 
   ol > li:before {
@@ -82,7 +114,6 @@ code {
     font-weight: 600;
 
     position: absolute;
-    left: -21px;
     top: 1px;
     content: counter(list) '.';
   }
