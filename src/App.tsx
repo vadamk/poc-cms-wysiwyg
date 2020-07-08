@@ -43,7 +43,7 @@ const toolbarOptions = [
   ['bold', 'italic', 'underline'],
   [{ 'align': [] }],
   [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-  ['link', 'image'],
+  ['link', 'image', 'video'],
   [{ 'background': [] }],
   ['clean']
 ];
