@@ -14,46 +14,46 @@ body {
   }
 }
 
-.half {
-  float: left;
-  padding: 10px;
-  width: 50%;
-  box-sizing: border-box;
+.content {
+  margin: 0 auto;
+  width: 100vw;
+  transition: width 300ms;
 
-
-  @media screen and (max-width: $breakpointMD) {
-    width: 100%;
+  &.mobile {
+    width: 375px;
   }
 }
 
-.full {
-  float: left;
-  padding: 10px;
-  width: 100%;
-  box-sizing: border-box;
-}
+header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-code {
-  box-sizing: border-box;
-  padding: 20px;
-  background-color: #999;
-  color: #fff;
-  font-family: 'Source Code Pro';
-  overflow: auto;
+  padding: 7px 14px;
+  height: 42px;
+
+  background-color: #f9f9f9;
+
+  .switchMode {
+    font-size: 16px;
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    cursor: pointer;
+
+    &[aria-disabled=true] {
+      pointer-events: none;
+    }
+  }
 }
 
 /* mark */
 
-.preview, .ql-editor {
-
-  header {
-    height: 42px;
-  }
-
-  .content {
-    margin: 0;
-    padding: 5px 20px;
-  }
+.ql-editor {
 
   p, li {
     font-family: 'PT serif', Arial;

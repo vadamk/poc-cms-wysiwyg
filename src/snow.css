@@ -20,6 +20,15 @@
 .ql-container.ql-disabled .ql-tooltip {
   visibility: hidden;
 }
+.ql-align-center {
+  text-align: center;
+}
+.ql-align-right {
+  text-align: right;
+}
+.ql-align-justify {
+  text-align: justify;
+}
 .ql-clipboard {
   left: -100000px;
   height: 1px;
