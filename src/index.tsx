@@ -1,15 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import hljs from 'highlight.js/lib/core';
-import html from 'highlight.js/lib/languages/xml';
-import 'highlight.js/styles/github.css';
 
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-
-hljs.registerLanguage('html', html);
-hljs.initHighlightingOnLoad();
 
 ReactDOM.render(
   <React.StrictMode>
