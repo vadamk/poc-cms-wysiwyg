@@ -43,7 +43,7 @@ function App() {
           {
             isCodeMode ? (
               <pre>
-                <code className="full">
+                <code className="full language-html">
                   {html(value, { indent_size: 2, wrap_line_length: 80 })}
                 </code>
               </pre>
