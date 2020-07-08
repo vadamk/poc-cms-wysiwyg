@@ -16,7 +16,8 @@ body {
 
 .content {
   margin: 0 auto;
-  width: 100vw;
+  padding: 20px;
+  width: 685px;
   transition: width 300ms;
 
   &.mobile {
