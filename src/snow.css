@@ -4,6 +4,9 @@
  * Copyright (c) 2014, Jason Chen
  * Copyright (c) 2013, salesforce.com
  */
+.quill {
+  background-color: #fff;
+}
 .ql-editor {
   padding: 5px 20px;
   outline: none;
@@ -19,6 +22,14 @@
 }
 .ql-container.ql-disabled .ql-tooltip {
   visibility: hidden;
+}
+.ql-video.ql-align-center {
+  display: block;
+  margin: 0 auto;
+}
+.ql-video.ql-align-right {
+  display: block;
+  margin: 0 0 0 auto;
 }
 .ql-align-center {
   text-align: center;
