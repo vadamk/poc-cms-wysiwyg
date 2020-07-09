@@ -5,7 +5,9 @@ import {
   InsertRowAboveOutlined,
   FileProtectOutlined,
 } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+
+import Logo from 'icons/Logo';
 
 import sty from './CommonLayout.module.scss';
 
@@ -13,6 +15,7 @@ const { Header, Content, Footer, Sider } = Layout;
 
 const layoutStyles: React.CSSProperties = {
   marginLeft: 200,
+  minHeight: '100vh',
 };
 
 const headerStyles: React.CSSProperties = {
@@ -29,20 +32,24 @@ const footerStyles: React.CSSProperties = {
 };
 
 const CommonLayout: React.FC = ({ children }) => {
+  const { pathname } = useLocation();
+
   return (
     <Layout>
       <Sider className={sty.sider}>
-        <Link to="/">
-          <div className={sty.logo} />
-        </Link>
-        <Menu theme="light" mode="inline" defaultSelectedKeys={['4']}>
-          <Menu.Item key="1" icon={<InsertRowAboveOutlined />}>
+        <div className={sty.logo}>
+          <Link to="/">
+            <Logo />
+          </Link>
+        </div>
+        <Menu theme="light" mode="inline" defaultSelectedKeys={[pathname]}>
+          <Menu.Item key="/subjects" icon={<InsertRowAboveOutlined />}>
             <Link to="/subjects">Subjects</Link>
           </Menu.Item>
-          <Menu.Item key="2" icon={<ReadOutlined />}>
+          <Menu.Item key="/articles" icon={<ReadOutlined />}>
             <Link to="/articles">Articles</Link>
           </Menu.Item>
-          <Menu.Item key="3" icon={<FileProtectOutlined />}>
+          <Menu.Item key="/guides" icon={<FileProtectOutlined />}>
             <Link to="/guides">Guides</Link>
           </Menu.Item>
         </Menu>

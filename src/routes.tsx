@@ -10,6 +10,7 @@ import Subjects from './containers/Subjects';
 import UpdateSubject from './containers/UpdateSubject';
 import Articles from './containers/Articles';
 import UpdateArticle from './containers/UpdateArticle';
+import Guides from './containers/Guides';
 import CommonLayout from './layouts/CommonLayout';
 
 const Routes = () => {
@@ -28,6 +29,12 @@ const Routes = () => {
           </Route>
           <Route path="/articles">
             <Articles />
+          </Route>
+          <Route path="/articles/:slug">
+            <UpdateArticle />
+          </Route>
+          <Route path="/guides">
+            <Guides />
           </Route>
           <Route path="/articles/:slug">
             <UpdateArticle />

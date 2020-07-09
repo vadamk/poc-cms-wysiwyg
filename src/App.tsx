@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactQuill from 'react-quill';
 import cx from 'classnames';
-import { FaDesktop, FaMobileAlt } from 'react-icons/fa';
+import { DesktopOutlined, MobileOutlined } from '@ant-design/icons';
 
 import './snow.css';
 import './App.scss'
@@ -73,7 +73,7 @@ function App() {
           aria-disabled={!isMobileMode}
           onClick={handleToggle}
         >
-          <FaDesktop color={!isMobileMode ? '#19C2C6' : '#CCC'} />
+          <DesktopOutlined />
         </span>
         <span
           role="button"
@@ -81,7 +81,7 @@ function App() {
           aria-disabled={isMobileMode}
           onClick={handleToggle}
         >
-          <FaMobileAlt color={isMobileMode ? '#19C2C6' : '#CCC'} />
+          <MobileOutlined />
         </span>
       </header>
       <div className={cx('content', isMobileMode && 'mobile')}>

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import sty from './Dashboard.module.scss';
-import App from '../../App';
+import App from 'App';
 
 export interface DashboardProps {}
 

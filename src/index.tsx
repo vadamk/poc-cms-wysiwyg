@@ -1,17 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { ApolloProvider } from '@apollo/react-hooks';
 
 import './index.css';
 import 'antd/dist/antd.css';
 
-import App from './App';
-import * as serviceWorker from './serviceWorker';
-import Routes from './routes';
+import client from 'graphql/client';
+import * as serviceWorker from 'serviceWorker';
+import Routes from 'routes';
 
 ReactDOM.render(
-  <React.StrictMode>
+  <ApolloProvider client={client}>
     <Routes />
-  </React.StrictMode>,
+  </ApolloProvider>,
   document.getElementById('root')
 );
 
