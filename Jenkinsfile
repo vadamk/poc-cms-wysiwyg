@@ -1,17 +1,17 @@
 pipeline {
     agent any
     stages {
-        stage ('Build') {
-            steps {
-                sh 'yarn'
-                sh 'yarn build'
-             }
-        }
-        stage ('Recycle') {
-             steps {
-                 sh 'rm -rf node_modules/'
-             }     
-        }
+//        stage ('Build') {
+//            steps {
+//                sh 'yarn'
+//                sh 'yarn build'
+//             }
+//       }
+//       stage ('Recycle') {
+//             steps {
+//                 sh 'rm -rf node_modules/'
+//             }     
+//        }
         stage ('Docker build & Push -dev') {
             when {
                 expression {
