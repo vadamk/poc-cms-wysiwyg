@@ -3,7 +3,6 @@ pipeline {
     stages {
         stage ('Build') {
             steps {
-                sh 'cp /var/lib/jenkins/workspace/go-monday-content-service-env .env'
                 sh 'yarn'
                 sh 'yarn build'
              }
