@@ -58,12 +58,12 @@ const CommonLayout: React.FC = ({ children }) => {
   }), [isCollapsed]);
 
   const switchButtonStyles = React.useMemo<React.CSSProperties>(() => ({
-      position: 'absolute',
-      bottom: 0,
-      display: 'block',
-      width: '100%',
-      paddingLeft: isCollapsed ? '32px' : '24px',
-      textAlign: 'left',
+    position: 'absolute',
+    bottom: 0,
+    display: 'block',
+    width: '100%',
+    paddingLeft: isCollapsed ? '32px' : '24px',
+    textAlign: 'left',
   }), [isCollapsed]);
   
   const toggleCollapsed = () => {
