@@ -13,11 +13,11 @@ export interface EditionTagsProps {
 }
 
 const EditionTags: React.FC<EditionTagsProps> = ({ items = [] }) => (
-  <>
+  <div>
     {items.map(({ type }) => (
       <Tag key={type} color="magenta">{labels[type]}</Tag>
     ))}
-  </>
+  </div>
 );
 
 export default EditionTags;

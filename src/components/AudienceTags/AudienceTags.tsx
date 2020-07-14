@@ -16,11 +16,11 @@ export interface AudienceTagsProps {
 }
 
 const AudienceTags: React.FC<AudienceTagsProps> = ({ items = [] }) => (
-  <>
+  <div>
     {items.map(({ type }) => (
       <Tag key={type} color="purple">{labels[type]}</Tag>
     ))}
-  </>
+  </div>
 );
 
 export default AudienceTags;

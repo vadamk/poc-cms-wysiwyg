@@ -31,7 +31,7 @@ export interface ArticleFormProps extends FormProps {
 
 const ArticleForm: React.FC<ArticleFormProps> = ({
   form,
-  initialValues = { language: Language.SV },
+  initialValues = { language: Language.SV, image: 'https://picsum.photos/id/1/1000' },
   mode = 'create',
   isSubmitting = false,
   onSubmit = () => null,
@@ -129,7 +129,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
 
       <Form.Item
         label="Audiences"
-        name="audience"
+        name="audiences"
         rules={[{ required: true, message: 'Please select at least 1 audience!' }]}
       >
         <Checkbox.Group options={curAudienceOptions} />
@@ -153,7 +153,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
         />
       </Form.Item>
 
-      <Form.Item label="Editions" name="edition">
+      <Form.Item label="Editions" name="editions">
         <Checkbox.Group options={editionOptions} />
       </Form.Item>
 

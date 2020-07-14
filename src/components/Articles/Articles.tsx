@@ -29,7 +29,7 @@ import {
 import { ArticleFragment } from 'graphql/fragments';
 import Toolbar from 'components/Toolbar';
 import EditionTags from 'components/EditionTags';
-import { Language, langOptions, localStorageKeys } from 'global';
+import { localStorageKeys } from 'global';
 import AudienceTags from 'components/AudienceTags';
 import { getFromLocalStorage, saveInLocalStorage } from 'services/browser';
 
@@ -76,14 +76,14 @@ const Cards = ({ articles, isLoading, onDelete }) => (
               <Paragraph ellipsis={{ rows: 3 }}>
                 {article.subTitle}
               </Paragraph>
-              <Text>
-                <b>Editions:</b>{' '}
+              <Space align="start">
+                <b>Editions:</b>
                 <EditionTags items={article?.editions} />
-              </Text>
-              <Text>
-                <b>Audiences:</b>{' '}
+              </Space>
+              <Space align="start">
+                <b>Audiences:</b>
                 <AudienceTags items={article?.audiences} />
-              </Text>
+              </Space>
             </Space>
             {/* <Card.Meta title={new Date(article.actualTime)} /> */}
           </Card>

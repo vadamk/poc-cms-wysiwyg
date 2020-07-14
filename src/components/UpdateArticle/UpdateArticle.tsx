@@ -57,8 +57,8 @@ const UpdateArticle: React.FC<UpdateArticleProps> = () => {
 
       const formData = {
         ...rest,
-        edition: editions.map(ed => Edition[ed.type.trim()]),
-        audience: audiences.map(ad => ad.type),
+        editions: editions.map(ed => Edition[ed.type.trim()]),
+        audiences: audiences.map(ad => ad.type),
         subjectId: subject.id,
       };
 
@@ -75,8 +75,6 @@ const UpdateArticle: React.FC<UpdateArticleProps> = () => {
       ...values,
       id: data?.getArticle.id,
       actualTime: 123,
-      audiences: audience,
-      editions: edition,
     };
     updateArticle({ variables: { article } });
   }, [data, updateArticle]);
