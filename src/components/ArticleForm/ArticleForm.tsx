@@ -15,6 +15,7 @@ import {
 import { GET_SUBJECTS_LIST } from 'components/Subjects';
 import RichEditor from 'components/RichEditor';
 import RadioButtons from 'components/RadioButtons';
+import UploadImage from 'components/UploadImage';
 
 const layout = {
   labelCol: { span: 3 },
@@ -121,8 +122,8 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
         name="image"
         rules={[{ required: true, message: 'Please add image!' }]}
       >
-        <Input autoComplete="off" disabled={isSubmitting} />
-        {/* <UploadImage name="image" /> */}
+        {/* <Input autoComplete="off" disabled={isSubmitting} /> */}
+        <UploadImage />
       </Form.Item>
 
       <Form.Item label="Language" name="language">

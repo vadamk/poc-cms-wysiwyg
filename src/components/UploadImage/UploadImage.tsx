@@ -21,12 +21,16 @@ const uploadToTheServer = (
     method: 'post',
     processData: false,
     data: formData,
+    headers: {
+      'Access-Control-Allow-Origin': '*'
+    },
     success: () => {
       message.success('Upload successfully.');
       callback();
     },
-    error: () => {
-      message.error('Upload failed.');
+    error: (err) => {
+      message.error('Upload failed.', err);
+      callback();
     },
   });
 }
@@ -42,13 +46,13 @@ export const GET_UPLOAD_URL = gql`
 `;
 
 export interface UploadImageProps {
-  name: string;
-  onChange: (imageURL: string) => void;
+  onChange?: (imageURL: string) => void;
 }
 
 const UploadImage = React.forwardRef<Upload, UploadImageProps>(
-  ({ name = 'image', onChange = () => null }, ref) => {
+  ({ onChange = () => null }, ref) => {
     const [file, setFile] = React.useState<UploadFile>();
+    const [fileURL, setFileURL] = React.useState<string>();
     const [isLoading, setLoading] = React.useState(false);
 
     const [getUploadUrl, { called, refetch }] = useLazyQuery(GET_UPLOAD_URL, {
@@ -57,7 +61,10 @@ const UploadImage = React.forwardRef<Upload, UploadImageProps>(
         const { uploadUrl, path, exp } = data.getUploadUrl;
 
         if (file) {
-          uploadToTheServer(uploadUrl, file, () => onChange(path));
+          uploadToTheServer(uploadUrl, file, () => {
+            onChange(path);
+            setFileURL(path);
+          });
         }
       },
       onError: (err) => {
@@ -79,24 +86,20 @@ const UploadImage = React.forwardRef<Upload, UploadImageProps>(
     return (
       <Upload
         ref={ref}
-        name={name}
         listType="picture-card"
         style={{ width: '128px', height: '128px' }}
         showUploadList={false}
         beforeUpload={beforeUpload}
         fileList={file ? [file] : []}
       >
-        {/* {imageUrl ? (
-          <img src={imageUrl} alt="avatar" style={{ width: '100%' }} />
+        {fileURL ? (
+          <img src={fileURL} alt="avatar" style={{ width: '100%' }} />
         ) : (
-          <div>
+          <>
             {isLoading ? <LoadingOutlined /> : <PlusOutlined />}
             <div className="ant-upload-text">Upload</div>
-          </div>
-        )} */}
-
-        {isLoading ? <LoadingOutlined /> : <PlusOutlined />}
-        <div className="ant-upload-text">Upload</div>
+          </>
+        )}
       </Upload>
     );
   }
