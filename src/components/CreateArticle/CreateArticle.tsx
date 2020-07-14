@@ -35,7 +35,7 @@ const CreateArticle: React.FC<CreateArticleProps> = () => {
   }, []);
 
   const handleSubmit = (values) => {
-    const article = { ...values, actualTime: +new Date() };
+    const article = { ...values, actualTime: 123 };
     createArticle({ variables: { article } });
   }
 
