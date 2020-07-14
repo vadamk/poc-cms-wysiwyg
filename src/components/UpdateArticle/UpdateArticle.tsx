@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
-import { Card, Spin, message } from 'antd';
+import { Card, Spin, message, Typography } from 'antd';
 import { useHistory } from "react-router-dom";
 
 import { ArticleFragment } from 'graphql/fragments';

@@ -77,14 +77,16 @@ const Cards = ({ articles, isLoading, onDelete }) => (
               <Paragraph ellipsis={{ rows: 3 }}>
                 {article.subTitle}
               </Paragraph>
-              {Boolean(article?.editions.length) && <Space align="start">
-                <b>Editions:</b>
-                <EditionTags items={article?.editions} />
-              </Space>}
               <Space align="start">
                 <b>Audiences:</b>
                 <AudienceTags items={article?.audiences} />
               </Space>
+              {Boolean(article?.editions.length) && (
+                <Space align="start">
+                  <b>Editions:</b>
+                  <EditionTags items={article?.editions} />
+                </Space>
+              )}
             </Space>
             {/* <Card.Meta title={new Date(article.actualTime)} /> */}
           </Card>
