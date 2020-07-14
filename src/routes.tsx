@@ -3,43 +3,79 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
+  Redirect,
+  RouteProps,
 } from "react-router-dom";
+import { gql } from 'apollo-boost';
+import { useQuery } from '@apollo/react-hooks';
 
-import Dashboard from './containers/Dashboard';
-import Subjects from './containers/Subjects';
-import UpdateSubject from './containers/UpdateSubject';
-import Articles from './containers/Articles';
-import UpdateArticle from './containers/UpdateArticle';
-import Guides from './containers/Guides';
+import Dashboard from 'components/Dashboard';
+import SignIn from 'components/SignIn';
+import Subjects from 'components/Subjects';
+import Articles from 'components/Articles';
+import CreateArticle from 'components/CreateArticle';
+import UpdateArticle from 'components/UpdateArticle';
+import Guides from 'components/Guides';
 import CommonLayout from './layouts/CommonLayout';
+import PureLayout from 'layouts/PureLayout';
+
+const GET_AUTHORIZED = gql`
+  query IsAuthorized {
+    isAuthorized @client
+  }
+`;
+
+interface PrivatRouteProp extends RouteProps {
+  allow?: boolean;
+  redirect?: string;
+}
+
+const CustomRoute = ({ children, allow = true, redirect, ...rest }: PrivatRouteProp) => {
+  const routeComponent = () =>
+    allow ? children : <Redirect to={{ pathname: redirect || '/login' }} />;
+  return <Route {...rest} render={routeComponent} />;
+};
 
 const Routes = () => {
+  const { data } = useQuery(GET_AUTHORIZED);
+
   return (
     <Router>
       <Switch>
-        <CommonLayout>
-          <Route exact path="/">
-            <Dashboard />
-          </Route>
-          <Route path="/subjects">
-            <Subjects />
-          </Route>
-          <Route path="/subjects/:slug">
-            <UpdateSubject />
-          </Route>
-          <Route path="/articles">
-            <Articles />
-          </Route>
-          <Route path="/articles/:slug">
-            <UpdateArticle />
-          </Route>
-          <Route path="/guides">
-            <Guides />
-          </Route>
-          <Route path="/articles/:slug">
-            <UpdateArticle />
-          </Route>
-        </CommonLayout>
+        <CustomRoute exact path="/login" redirect="/" allow={!data.isAuthorized}>
+          <PureLayout>
+            <SignIn />
+          </PureLayout>
+        </CustomRoute>
+        <CustomRoute path="/" allow={data.isAuthorized}>
+          <CommonLayout>
+            <Switch>
+              <CustomRoute exact path="/">
+                <Dashboard />
+              </CustomRoute>
+              <CustomRoute exact path="/subjects">
+                <Subjects />
+              </CustomRoute>
+              <CustomRoute exact path="/articles">
+                <Articles />
+              </CustomRoute>
+              <Switch>
+                <CustomRoute exact path="/articles/create">
+                  <CreateArticle />
+                </CustomRoute>
+                <CustomRoute path="/articles/:slug">
+                  <UpdateArticle />
+                </CustomRoute>
+              </Switch>
+              <CustomRoute exact path="/guides">
+                <Guides />
+              </CustomRoute>
+              <CustomRoute path="/guides/:slug">
+                <UpdateArticle />
+              </CustomRoute>
+            </Switch>
+          </CommonLayout>
+        </CustomRoute>
       </Switch>
     </Router>
   )

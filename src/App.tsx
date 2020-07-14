@@ -1,9 +1,9 @@
 import React from 'react';
-import ReactQuill from 'react-quill';
 import cx from 'classnames';
 import { DesktopOutlined, MobileOutlined } from '@ant-design/icons';
 
-import './snow.css';
+import RichEditor from 'components/RichEditor';
+
 import './App.scss'
 
 const defaultValue = `
@@ -19,6 +19,9 @@ const defaultValue = `
   <p>There are many more hidden jobs than visible jobs. It is a typical iceberg. You know, as you say, only a small part of the iceberg is visible above the surface. The rest is below the water surface and invisible to us.</p>
   <p>
     <span> <img src="/image.png" /> </span>
+  </p>
+  <p>
+    <iframe class="ql-video" frameborder="0" allowfullscreen="true" src="https://player.vimeo.com/video/437769465/"></iframe>
   </p>
   <ul>
     <li>Writing an ad</li>
@@ -37,17 +40,6 @@ const defaultValue = `
     job listings.
   </p>
 `;
-
-const toolbarOptions = [
-  [{ 'header': [1, 2, 3, 4, false] }],
-  ['bold', 'italic', 'underline'],
-  [{ 'align': [] }],
-  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-  ['link', 'image', 'video'],
-  [{ 'background': [] }],
-  ['clean']
-];
-
 function App() {
   const [isMobileMode, setMobileMode] = React.useState(false);
   const [value, setValue] = React.useState(defaultValue);
@@ -85,14 +77,7 @@ function App() {
         </span>
       </header>
       <div className={cx('content', isMobileMode && 'mobile')}>
-        <ReactQuill
-          value={value}
-          onChange={handleChange}
-          modules={{
-            clipboard: { matchVisual: false },
-            toolbar: toolbarOptions
-          }}
-        />
+        <RichEditor value={value} onChange={handleChange} />
       </div>
     </>
   );

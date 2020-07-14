@@ -11,3 +11,9 @@ export interface FormProps {
   isSubmitting?: boolean;
   onSubmit?: (data: FormValues) => void,
 }
+
+export interface Option {
+  label: string;
+  value: string | number | boolean | null | undefined;
+  disabled?: boolean;
+}
