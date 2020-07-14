@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { ApolloProvider } from '@apollo/react-hooks';
+import * as Sentry from '@sentry/react';
 
 import './index.css';
 import 'antd/dist/antd.css';
@@ -8,6 +9,12 @@ import 'antd/dist/antd.css';
 import client from 'graphql/client';
 import * as serviceWorker from 'serviceWorker';
 import Routes from 'routes';
+
+if (process.env.NODE_ENV !== 'production') {
+  Sentry.init({
+    dsn: 'https://7625f917ab8d4304aa9cd4c613270894@o420297.ingest.sentry.io/5338316'
+  });  
+}
 
 ReactDOM.render(
   <ApolloProvider client={client}>
