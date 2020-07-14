@@ -84,7 +84,7 @@ const CardsView: React.FC<CardsViewProps> = ({
                   type="secondary"
                   style={{ display: 'block', fontSize: 12, textAlign: 'right', width: 75 }}
                 >
-                  Edtied:
+                  Edited:
                 </Text>
                 <Text type="secondary" style={{ display: 'block', fontSize: 12, lineHeight: '18px' }}>
                   <DateTime timestamp={article?.actualTime} />
