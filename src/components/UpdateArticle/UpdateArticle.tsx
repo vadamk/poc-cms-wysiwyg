@@ -71,7 +71,7 @@ const UpdateArticle: React.FC<UpdateArticleProps> = () => {
     const article = {
       ...values,
       id: data?.getArticle.id,
-      actualTime: 123,
+      actualTime: +new Date(),
     };
     updateArticle({ variables: { article } });
   }, [data, updateArticle]);

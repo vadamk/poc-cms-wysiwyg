@@ -8,6 +8,7 @@ import { ArticleFragment } from 'graphql/fragments';
 
 import Toolbar from 'components/Toolbar';
 import ArticleForm from 'components/ArticleForm';
+import { GET_ARTICLES_LIST } from 'components/Articles';
 
 export const CREATE_ARTICLE = gql`
   mutation CreateArticle($article: CreateArticleInput!) {
@@ -28,6 +29,7 @@ const CreateArticle: React.FC<CreateArticleProps> = () => {
       message.success('Article has been created.');
       history.push('/articles');
     },
+    refetchQueries: [{ query: GET_ARTICLES_LIST }],
   });
 
   const breadcrumbs = React.useMemo(() => {
@@ -35,7 +37,7 @@ const CreateArticle: React.FC<CreateArticleProps> = () => {
   }, []);
 
   const handleSubmit = (values) => {
-    const article = { ...values, actualTime: 123 };
+    const article = { ...values, actualTime: +new Date() };
     createArticle({ variables: { article } });
   }
 

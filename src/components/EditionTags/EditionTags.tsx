@@ -8,6 +8,14 @@ const labels = {
   [Edition.GOVERNMENT]: 'Government',
 }
 
+const tagStyles: React.CSSProperties = {
+  marginBottom: 4,
+  marginRight: 4,
+  fontSize: 11,
+  lineHeight: '18px',
+  display: 'block',
+};
+
 export interface EditionTagsProps {
   items: { type: Edition }[]
 }
@@ -15,7 +23,7 @@ export interface EditionTagsProps {
 const EditionTags: React.FC<EditionTagsProps> = ({ items = [] }) => (
   <div>
     {items.map(({ type }) => (
-      <Tag key={type} color="magenta">{labels[type]}</Tag>
+      <Tag key={type} color="magenta" style={tagStyles}>{labels[type]}</Tag>
     ))}
   </div>
 );

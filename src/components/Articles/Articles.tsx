@@ -7,7 +7,6 @@ import {
   Table,
   Button,
   Modal,
-  Tag,
   Card,
   Row,
   Col,
@@ -26,13 +25,18 @@ import {
   EditOutlined,
   MoreOutlined,
 } from '@ant-design/icons';
+import moment from 'moment';
 
-import { ArticleFragment } from 'graphql/fragments';
-import Toolbar from 'components/Toolbar';
-import EditionTags from 'components/EditionTags';
-import { localStorageKeys } from 'global';
-import AudienceTags from 'components/AudienceTags';
 import { getFromLocalStorage, saveInLocalStorage } from 'services/browser';
+import { ArticleFragment } from 'graphql/fragments';
+import {
+  localStorageKeys,
+  audienceOptions,
+  editionOptions,
+} from 'global';
+
+import Toolbar from 'components/Toolbar';
+import Tags from 'components/Tags';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -40,6 +44,16 @@ const viewOptions = [
   { label: 'Cards', value: 'cards' },
   { label: 'Table', value: 'table' }
 ];
+
+const getAudienceOptions = (audience: { type: string }[]) => {
+  const audienceTypes = audience.map(ad => ad.type);
+  return audienceOptions.filter(o => audienceTypes.includes(o.value));
+}
+
+const getEditionsOptions = (editions: { type: string }[]) => {
+  const editionTypes = editions.map(ed => ed.type);
+  return editionOptions.filter(o => editionTypes.includes(o.value));
+}
 
 export const GET_ARTICLES_LIST = gql`
   query GetArticleList {
@@ -57,8 +71,17 @@ export const DELETE_ARTICLE = gql`
 `;
 
 export interface ArticlesProps {}
+export interface CardsProps {
+  articles: any[];
+  isLoading: boolean;
+  onDelete: (article: any) => void;
+}
 
-const Cards = ({ articles, isLoading, onDelete }) => (
+const Cards: React.FC<CardsProps> = ({
+  articles,
+  isLoading,
+  onDelete = () => null
+}) => (
   <Spin spinning={isLoading}>
     <Row gutter={[20, 20]}>
       {articles.map(article => (
@@ -78,15 +101,36 @@ const Cards = ({ articles, isLoading, onDelete }) => (
                 {article.subTitle}
               </Paragraph>
               <Space align="start">
-                <b>Audiences:</b>
-                <AudienceTags items={article?.audiences} />
+                <Text
+                  type="secondary"
+                  style={{ display: 'block', fontSize: 12, textAlign: 'right', width: 75 }}
+                >
+                  Audiences:
+                </Text>
+                <Tags options={getAudienceOptions(article?.audiences)} />
               </Space>
               {Boolean(article?.editions.length) && (
                 <Space align="start">
-                  <b>Editions:</b>
-                  <EditionTags items={article?.editions} />
+                  <Text
+                    type="secondary"
+                    style={{ display: 'block', fontSize: 12, textAlign: 'right', width: 75 }}
+                  >
+                    Editions:
+                  </Text>
+                  <Tags options={getEditionsOptions(article?.editions)} color="magenta" />
                 </Space>
               )}
+              <Space align="start">
+                <Text
+                  type="secondary"
+                  style={{ display: 'block', fontSize: 12, textAlign: 'right', width: 75 }}
+                >
+                  Edtied:
+                </Text>
+                <Text type="secondary" style={{ display: 'block', fontSize: 12, lineHeight: '18px' }}>
+                  {moment(article?.actualTime).format('YYYY/MM/DD H:mm')}
+                </Text>
+              </Space>
             </Space>
             {/* <Card.Meta title={new Date(article.actualTime)} /> */}
           </Card>
@@ -174,13 +218,15 @@ const Articles: React.FC<ArticlesProps> = () => {
             title="Editions"
             dataIndex="editions"
             key="editions"
-            render={data => <EditionTags items={data} />}
+            width={220}
+            render={data => <Tags options={getEditionsOptions(data)}  color="magenta" />}
           />
           <Column
             title="Audiences"
             dataIndex="audiences"
             key="audiences"
-            render={data => <AudienceTags items={data} />}
+            width={220}
+            render={data => <Tags options={getAudienceOptions(data)} />}
           />
           <Column
             dataIndex="actions"

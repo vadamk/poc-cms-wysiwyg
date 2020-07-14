@@ -1,0 +1,12 @@
+.list {
+  display: flex;
+  flex-wrap: wrap;
+
+  .tag {
+    display: block;
+    margin-bottom: 4px;
+    margin-right: 4px;
+    font-size: 11px;
+    line-height: 18px;
+  }
+}
