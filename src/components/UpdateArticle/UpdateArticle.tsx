@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
-import { Card, Spin, notification } from 'antd';
+import { Card, Spin, message } from 'antd';
 import { useHistory } from "react-router-dom";
 
 import { ArticleFragment } from 'graphql/fragments';
@@ -37,10 +37,7 @@ const UpdateArticle: React.FC<UpdateArticleProps> = () => {
 
   const [updateArticle, updateArticleStatus] = useMutation(UPDATE_ARTICLE, {
     onCompleted: () => {
-      notification.success({
-        message: 'Success',
-        description: 'Subject has been deleted.',
-      });
+      message.success('Article has been updated.');
       history.push('/articles');
     },
   });
