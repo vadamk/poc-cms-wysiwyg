@@ -1,2 +1,12 @@
-@import 'styles/variables';
+.label {
+  display: block;
+  font-size: 12px;
+  text-align: right;
+  width: 75px;
+}
 
+.dateTime {
+  display: block;
+  font-size: 12px;
+  line-height: 18px;
+}

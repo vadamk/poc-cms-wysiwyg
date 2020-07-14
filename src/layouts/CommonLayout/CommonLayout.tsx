@@ -108,8 +108,8 @@ const CommonLayout: React.FC = ({ children }) => {
         <Header className={sty.siteLayoutBackground} style={headerStyles}>
           <Dropdown overlay={() => (
             <Menu>
-              <Menu.Item onClick={logout}>
-                <LogoutOutlined /> Logout
+              <Menu.Item icon={<LogoutOutlined />} onClick={logout}>
+                Logout
               </Menu.Item>
             </Menu>
           )}>

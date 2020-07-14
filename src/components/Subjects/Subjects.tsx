@@ -5,20 +5,17 @@ import {
   Typography,
   Table,
   Button,
-  Dropdown,
-  Menu,
   Modal,
-  message,
   Tag,
+  message,
 } from 'antd';
 import {
-  EditOutlined,
-  DeleteOutlined,
   MoreOutlined,
   ExclamationCircleOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
+import Column from 'antd/lib/table/Column';
 
 import { SubjectFragment } from 'graphql/fragments';
 import { FormValues } from 'models';
@@ -26,8 +23,8 @@ import { removeTypeName } from 'utils';
 import Toolbar from 'components/Toolbar';
 
 import CreateSubjectForm from './CreateSubjectForm';
-import Column from 'antd/lib/table/Column';
-import { langOptions, Language } from 'global';
+import { Language } from 'global';
+import CrudMenu from 'components/CrudMenu';
 
 export const GET_SUBJECTS_LIST = gql`
   query GetSubjectList {
@@ -124,8 +121,8 @@ const Subjects: React.FC<SubjectsProps> = () => {
   }
 
   const cancelUpdating = () => {
-    updateForm.resetFields();
     setEditableSubject(null);
+    updateForm.resetFields();
   }
 
   const handleUpdate = () => {
@@ -181,27 +178,9 @@ const Subjects: React.FC<SubjectsProps> = () => {
           key="action"
           width={45}
           render={(_, record) => (
-            <Dropdown
-              trigger={['click']}
-              overlay={() => (
-                <Menu>
-                  <Menu.Item
-                    icon={<EditOutlined />}
-                    onClick={() => startUpdating(record)}
-                  >
-                    Edit
-                  </Menu.Item>
-                  <Menu.Item
-                    icon={<DeleteOutlined />}
-                    onClick={() => deleteRequest(record)}
-                  >
-                    Delete
-                  </Menu.Item>
-                </Menu>
-              )}
-            >
-              <MoreOutlined />
-            </Dropdown>
+            <CrudMenu data={record} onEdit={startUpdating} onDelete={deleteRequest}>
+              <Button type="text" icon={<MoreOutlined />} shape="circle" />
+            </CrudMenu>
           )}
         />
       </Table>

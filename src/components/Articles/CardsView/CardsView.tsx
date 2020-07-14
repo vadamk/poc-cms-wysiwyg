@@ -1,10 +1,11 @@
 import React from 'react';
-import { Spin, Row, Col, Card, Dropdown, Menu, Space, Typography, Button } from 'antd';
-import { EditOutlined, DeleteOutlined, MoreOutlined } from '@ant-design/icons';
+import { Spin, Row, Col, Card, Space, Typography, Button } from 'antd';
+import { MoreOutlined } from '@ant-design/icons';
 
 import Tags from 'components/Tags';
-import { getEditionsOptions, getAudienceOptions } from 'components/Articles';
 import DateTime from 'components/DateTime';
+import CrudMenu from 'components/CrudMenu';
+import { getEditionsOptions, getAudienceOptions } from 'components/Articles';
 
 import sty from './CardsView.module.scss';
 
@@ -13,8 +14,8 @@ const { Paragraph, Text } = Typography;
 export interface CardsViewProps {
   articles: any[];
   isLoading: boolean;
+  onEdit: (article: any) => void;
   onDelete: (article: any) => void;
-  onEdit: (articleId: string) => void;
 }
 
 const CardsView: React.FC<CardsViewProps> = ({
@@ -30,63 +31,35 @@ const CardsView: React.FC<CardsViewProps> = ({
           <Card
             title={article.title}
             extra={(
-              <Dropdown
-                trigger={['click']}
-                overlay={() => (
-                  <Menu>
-                    <Menu.Item
-                      icon={<EditOutlined />}
-                      onClick={() => onEdit(article.id)}
-                    >
-                      Edit
-                    </Menu.Item>
-                    <Menu.Item
-                      icon={<DeleteOutlined />}
-                      onClick={() => onDelete(article)}
-                    >
-                      Delete
-                    </Menu.Item>
-                  </Menu>
-                )}
-              >
+              <CrudMenu data={article} onEdit={onEdit} onDelete={onDelete}>
                 <Button type="text" icon={<MoreOutlined />} shape="circle" />
-              </Dropdown>
+              </CrudMenu>
             )}
-            cover={<img src={article.image} alt=""/>}
-            // onClick={() => onEdit(article.id)}
+            cover={<img src={article.image} alt="" />}
           >
             <Space direction="vertical">
               <Paragraph ellipsis={{ rows: 3 }}>
                 {article.subTitle}
               </Paragraph>
               <Space align="start">
-                <Text
-                  type="secondary"
-                  style={{ display: 'block', fontSize: 12, textAlign: 'right', width: 75 }}
-                >
+                <Text type="secondary" className={sty.label}>
                   Audiences:
                 </Text>
                 <Tags options={getAudienceOptions(article?.audiences)} />
               </Space>
               {Boolean(article?.editions.length) && (
                 <Space align="start">
-                  <Text
-                    type="secondary"
-                    style={{ display: 'block', fontSize: 12, textAlign: 'right', width: 75 }}
-                  >
+                  <Text type="secondary" className={sty.label}>
                     Editions:
                   </Text>
                   <Tags options={getEditionsOptions(article?.editions)} color="magenta" />
                 </Space>
               )}
               <Space align="start">
-                <Text
-                  type="secondary"
-                  style={{ display: 'block', fontSize: 12, textAlign: 'right', width: 75 }}
-                >
+                <Text type="secondary" className={sty.label}>
                   Edited:
                 </Text>
-                <Text type="secondary" style={{ display: 'block', fontSize: 12, lineHeight: '18px' }}>
+                <Text type="secondary" className={sty.dateTime}>
                   <DateTime timestamp={article?.actualTime} />
                 </Text>
               </Space>

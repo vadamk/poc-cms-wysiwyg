@@ -9,8 +9,6 @@ import {
   Modal,
   Space,
   Select,
-  Dropdown,
-  Menu,
   message,
   Tag,
 } from 'antd';
@@ -18,8 +16,6 @@ import Column from 'antd/lib/table/Column';
 import {
   ExclamationCircleOutlined,
   PlusOutlined,
-  DeleteOutlined,
-  EditOutlined,
   MoreOutlined,
 } from '@ant-design/icons';
 
@@ -35,6 +31,7 @@ import {
 import Toolbar from 'components/Toolbar';
 import Tags from 'components/Tags';
 import DateTime from 'components/DateTime';
+import CrudMenu from 'components/CrudMenu';
 
 import CardsView from './CardsView';
 
@@ -51,8 +48,6 @@ const viewOptions = [
   { label: 'Cards', value: ViewMode.CARDS },
   { label: 'Table', value: ViewMode.TABLE }
 ];
-
-const defaultViewMode: ViewMode = getFromLocalStorage(localStorageKeys.articlesView) || ViewMode.TABLE;
 
 export const getAudienceOptions = (audience: { type: string }[]) => {
   const audienceTypes = audience.map(ad => ad.type);
@@ -84,10 +79,14 @@ export interface ArticlesProps {}
 const Articles: React.FC<ArticlesProps> = () => {
   const history = useHistory()
 
-  const [viewMode, setViewMode] = React.useState<ViewMode>(defaultViewMode);
+  const [viewMode, setViewMode] = React.useState<ViewMode>(ViewMode.TABLE);
   const { data, loading, refetch } = useQuery(GET_ARTICLES_LIST, {
     pollInterval: 10000,
   });
+
+  React.useEffect(() => {
+    setViewMode(getFromLocalStorage(localStorageKeys.articlesView) || ViewMode.TABLE);
+  }, []);
 
   const [deleteArticle, deleteArticleStatus] = useMutation(DELETE_ARTICLE, {
     onCompleted: () => {
@@ -123,7 +122,7 @@ const Articles: React.FC<ArticlesProps> = () => {
     saveInLocalStorage(localStorageKeys.articlesView, value);
   }
 
-  const redirectToUpdate = (id: string) => {
+  const redirectToUpdate = ({ id }: { id: string }) => {
     history.push(`/articles/${id}`);
   }
 
@@ -146,8 +145,8 @@ const Articles: React.FC<ArticlesProps> = () => {
         <CardsView
           articles={articles}
           isLoading={loading}
-          onDelete={deleteRequest}
           onEdit={redirectToUpdate}
+          onDelete={deleteRequest}
         />
       ) : (
         <Table
@@ -209,28 +208,10 @@ const Articles: React.FC<ArticlesProps> = () => {
             dataIndex="actions"
             key="actions"
             width={45}
-            render={(_, record: any) => (
-              <Dropdown
-                trigger={['click']}
-                overlay={() => (
-                  <Menu>
-                    <Menu.Item
-                      icon={<EditOutlined />}
-                      onClick={() => redirectToUpdate(record.id)}
-                    >
-                      Edit
-                    </Menu.Item>
-                    <Menu.Item
-                      icon={<DeleteOutlined />}
-                      onClick={() => deleteRequest(record)}
-                    >
-                      Delete
-                    </Menu.Item>
-                  </Menu>
-                )}
-              >
-                <Button type="text" icon={<MoreOutlined />} shape="circle" style={{ zIndex: 999 }} />
-              </Dropdown>
+            render={(_, article: any) => (
+              <CrudMenu data={article} onEdit={redirectToUpdate} onDelete={deleteRequest}>
+                <Button type="text" icon={<MoreOutlined />} shape="circle" />
+              </CrudMenu>
             )}
           />
         </Table>
