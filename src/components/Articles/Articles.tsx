@@ -129,7 +129,6 @@ const Articles: React.FC<ArticlesProps> = () => {
   }
 
   const handleChangeView = (value: string) => {
-    console.log('value: ', value);
     setViewMode(value);
     saveInLocalStorage(localStorageKeys.articlesView, value);
   }

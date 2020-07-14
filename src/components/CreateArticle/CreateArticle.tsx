@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, notification, message } from 'antd';
+import { Card, message } from 'antd';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 import { useHistory } from "react-router-dom";
@@ -35,7 +35,7 @@ const CreateArticle: React.FC<CreateArticleProps> = () => {
   }, []);
 
   const handleSubmit = (values) => {
-    const article = { ...values, actualTime: 123 };
+    const article = { ...values, actualTime: +new Date() };
     createArticle({ variables: { article } });
   }
 

@@ -13,7 +13,6 @@ const uploadToTheServer = (
   file: UploadFile,
   callback: () => void = () => null
 ) => {
-  console.log('file: ', file);
   const formData = new FormData();
   formData.append(file.name, file as any);
 

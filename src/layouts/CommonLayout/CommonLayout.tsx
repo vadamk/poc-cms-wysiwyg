@@ -8,6 +8,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   LogoutOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import { Link, useLocation } from 'react-router-dom';
 import { useMutation } from '@apollo/react-hooks';
@@ -23,7 +24,7 @@ import sty from './CommonLayout.module.scss';
 const { Header, Content, Footer, Sider } = Layout;
 
 const headerStyles: React.CSSProperties = {
-  padding: '0 20px',
+  padding: '0 30px',
   display: 'flex',
   justifyContent: 'flex-end'
 };
@@ -112,7 +113,7 @@ const CommonLayout: React.FC = ({ children }) => {
               </Menu.Item>
             </Menu>
           )}>
-            <Avatar style={{ cursor: 'pointer' }} />
+            <Avatar icon={<UserOutlined />} style={{ cursor: 'pointer' }} />
           </Dropdown>
         </Header>
         <Content style={contentStyles}>
