@@ -1,5 +1,6 @@
 import ApolloClient, { InMemoryCache } from 'apollo-boost';
 import { notification } from 'antd';
+import { toIdValue } from 'apollo-utilities';
 
 import { typeDefs, resolvers, GET_AUTHORIZED } from './resolvers';
 
@@ -18,7 +19,13 @@ const createHeaders = (token?: string) => {
 
 const uri = `${env.apiUrl}${process.env.REACT_APP_API_PATH}`;
 
-const cache = new InMemoryCache();
+const cache = new InMemoryCache({
+  cacheRedirects: {
+    Query: {
+      getArticle: (_, args) => toIdValue(cache.config.dataIdFromObject({ __typename: 'Article', id: args.articleId })),
+    },
+  },
+});
 
 const storedToken = getFromLocalStorage(localStorageKeys.token);
 

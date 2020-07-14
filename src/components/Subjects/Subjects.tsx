@@ -167,15 +167,15 @@ const Subjects: React.FC<SubjectsProps> = () => {
         dataSource={subjects}
       >
         <Column title="Title" dataIndex="title" key="title" width={200} />
-        <Column title="Description" dataIndex="description" key="description" />
         <Column
           title="Language"
           dataIndex="language"
           key="language"
           render={(key: Language) => (
-            <Tag>{langOptions.find(o => o.value === key)?.label}</Tag>
+            <Tag>{key.toUpperCase()}</Tag>
           )}
         />
+        <Column title="Description" dataIndex="description" key="description" />
         <Column
           dataIndex="action"
           key="action"
@@ -209,6 +209,7 @@ const Subjects: React.FC<SubjectsProps> = () => {
       {/* Create Subject Modal */}
       <Modal
         style={{ top: 30 }}
+        width={640}
         title="Create a new subject"
         visible={isCreating}
         okText="Create"
@@ -225,6 +226,7 @@ const Subjects: React.FC<SubjectsProps> = () => {
       {/* Update Subject Modal */}
       <Modal
         style={{ top: 30 }}
+        width={640}
         title="Update Subject"
         visible={Boolean(editableSubject)}
         okText="Update"

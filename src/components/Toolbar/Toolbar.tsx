@@ -1,7 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { Breadcrumb } from 'antd';
 
 import sty from './Toolbar.module.scss';
-import { Breadcrumb } from 'antd';
 
 export interface Breadcrumb {
   path: string;
@@ -22,11 +23,11 @@ const Toolbar: React.FC<ToolbarProps> = ({
     <div className={sty.toolbar}>
       <Breadcrumb>
         <Breadcrumb.Item>
-          <a href="/">Dashboard</a>
+          <Link to="/">Dashboard</Link>
         </Breadcrumb.Item>
         {breadcrumbs.map(b => (
           <Breadcrumb.Item key={b.path}>
-            <a href={b.path}>{b.title}</a>
+            <Link to={b.path}>{b.title}</Link>
           </Breadcrumb.Item>
         ))}
         <Breadcrumb.Item>

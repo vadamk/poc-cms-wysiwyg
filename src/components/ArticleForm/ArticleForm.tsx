@@ -35,7 +35,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
   form,
   initialValues = {
     language: Language.SV,
-    image: `https://picsum.photos/id/${randomImageId}/400/300`
+    image: `https://picsum.photos/id/${randomImageId}/400/250`
   },
   mode = 'create',
   isSubmitting = false,

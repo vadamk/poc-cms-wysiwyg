@@ -7,15 +7,12 @@ import {
   Table,
   Button,
   Modal,
-  Card,
-  Row,
-  Col,
   Space,
   Select,
-  Spin,
   Dropdown,
   Menu,
   message,
+  Tag,
 } from 'antd';
 import Column from 'antd/lib/table/Column';
 import {
@@ -25,7 +22,6 @@ import {
   EditOutlined,
   MoreOutlined,
 } from '@ant-design/icons';
-import moment from 'moment';
 
 import { getFromLocalStorage, saveInLocalStorage } from 'services/browser';
 import { ArticleFragment } from 'graphql/fragments';
@@ -33,24 +29,37 @@ import {
   localStorageKeys,
   audienceOptions,
   editionOptions,
+  Language,
 } from 'global';
 
 import Toolbar from 'components/Toolbar';
 import Tags from 'components/Tags';
+import DateTime from 'components/DateTime';
 
-const { Title, Text, Paragraph } = Typography;
+import CardsView from './CardsView';
+
+import sty from './Articles.module.scss';
+
+const { Text, Paragraph } = Typography;
+
+enum ViewMode {
+  CARDS = 'cards',
+  TABLE = 'table',
+}
 
 const viewOptions = [
-  { label: 'Cards', value: 'cards' },
-  { label: 'Table', value: 'table' }
+  { label: 'Cards', value: ViewMode.CARDS },
+  { label: 'Table', value: ViewMode.TABLE }
 ];
 
-const getAudienceOptions = (audience: { type: string }[]) => {
+const defaultViewMode: ViewMode = getFromLocalStorage(localStorageKeys.articlesView) || ViewMode.TABLE;
+
+export const getAudienceOptions = (audience: { type: string }[]) => {
   const audienceTypes = audience.map(ad => ad.type);
   return audienceOptions.filter(o => audienceTypes.includes(o.value));
 }
 
-const getEditionsOptions = (editions: { type: string }[]) => {
+export const getEditionsOptions = (editions: { type: string }[]) => {
   const editionTypes = editions.map(ed => ed.type);
   return editionOptions.filter(o => editionTypes.includes(o.value));
 }
@@ -71,79 +80,11 @@ export const DELETE_ARTICLE = gql`
 `;
 
 export interface ArticlesProps {}
-export interface CardsProps {
-  articles: any[];
-  isLoading: boolean;
-  onDelete: (article: any) => void;
-}
-
-const Cards: React.FC<CardsProps> = ({
-  articles,
-  isLoading,
-  onDelete = () => null
-}) => (
-  <Spin spinning={isLoading}>
-    <Row gutter={[20, 20]}>
-      {articles.map(article => (
-        <Col key={article.id} span={6}>
-          <Card
-            cover={<img src={article.image} alt=""/>}
-            actions={[
-              <Link to={`/articles/${article.id}`}>
-                <EditOutlined key="edit" />
-              </Link>,
-              <DeleteOutlined key="ellipsis" onClick={() => onDelete(article)} />,
-            ]}
-          >
-            <Title level={4}>{article.title}</Title>
-            <Space direction="vertical">
-              <Paragraph ellipsis={{ rows: 3 }}>
-                {article.subTitle}
-              </Paragraph>
-              <Space align="start">
-                <Text
-                  type="secondary"
-                  style={{ display: 'block', fontSize: 12, textAlign: 'right', width: 75 }}
-                >
-                  Audiences:
-                </Text>
-                <Tags options={getAudienceOptions(article?.audiences)} />
-              </Space>
-              {Boolean(article?.editions.length) && (
-                <Space align="start">
-                  <Text
-                    type="secondary"
-                    style={{ display: 'block', fontSize: 12, textAlign: 'right', width: 75 }}
-                  >
-                    Editions:
-                  </Text>
-                  <Tags options={getEditionsOptions(article?.editions)} color="magenta" />
-                </Space>
-              )}
-              <Space align="start">
-                <Text
-                  type="secondary"
-                  style={{ display: 'block', fontSize: 12, textAlign: 'right', width: 75 }}
-                >
-                  Edtied:
-                </Text>
-                <Text type="secondary" style={{ display: 'block', fontSize: 12, lineHeight: '18px' }}>
-                  {moment(article?.actualTime).format('YYYY/MM/DD H:mm')}
-                </Text>
-              </Space>
-            </Space>
-            {/* <Card.Meta title={new Date(article.actualTime)} /> */}
-          </Card>
-        </Col>
-      ))}
-    </Row>
-  </Spin>
-);
 
 const Articles: React.FC<ArticlesProps> = () => {
   const history = useHistory()
 
-  const [viewMode, setViewMode] = React.useState(getFromLocalStorage(localStorageKeys.articlesView) || 'cards');
+  const [viewMode, setViewMode] = React.useState<ViewMode>(defaultViewMode);
   const { data, loading, refetch } = useQuery(GET_ARTICLES_LIST);
   const [deleteArticle, deleteArticleStatus] = useMutation(DELETE_ARTICLE, {
     onCompleted: () => {
@@ -174,7 +115,7 @@ const Articles: React.FC<ArticlesProps> = () => {
     });
   }
 
-  const handleChangeView = (value: string) => {
+  const handleChangeView = (value: ViewMode) => {
     setViewMode(value);
     saveInLocalStorage(localStorageKeys.articlesView, value);
   }
@@ -199,20 +140,42 @@ const Articles: React.FC<ArticlesProps> = () => {
       </Toolbar>
       
       {viewMode === 'cards' ? (
-        <Cards articles={articles} isLoading={loading} onDelete={deleteRequest} />
+        <CardsView
+          articles={articles}
+          isLoading={loading}
+          onDelete={deleteRequest}
+          onEdit={redirectToUpdate}
+        />
       ) : (
-        <Table rowKey="id" loading={loading} dataSource={articles}>
+        <Table
+          rowKey="id"
+          loading={loading}
+          dataSource={articles}
+        >
           <Column
             title='Title'
             dataIndex='title'
             key='title'
             width={200}
-            render={(text, { id }: any) => <Link to={`/articles/${id}`}>{text}</Link>}
+            render={(text, r: any) => <Link to={`/articles/${r.id}`}>{text}</Link>}
+          />
+          <Column
+            title="Language"
+            dataIndex="language"
+            key="language"
+            render={(key: Language) => (
+              <Tag>{key.toUpperCase()}</Tag>
+            )}
           />
           <Column
             title="Subtitle"
             dataIndex="subTitle"
             key="subTitle"
+            render={data => (
+              <Paragraph ellipsis={{ rows: 3 }}>
+                {data}
+              </Paragraph>
+            )}
           />
           <Column
             title="Editions"
@@ -227,6 +190,17 @@ const Articles: React.FC<ArticlesProps> = () => {
             key="audiences"
             width={220}
             render={data => <Tags options={getAudienceOptions(data)} />}
+          />
+          <Column
+            title="Edited"
+            dataIndex="actualTime"
+            key="actualTime"
+            width={160}
+            render={data => (
+              <Text type="secondary" className={sty.dateTime}>
+                <DateTime timestamp={data} />
+              </Text>
+            )}
           />
           <Column
             dataIndex="actions"
@@ -252,7 +226,7 @@ const Articles: React.FC<ArticlesProps> = () => {
                   </Menu>
                 )}
               >
-                <MoreOutlined />
+                <Button type="text" icon={<MoreOutlined />} shape="circle" style={{ zIndex: 999 }} />
               </Dropdown>
             )}
           />

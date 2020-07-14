@@ -4,6 +4,11 @@ import { Form, Input, Select } from 'antd';
 import { FormProps } from 'models';
 import { langOptions, Language } from 'global';
 
+const layout = {
+  labelCol: { span: 5 },
+  wrapperCol: { span: 16 },
+};
+
 export interface CreateSubjectFormProps extends FormProps {
   mode?: 'create' | 'update';
 }
@@ -14,7 +19,7 @@ const CreateSubjectForm: React.FC<CreateSubjectFormProps> = ({
   isSubmitting = false,
 }) => (
   <Form
-    layout="vertical"
+    {...layout}
     name="basic"
     form={form}
     initialValues={initialValues}
