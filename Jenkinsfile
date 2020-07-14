@@ -1,17 +1,12 @@
 pipeline {
     agent any
     stages {
-//        stage ('Build') {
-//            steps {
-//                sh 'yarn'
-//                sh 'yarn build'
-//             }
-//       }
-//       stage ('Recycle') {
-//             steps {
-//                 sh 'rm -rf node_modules/'
-//             }     
-//        }
+        stage ('Build') {
+            steps {
+                sh 'yarn'
+                sh 'yarn build'
+             }
+       }
         stage ('Docker build & Push -dev') {
             when {
                 expression {
@@ -24,6 +19,11 @@ pipeline {
                  sh 'docker push saliuk/go-cms:latest'
                  sh 'ssh root@ec2-13-48-104-249.eu-north-1.compute.amazonaws.com ./go-cms'
              }
+        }
+        stage ('Recycle') {
+             steps {
+                 sh 'rm -rf node_modules/ build/'
+             }     
         }
 
     }

@@ -1,14 +1,4 @@
-FROM node:12.18.2
-
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-COPY package*.json ./
-
-COPY . .
-
-RUN yarn install
-RUN yarn build
-
-EXPOSE 3000
-
-CMD [ "yarn", "start" ]
+FROM nginx:1.18
+COPY build/ /usr/share/nginx/html
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx/default.conf /etc/nginx/conf.d/
