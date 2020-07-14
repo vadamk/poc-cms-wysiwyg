@@ -16,6 +16,7 @@ import {
   Spin,
   Dropdown,
   Menu,
+  message,
 } from 'antd';
 import Column from 'antd/lib/table/Column';
 import {
@@ -98,7 +99,11 @@ const Articles: React.FC<ArticlesProps> = () => {
 
   const [viewMode, setViewMode] = React.useState(getFromLocalStorage(localStorageKeys.articlesView) || 'cards');
   const { data, loading } = useQuery(GET_ARTICLES_LIST);
-  const [deleteArticle, deleteArticleStatus] = useMutation(DELETE_ARTICLE);
+  const [deleteArticle, deleteArticleStatus] = useMutation(DELETE_ARTICLE, {
+    onCompleted: () => {
+      message.success('Article has been deleted.');
+    }
+  });
 
   const articles = React.useMemo(() => {
     return (data?.getArticleList || []).reverse()

@@ -66,9 +66,10 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
   }, [isEnglish]);
 
   const handleLangChange = ({ target }) => {
+    console.log(internalForm.getFieldValue('audiences'))
     setEnglish(target.value === Language.EN);
-    const audience = target.value === Language.EN ? [Audiences.SWEDEN_JOB] : [];
-    internalForm.setFieldsValue({ audience });
+    const audiences = target.value === Language.EN ? [Audiences.SWEDEN_JOB] : [];
+    internalForm.setFieldsValue({ audiences });
   }
 
   return (

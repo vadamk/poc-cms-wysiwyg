@@ -1,7 +1,6 @@
 import React from 'react';
 import { gql } from 'apollo-boost';
 import { useQuery, useMutation } from '@apollo/react-hooks'
-import { ColumnsType } from 'antd/lib/table/interface';
 import {
   Typography,
   Table,
@@ -9,7 +8,7 @@ import {
   Dropdown,
   Menu,
   Modal,
-  notification,
+  message,
   Tag,
 } from 'antd';
 import {
@@ -78,10 +77,7 @@ const Subjects: React.FC<SubjectsProps> = () => {
     onCompleted: () => {
       refetch();
       cancelCreating();
-      notification.success({
-        message: 'Success',
-        description: 'Subject has been created.',
-      });
+      message.success('Subject has been created.');
     },
   });
 
@@ -89,10 +85,7 @@ const Subjects: React.FC<SubjectsProps> = () => {
     onCompleted: () => {
       refetch();
       cancelUpdating();
-      notification.success({
-        message: 'Success',
-        description: 'Subject has been updated.',
-      });
+      message.success('Subject has been updated.');
     },
   });
 
@@ -100,10 +93,7 @@ const Subjects: React.FC<SubjectsProps> = () => {
     onCompleted: () => {
       refetch();
       cancelUpdating();
-      notification.success({
-        message: 'Success',
-        description: 'Subject has been deleted.',
-      });
+      message.success('Subject has been deleted.');
     },
   });
 
