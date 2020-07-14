@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, notification } from 'antd';
+import { Card, notification, message } from 'antd';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 import { useHistory } from "react-router-dom";
@@ -25,10 +25,7 @@ const CreateArticle: React.FC<CreateArticleProps> = () => {
   
   const [createArticle, createArticleStatus] = useMutation(CREATE_ARTICLE, {
     onCompleted: () => {
-      notification.success({
-        message: 'Success',
-        description: 'Subject has been deleted.',
-      });
+      message.success('Article has been created.');
       history.push('/articles');
     },
   });

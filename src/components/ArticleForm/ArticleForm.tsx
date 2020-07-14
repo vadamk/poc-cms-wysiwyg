@@ -29,9 +29,14 @@ export interface ArticleFormProps extends FormProps {
   mode?: 'create' | 'update';
 }
 
+const randomImageId = Math.round(Math.random() * 50) + 1000;
+
 const ArticleForm: React.FC<ArticleFormProps> = ({
   form,
-  initialValues = { language: Language.SV, image: 'https://picsum.photos/id/1/1000' },
+  initialValues = {
+    language: Language.SV,
+    image: `https://picsum.photos/id/${randomImageId}/400/300`
+  },
   mode = 'create',
   isSubmitting = false,
   onSubmit = () => null,

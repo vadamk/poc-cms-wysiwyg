@@ -77,10 +77,10 @@ const Cards = ({ articles, isLoading, onDelete }) => (
               <Paragraph ellipsis={{ rows: 3 }}>
                 {article.subTitle}
               </Paragraph>
-              <Space align="start">
+              {Boolean(article?.editions.length) && <Space align="start">
                 <b>Editions:</b>
                 <EditionTags items={article?.editions} />
-              </Space>
+              </Space>}
               <Space align="start">
                 <b>Audiences:</b>
                 <AudienceTags items={article?.audiences} />
@@ -98,10 +98,11 @@ const Articles: React.FC<ArticlesProps> = () => {
   const history = useHistory()
 
   const [viewMode, setViewMode] = React.useState(getFromLocalStorage(localStorageKeys.articlesView) || 'cards');
-  const { data, loading } = useQuery(GET_ARTICLES_LIST);
+  const { data, loading, refetch } = useQuery(GET_ARTICLES_LIST);
   const [deleteArticle, deleteArticleStatus] = useMutation(DELETE_ARTICLE, {
     onCompleted: () => {
       message.success('Article has been deleted.');
+      refetch();
     }
   });
 
