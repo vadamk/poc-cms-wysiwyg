@@ -51,7 +51,7 @@ export const editionOptions = [
     value: Edition.BOSS,
   },
   {
-    label: 'Government',
+    label: 'Gov\'t',
     value: Edition.GOVERNMENT,
   },
 ];

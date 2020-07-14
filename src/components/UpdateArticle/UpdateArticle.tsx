@@ -67,12 +67,13 @@ const UpdateArticle: React.FC<UpdateArticleProps> = () => {
     return [{ path: '/articles', title: 'Articles' }];
   }, []);
 
-  const handleSubmit = React.useCallback(({ audience, edition, ...values }) => {
+  const handleSubmit = React.useCallback((values) => {
     const article = {
       ...values,
       id: data?.getArticle.id,
       actualTime: +new Date(),
     };
+
     updateArticle({ variables: { article } });
   }, [data, updateArticle]);
 
@@ -81,12 +82,14 @@ const UpdateArticle: React.FC<UpdateArticleProps> = () => {
       <Toolbar title="Update Article" breadcrumbs={breadcrumbs} />
       <Card>
         <Spin spinning={loading}>
-          {formData && <ArticleForm
-            initialValues={formData}
-            mode="update"
-            isSubmitting={updateArticleStatus.loading}
-            onSubmit={handleSubmit}
-          />}
+          {formData && (
+            <ArticleForm
+              initialValues={formData}
+              mode="update"
+              isSubmitting={updateArticleStatus.loading}
+              onSubmit={handleSubmit}
+            />
+          )}
         </Spin>
       </Card>
     </>

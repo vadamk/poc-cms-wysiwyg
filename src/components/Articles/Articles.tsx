@@ -85,7 +85,10 @@ const Articles: React.FC<ArticlesProps> = () => {
   const history = useHistory()
 
   const [viewMode, setViewMode] = React.useState<ViewMode>(defaultViewMode);
-  const { data, loading, refetch } = useQuery(GET_ARTICLES_LIST);
+  const { data, loading, refetch } = useQuery(GET_ARTICLES_LIST, {
+    pollInterval: 10000,
+  });
+
   const [deleteArticle, deleteArticleStatus] = useMutation(DELETE_ARTICLE, {
     onCompleted: () => {
       message.success('Article has been deleted.');

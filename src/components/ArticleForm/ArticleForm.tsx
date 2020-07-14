@@ -71,10 +71,10 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
   }, [isEnglish]);
 
   const handleLangChange = ({ target }) => {
-    console.log(internalForm.getFieldValue('audiences'))
-    setEnglish(target.value === Language.EN);
-    const audiences = target.value === Language.EN ? [Audiences.SWEDEN_JOB] : [];
+    const nextIsEnglish = target.value === Language.EN;
+    const audiences = nextIsEnglish ? [Audiences.SWEDEN_JOB] : [];
     internalForm.setFieldsValue({ audiences });
+    setEnglish(nextIsEnglish);
   }
 
   return (
@@ -144,7 +144,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
       <Form.Item
         label="Subject"
         name="subjectId"
-        rules={[{ required: true, message: 'Please select at least 1 audience!' }]}>
+        rules={[{ required: true, message: 'Please choose subject!' }]}>
         <Select
           showSearch
           disabled={isSubmitting}
