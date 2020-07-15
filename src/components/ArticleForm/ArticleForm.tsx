@@ -4,14 +4,14 @@ import { Form, Input, Select, Button, Space, Checkbox } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { Link } from 'react-router-dom';
 
-import { FormProps } from 'models';
+import { FormProps } from 'core/models';
 import {
   langOptions,
   audienceOptions,
   editionOptions,
   Language,
   Audiences,
-} from 'global';
+} from 'core/global';
 import { GET_SUBJECTS_LIST } from 'components/Subjects';
 import RichEditor from 'components/RichEditor';
 import RadioButtons from 'components/RadioButtons';

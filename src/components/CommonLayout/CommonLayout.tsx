@@ -14,7 +14,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useMutation } from '@apollo/react-hooks';
 
 import { saveInLocalStorage, getFromLocalStorage, removeFromLocalStorage } from 'services/browser';
-import { localStorageKeys } from 'global';
+import { localStorageKeys } from 'core/global';
 
 import Logo from 'components/Logo';
 import { SET_AUTHORIZED } from 'components/SignIn';

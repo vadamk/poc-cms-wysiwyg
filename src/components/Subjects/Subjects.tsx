@@ -17,13 +17,13 @@ import {
 import { useForm } from 'antd/lib/form/Form';
 import Column from 'antd/lib/table/Column';
 
-import { SubjectFragment } from 'graphql/fragments';
-import { FormValues } from 'models';
-import { removeTypeName } from 'utils';
+import { SubjectFragment } from 'core/graphql/fragments';
+import { FormValues } from 'core/models';
+import { removeTypeName } from 'core/utils';
 import Toolbar from 'components/Toolbar';
 
 import CreateSubjectForm from './CreateSubjectForm';
-import { Language } from 'global';
+import { Language } from 'core/global';
 import CrudMenu from 'components/CrudMenu';
 
 export const GET_SUBJECTS_LIST = gql`

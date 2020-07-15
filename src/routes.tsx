@@ -16,8 +16,8 @@ import Articles from 'components/Articles';
 import CreateArticle from 'components/CreateArticle';
 import UpdateArticle from 'components/UpdateArticle';
 import Guides from 'components/Guides';
-import CommonLayout from './layouts/CommonLayout';
-import PureLayout from 'layouts/PureLayout';
+import CommonLayout from './components/CommonLayout';
+import PureLayout from 'components/PureLayout';
 
 const GET_AUTHORIZED = gql`
   query IsAuthorized {

@@ -4,7 +4,7 @@ import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 import { useHistory } from "react-router-dom";
 
-import { ArticleFragment } from 'graphql/fragments';
+import { ArticleFragment } from 'core/graphql/fragments';
 
 import Toolbar from 'components/Toolbar';
 import ArticleForm from 'components/ArticleForm';

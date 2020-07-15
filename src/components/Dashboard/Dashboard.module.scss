@@ -1,2 +1,109 @@
-@import 'styles/variables';
-
+.dashboard {
+  .content {
+    margin: 0 auto;
+    padding: 20px;
+    width: 685px;
+    transition: width 300ms;
+  
+    &.mobile {
+      width: 375px;
+    }
+  }
+  
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    padding: 7px 14px;
+    height: 42px;
+  
+    background-color: #f9f9f9;
+  
+    .switchMode {
+      font-size: 16px;
+      color: #CCC;
+      width: 32px;
+      height: 32px;
+  
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      
+      cursor: pointer;
+  
+      &[aria-disabled=true] {
+        pointer-events: none;
+        color: #19C2C6;
+      }
+    }
+  }
+  
+  /* mark */
+  
+  .ql-editor {
+  
+    p, li {
+      font-family: 'PT serif', Arial;
+      font-size: 1.25rem;
+      line-height: 2rem;
+      color: #555D5D;
+    }
+  
+    p {
+      margin: 1.3rem 0;
+    }
+  
+    p a {
+      color: #FF486C;
+      text-decoration: none;
+    }
+  
+    img {
+      max-width: 100%;
+    }
+  
+    ul, ol {
+      margin-bottom: 36px;
+  
+      li {
+        position: relative;
+        list-style: none;
+        margin-bottom: 0.875rem;
+  
+        &:before {
+          left: -2rem;
+        }
+      }
+    }
+  
+    ul > li:before {
+      display: block;
+      width: .75rem;
+      height: .75rem;
+      border-radius: 50%;
+      background-color: #19C2C6;
+  
+      position: absolute;
+      top: .75rem;
+      content: '';
+    }
+  
+    ol {
+      counter-reset: list;
+    }
+  
+    ol > li {
+      counter-increment: list;
+    }
+  
+    ol > li:before {
+      color: #19C2C6;
+      font-weight: 600;
+  
+      position: absolute;
+      top: 1px;
+      content: counter(list) '.';
+    }
+  }  
+}

@@ -5,10 +5,10 @@ import { gql } from 'apollo-boost';
 import { Card, Spin, message, Typography } from 'antd';
 import { useHistory } from "react-router-dom";
 
-import { ArticleFragment } from 'graphql/fragments';
+import { ArticleFragment } from 'core/graphql/fragments';
 import Toolbar from 'components/Toolbar';
 import ArticleForm from 'components/ArticleForm';
-import { Edition } from 'global';
+import { Edition } from 'core/global';
 
 export const GET_ARTICLE = gql`
   query GetArticle($articleId: Int!) {

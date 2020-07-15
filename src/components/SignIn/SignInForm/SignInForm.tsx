@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Input, Button } from 'antd';
 
-import { FormProps } from 'models';
+import { FormProps } from 'core/models';
 
 const layout = {
   labelCol: { span: 8 },

@@ -2,7 +2,7 @@ import React from 'react';
 import { Radio } from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio';
 
-import { Option } from 'models';
+import { Option } from 'core/models';
 
 const { Group, Button } = Radio;
 

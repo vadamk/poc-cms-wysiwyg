@@ -20,13 +20,13 @@ import {
 } from '@ant-design/icons';
 
 import { getFromLocalStorage, saveInLocalStorage } from 'services/browser';
-import { ArticleFragment } from 'graphql/fragments';
+import { ArticleFragment } from 'core/graphql/fragments';
 import {
   localStorageKeys,
   audienceOptions,
   editionOptions,
   Language,
-} from 'global';
+} from 'core/global';
 
 import Toolbar from 'components/Toolbar';
 import Tags from 'components/Tags';

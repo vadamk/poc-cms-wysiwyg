@@ -6,7 +6,7 @@ import { useMutation } from '@apollo/react-hooks';
 import { useForm } from 'antd/lib/form/Form';
 
 import { saveInLocalStorage } from 'services/browser';
-import { localStorageKeys } from 'global';
+import { localStorageKeys } from 'core/global';
 
 import SignInForm from './SignInForm';
 

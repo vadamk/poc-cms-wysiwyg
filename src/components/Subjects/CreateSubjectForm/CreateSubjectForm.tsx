@@ -1,8 +1,8 @@
 import React from 'react';
 import { Form, Input, Select } from 'antd';
 
-import { FormProps } from 'models';
-import { langOptions, Language } from 'global';
+import { FormProps } from 'core/models';
+import { langOptions, Language } from 'core/global';
 
 const layout = {
   labelCol: { span: 5 },

@@ -6,7 +6,7 @@ import { UploadFile } from 'antd/lib/upload/interface';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import reqwest from 'reqwest';
 
-import { UploadFolder } from 'global';
+import { UploadFolder } from 'core/global';
 
 const uploadToTheServer = (
   url: string,
@@ -18,11 +18,12 @@ const uploadToTheServer = (
 
   reqwest({
     url,
-    method: 'post',
+    method: 'PUT',
     processData: false,
     data: formData,
     headers: {
-      'Access-Control-Allow-Origin': '*'
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true,
     },
     success: () => {
       message.success('Upload successfully.');
@@ -59,6 +60,7 @@ const UploadImage = React.forwardRef<Upload, UploadImageProps>(
       variables: { folder: UploadFolder.CMS },
       onCompleted: (data) => {
         const { uploadUrl, path, exp } = data.getUploadUrl;
+        console.log('uploadUrl, path, exp: ', uploadUrl, path, exp);
 
         if (file) {
           uploadToTheServer(uploadUrl, file, () => {

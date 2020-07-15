@@ -1,3 +1,7 @@
+$breakpointLG: 1096px;
+$breakpointMD: 838px;
+$breakpointSM: 576px;
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -7,13 +11,19 @@ body {
   -moz-osx-font-smoothing: grayscale;
 
   min-width: 960px;
+
+  font-size: 100%;
+
+  @media screen and (max-width: $breakpointMD) {
+    font-size: 14px;
+  }
+
+  @media screen and (max-width: $breakpointSM) {
+    font-size: 12px;
+  }
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
-}
-
-.ant-popover-title h3 {
-  margin: 10px 0;
 }

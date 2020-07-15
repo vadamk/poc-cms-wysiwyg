@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tag } from 'antd';
-import { Audiences } from 'global';
-import { Option } from 'models';
+import { Audiences } from 'core/global';
+import { Option } from 'core/models';
 
 import sty from './Tags.module.scss';
 
