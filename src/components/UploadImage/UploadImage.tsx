@@ -16,7 +16,11 @@ const uploadToTheServer = (
   const formData = new FormData();
   formData.append(file.name, file as any);
 
-  axios.put(url, file).finally(() => {
+  axios.put(url, file, {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    }
+  }).finally(() => {
     message.success('Upload successfully.');
     callback();
   });
