@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactQuill from 'react-quill';
 
-import 'snow.css';
-
 const toolbarOptions = [
   [{ 'header': [1, 2, 3, 4, false] }],
   ['bold', 'italic', 'underline'],

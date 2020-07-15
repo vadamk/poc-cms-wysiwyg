@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { useMutation } from '@apollo/react-hooks';
 import { useForm } from 'antd/lib/form/Form';
 
-import { saveInLocalStorage } from 'services/browser';
+import { saveInLocalStorage } from 'core/services/browser';
 import { localStorageKeys } from 'core/global';
 
 import SignInForm from './SignInForm';

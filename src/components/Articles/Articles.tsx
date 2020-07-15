@@ -19,7 +19,7 @@ import {
   MoreOutlined,
 } from '@ant-design/icons';
 
-import { getFromLocalStorage, saveInLocalStorage } from 'services/browser';
+import { getFromLocalStorage, saveInLocalStorage } from 'core/services/browser';
 import { ArticleFragment } from 'core/graphql/fragments';
 import {
   localStorageKeys,

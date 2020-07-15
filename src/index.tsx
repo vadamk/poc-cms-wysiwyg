@@ -3,8 +3,7 @@ import ReactDOM from 'react-dom';
 import { ApolloProvider } from '@apollo/react-hooks';
 import * as Sentry from '@sentry/react';
 
-import './index.scss';
-import 'antd/dist/antd.css';
+import 'styles/index.scss';
 
 import client from 'core/graphql/client';
 import * as serviceWorker from 'serviceWorker';

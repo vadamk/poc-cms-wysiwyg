@@ -13,7 +13,7 @@ import {
 import { Link, useLocation } from 'react-router-dom';
 import { useMutation } from '@apollo/react-hooks';
 
-import { saveInLocalStorage, getFromLocalStorage, removeFromLocalStorage } from 'services/browser';
+import { saveInLocalStorage, getFromLocalStorage, removeFromLocalStorage } from 'core/services/browser';
 import { localStorageKeys } from 'core/global';
 
 import Logo from 'components/Logo';

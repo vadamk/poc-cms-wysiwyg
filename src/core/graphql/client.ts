@@ -5,7 +5,7 @@ import { toIdValue } from 'apollo-utilities';
 import { typeDefs, resolvers, GET_AUTHORIZED } from './resolvers';
 
 import { env, localStorageKeys } from 'core/global';
-import { getFromLocalStorage, removeFromLocalStorage } from 'services/browser';
+import { getFromLocalStorage, removeFromLocalStorage } from 'core/services/browser';
 
 const createHeaders = (token?: string) => {
   const headers: any = {};
