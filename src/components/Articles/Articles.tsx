@@ -19,6 +19,7 @@ import {
   MoreOutlined,
 } from '@ant-design/icons';
 
+import { Article } from 'core/graphql/generated';
 import { getFromLocalStorage, saveInLocalStorage } from 'core/services/browser';
 import { ArticleFragment } from 'core/graphql/fragments';
 import {
@@ -80,7 +81,9 @@ const Articles: React.FC<ArticlesProps> = () => {
   const history = useHistory()
 
   const [viewMode, setViewMode] = React.useState<ViewMode>(ViewMode.TABLE);
-  const { data, loading, refetch } = useQuery(GET_ARTICLES_LIST, {
+  const { data, loading, refetch } = useQuery<
+    { getArticleList: Article[] }
+  >(GET_ARTICLES_LIST, {
     pollInterval: 10000,
   });
 
@@ -149,7 +152,7 @@ const Articles: React.FC<ArticlesProps> = () => {
           onDelete={deleteRequest}
         />
       ) : (
-        <Table
+        <Table<Article>
           rowKey="id"
           loading={loading}
           dataSource={articles}

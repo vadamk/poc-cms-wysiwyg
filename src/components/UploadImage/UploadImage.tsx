@@ -4,7 +4,7 @@ import { gql } from 'apollo-boost';
 import { Upload, message } from 'antd';
 import { UploadFile } from 'antd/lib/upload/interface';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
-import reqwest from 'reqwest';
+import axios from 'axios';
 
 import { UploadFolder } from 'core/global';
 
@@ -16,29 +16,15 @@ const uploadToTheServer = (
   const formData = new FormData();
   formData.append(file.name, file as any);
 
-  reqwest({
-    url,
-    method: 'PUT',
-    processData: false,
-    data: formData,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Credentials': true,
-    },
-    success: () => {
-      message.success('Upload successfully.');
-      callback();
-    },
-    error: (err) => {
-      message.error('Upload failed.', err);
-      callback();
-    },
+  axios.put(url, file).finally(() => {
+    message.success('Upload successfully.');
+    callback();
   });
 }
 
 export const GET_UPLOAD_URL = gql`
-  query GetUploadUrl($folder: UPLOAD_FOLDER!) {
-    getUploadUrl(folder: $folder) {
+  query GetUploadUrl($folder: UPLOAD_FOLDER!, $filename: String!) {
+    getUploadUrl(folder: $folder, filename: $filename) {
       uploadUrl
       path
       exp
@@ -47,17 +33,17 @@ export const GET_UPLOAD_URL = gql`
 `;
 
 export interface UploadImageProps {
+  value?: string;
   onChange?: (imageURL: string) => void;
 }
 
 const UploadImage = React.forwardRef<Upload, UploadImageProps>(
-  ({ onChange = () => null }, ref) => {
+  ({ value, onChange = () => null }, ref) => {
     const [file, setFile] = React.useState<UploadFile>();
-    const [fileURL, setFileURL] = React.useState<string>();
+    const [fileURL, setFileURL] = React.useState<string>(value || '');
     const [isLoading, setLoading] = React.useState(false);
 
     const [getUploadUrl, { called, refetch }] = useLazyQuery(GET_UPLOAD_URL, {
-      variables: { folder: UploadFolder.CMS },
       onCompleted: (data) => {
         const { uploadUrl, path, exp } = data.getUploadUrl;
         console.log('uploadUrl, path, exp: ', uploadUrl, path, exp);
@@ -74,10 +60,13 @@ const UploadImage = React.forwardRef<Upload, UploadImageProps>(
       }
     });
 
-    const beforeUpload = (file) => {  
+    const beforeUpload = (file: UploadFile) => {  
       if (['image/jpeg', 'image/png'].includes(file.type)) {
         setFile(file);
-        called ? refetch() : getUploadUrl();
+        called ? refetch() : getUploadUrl({ variables: {
+          folder: UploadFolder.CMS,
+          filename: file.name,
+        }});
       } else {
         message.error('You can only upload JPG/PNG file!');
       }
