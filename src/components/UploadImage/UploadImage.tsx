@@ -20,9 +20,11 @@ const uploadToTheServer = (
     headers: {
       'Access-Control-Allow-Origin': '*',
     }
-  }).finally(() => {
+  }).then(() => {
     message.success('Upload successfully.');
     callback();
+  }).catch(() => {
+    message.error('Upload error.');
   });
 }
 
