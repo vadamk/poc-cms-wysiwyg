@@ -16,6 +16,7 @@ import { GET_SUBJECTS_LIST } from 'components/Subjects';
 import RichEditor from 'components/RichEditor';
 import RadioButtons from 'components/RadioButtons';
 import UploadImage from 'components/UploadImage';
+import ImageUpload from 'components/ImageUpload';
 
 const layout = {
   labelCol: { span: 3 },
@@ -30,13 +31,10 @@ export interface ArticleFormProps extends FormProps {
   mode?: 'create' | 'update';
 }
 
-const randomImageId = Math.round(Math.random() * 50) + 1000;
-
 const ArticleForm: React.FC<ArticleFormProps> = ({
   form,
   initialValues = {
     language: Language.SV,
-    image: `https://picsum.photos/id/${randomImageId}/400/250`
   },
   mode = 'create',
   isSubmitting = false,
@@ -123,7 +121,8 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
         rules={[{ required: true, message: 'Please add image!' }]}
       >
         {/* <Input autoComplete="off" disabled={isSubmitting} /> */}
-        <UploadImage />
+        {/* <UploadImage /> */}
+        <ImageUpload />
       </Form.Item>
 
       <Form.Item label="Language" name="language">
