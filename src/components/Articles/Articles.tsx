@@ -19,7 +19,13 @@ import {
   MoreOutlined,
 } from '@ant-design/icons';
 
-import { GetArticleListQuery, DeleteArticleMutation, DeleteArticleMutationVariables, Article, Audience, SpecialEdition } from 'core/models/generated';
+import {
+  DeleteArticleMutation,
+  DeleteArticleMutationVariables,
+  Article,
+  Audience,
+  SpecialEdition,
+} from 'core/models/generated';
 import { getFromLocalStorage, saveInLocalStorage } from 'core/services/browser';
 import { ArticleFragment } from 'core/graphql/fragments';
 import {

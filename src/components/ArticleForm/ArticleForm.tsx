@@ -15,7 +15,6 @@ import {
 import { GET_SUBJECTS_LIST } from 'components/Subjects';
 import RichEditor from 'components/RichEditor';
 import RadioButtons from 'components/RadioButtons';
-import UploadImage from 'components/UploadImage';
 import ImageUpload from 'components/ImageUpload';
 
 const layout = {
