@@ -17,14 +17,16 @@ import {
 import { useForm } from 'antd/lib/form/Form';
 import Column from 'antd/lib/table/Column';
 
-import { SubjectFragment } from 'core/graphql/fragments';
+import { Language } from 'core/global';
+import { GetSubjectListQuery } from 'core/models/generated';
 import { FormValues } from 'core/models';
+import { SubjectFragment } from 'core/graphql/fragments';
 import { removeTypeName } from 'core/utils';
+
 import Toolbar from 'components/Toolbar';
+import CrudMenu from 'components/CrudMenu';
 
 import CreateSubjectForm from './CreateSubjectForm';
-import { Language } from 'core/global';
-import CrudMenu from 'components/CrudMenu';
 
 export const GET_SUBJECTS_LIST = gql`
   query GetSubjectList {
@@ -68,7 +70,7 @@ const Subjects: React.FC<SubjectsProps> = () => {
   const [createForm] = useForm();
   const [updateForm] = useForm();
 
-  const { data, loading, refetch } = useQuery(GET_SUBJECTS_LIST);
+  const { data, loading, refetch } = useQuery<GetSubjectListQuery>(GET_SUBJECTS_LIST);
   
   const [createSubject, createSubjectStatus] = useMutation(CREATE_SUBJECT, {
     onCompleted: () => {
@@ -158,7 +160,7 @@ const Subjects: React.FC<SubjectsProps> = () => {
       <Toolbar title="Subject">
         <Button icon={<PlusOutlined />} onClick={startCreating}>Create</Button>
       </Toolbar>
-      <Table
+      <Table<any>
         rowKey="id"
         loading={loading}
         dataSource={subjects}

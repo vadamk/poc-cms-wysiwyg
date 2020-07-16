@@ -19,7 +19,7 @@ import {
   MoreOutlined,
 } from '@ant-design/icons';
 
-import { Article } from 'core/graphql/generated';
+import { GetArticleListQuery, DeleteArticleMutation, DeleteArticleMutationVariables, Article, Audience, SpecialEdition } from 'core/models/generated';
 import { getFromLocalStorage, saveInLocalStorage } from 'core/services/browser';
 import { ArticleFragment } from 'core/graphql/fragments';
 import {
@@ -27,6 +27,7 @@ import {
   audienceOptions,
   editionOptions,
   Language,
+  Edition,
 } from 'core/global';
 
 import Toolbar from 'components/Toolbar';
@@ -37,6 +38,7 @@ import CrudMenu from 'components/CrudMenu';
 import CardsView from './CardsView';
 
 import sty from './Articles.module.scss';
+import { Maybe } from 'graphql/jsutils/Maybe';
 
 const { Text, Paragraph } = Typography;
 
@@ -50,13 +52,21 @@ const viewOptions = [
   { label: 'Table', value: ViewMode.TABLE }
 ];
 
-export const getAudienceOptions = (audience: { type: string }[]) => {
-  const audienceTypes = audience.map(ad => ad.type);
-  return audienceOptions.filter(o => audienceTypes.includes(o.value));
+export const getAudienceOptions = (audiences: Maybe<Audience>[]) => {
+  const audiencesTypes = audiences
+    // better to fix on backend [Article]! => [Article!]!
+    .filter(ad => typeof ad?.type === 'string')
+    .map(ad => ad?.type);
+
+  return audienceOptions.filter(o => audiencesTypes.includes(o.value));
 }
 
-export const getEditionsOptions = (editions: { type: string }[]) => {
-  const editionTypes = editions.map(ed => ed.type);
+export const getEditionsOptions = (editions: Maybe<SpecialEdition>[]) => {
+  const editionTypes = editions
+    // better to fix on backend [Article]! => [Article!]!
+    .filter(ad => typeof ad?.type === 'string')
+    .map(ad => ad?.type);
+
   return editionOptions.filter(o => editionTypes.includes(o.value));
 }
 
@@ -81,9 +91,7 @@ const Articles: React.FC<ArticlesProps> = () => {
   const history = useHistory()
 
   const [viewMode, setViewMode] = React.useState<ViewMode>(ViewMode.TABLE);
-  const { data, loading, refetch } = useQuery<
-    { getArticleList: Article[] }
-  >(GET_ARTICLES_LIST, {
+  const { data, loading, refetch } = useQuery(GET_ARTICLES_LIST, {
     pollInterval: 10000,
   });
 
@@ -91,7 +99,10 @@ const Articles: React.FC<ArticlesProps> = () => {
     setViewMode(getFromLocalStorage(localStorageKeys.articlesView) || ViewMode.TABLE);
   }, []);
 
-  const [deleteArticle, deleteArticleStatus] = useMutation(DELETE_ARTICLE, {
+  const [deleteArticle, deleteArticleStatus] = useMutation<
+    DeleteArticleMutation,
+    DeleteArticleMutationVariables
+  >(DELETE_ARTICLE, {
     onCompleted: () => {
       message.success('Article has been deleted.');
       refetch();
@@ -115,7 +126,7 @@ const Articles: React.FC<ArticlesProps> = () => {
       okText: 'Delete',
       okButtonProps: { loading: deleteArticleStatus.loading },
       onOk: () => {
-        deleteArticle({ variables: { articleId: article.id } })
+        deleteArticle({ variables: { articleId: article.id } });
       },
     });
   }
@@ -125,8 +136,10 @@ const Articles: React.FC<ArticlesProps> = () => {
     saveInLocalStorage(localStorageKeys.articlesView, value);
   }
 
-  const redirectToUpdate = ({ id }: { id: string }) => {
-    history.push(`/articles/${id}`);
+  const redirectToUpdate = (article?: Article) => {
+    if (article) {
+      history.push(`/articles/${article.id}`);
+    }
   }
 
   return (
@@ -152,17 +165,17 @@ const Articles: React.FC<ArticlesProps> = () => {
           onDelete={deleteRequest}
         />
       ) : (
-        <Table<Article>
+        <Table
           rowKey="id"
           loading={loading}
-          dataSource={articles}
+          dataSource={articles as any}
         >
-          <Column
+          <Column<Article>
             title='Title'
             dataIndex='title'
             key='title'
             width={200}
-            render={(text, r: any) => <Link to={`/articles/${r.id}`}>{text}</Link>}
+            render={(text, r) => <Link to={`/articles/${r.id}`}>{text}</Link>}
           />
           <Column
             title="Language"
@@ -176,9 +189,9 @@ const Articles: React.FC<ArticlesProps> = () => {
             title="Subtitle"
             dataIndex="subTitle"
             key="subTitle"
-            render={data => (
+            render={text => (
               <Paragraph ellipsis={{ rows: 3 }}>
-                {data}
+                {text}
               </Paragraph>
             )}
           />
@@ -187,32 +200,32 @@ const Articles: React.FC<ArticlesProps> = () => {
             dataIndex="editions"
             key="editions"
             width={220}
-            render={data => <Tags options={getEditionsOptions(data)}  color="magenta" />}
+            render={text => <Tags options={getEditionsOptions(text)} color="magenta" />}
           />
           <Column
             title="Audiences"
             dataIndex="audiences"
             key="audiences"
             width={220}
-            render={data => <Tags options={getAudienceOptions(data)} />}
+            render={text => <Tags options={getAudienceOptions(text)} />}
           />
           <Column
             title="Edited"
             dataIndex="actualTime"
             key="actualTime"
             width={160}
-            render={data => (
+            render={text => (
               <Text type="secondary" className={sty.dateTime}>
-                <DateTime timestamp={data} />
+                <DateTime timestamp={text} />
               </Text>
             )}
           />
-          <Column
+          <Column<Article>
             dataIndex="actions"
             key="actions"
             width={45}
-            render={(_, article: any) => (
-              <CrudMenu data={article} onEdit={redirectToUpdate} onDelete={deleteRequest}>
+            render={(_, article) => (
+              <CrudMenu<Article> data={article} onEdit={redirectToUpdate} onDelete={deleteRequest}>
                 <Button type="text" icon={<MoreOutlined />} shape="circle" />
               </CrudMenu>
             )}

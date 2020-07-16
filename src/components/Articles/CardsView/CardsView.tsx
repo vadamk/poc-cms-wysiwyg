@@ -2,6 +2,8 @@ import React from 'react';
 import { Spin, Row, Col, Card, Space, Typography, Button } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
 
+import { Article } from 'core/models/generated';
+
 import Tags from 'components/Tags';
 import DateTime from 'components/DateTime';
 import CrudMenu from 'components/CrudMenu';
@@ -12,10 +14,10 @@ import sty from './CardsView.module.scss';
 const { Paragraph, Text } = Typography;
 
 export interface CardsViewProps {
-  articles: any[];
+  articles: Article[];
   isLoading: boolean;
-  onEdit: (article: any) => void;
-  onDelete: (article: any) => void;
+  onEdit: (article?: Article) => void;
+  onDelete: (article?: Article) => void;
 }
 
 const CardsView: React.FC<CardsViewProps> = ({
@@ -31,7 +33,11 @@ const CardsView: React.FC<CardsViewProps> = ({
           <Card
             title={article.title}
             extra={(
-              <CrudMenu data={article} onEdit={onEdit} onDelete={onDelete}>
+              <CrudMenu<Article>
+                data={article}
+                onEdit={onEdit}
+                onDelete={onDelete}
+              >
                 <Button type="text" icon={<MoreOutlined />} shape="circle" />
               </CrudMenu>
             )}
@@ -45,14 +51,21 @@ const CardsView: React.FC<CardsViewProps> = ({
                 <Text type="secondary" className={sty.label}>
                   Audiences:
                 </Text>
-                <Tags options={getAudienceOptions(article?.audiences)} />
+                {article?.audiences && (
+                  <Tags options={getAudienceOptions(article?.audiences)} />
+                )}
               </Space>
-              {Boolean(article?.editions.length) && (
+              {Boolean(article?.editions?.length) && (
                 <Space align="start">
                   <Text type="secondary" className={sty.label}>
                     Editions:
                   </Text>
-                  <Tags options={getEditionsOptions(article?.editions)} color="magenta" />
+                  {article?.editions && (
+                    <Tags
+                      color="magenta"
+                      options={getEditionsOptions(article?.editions)}
+                    />
+                  )}
                 </Space>
               )}
               <Space align="start">

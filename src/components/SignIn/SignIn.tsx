@@ -21,7 +21,7 @@ export const SIGN_IN = gql`
 `;
 
 export const SET_AUTHORIZED = gql`
-  mutation($isAuthorized: Boolean!) {
+  mutation SetAuthorized($isAuthorized: Boolean!) {
     setAuthorized(isAuthorized: $isAuthorized) @client
   }
 `;

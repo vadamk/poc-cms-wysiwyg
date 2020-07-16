@@ -28,6 +28,7 @@ export const ArticleFragment = gql`
     id
     title
     subTitle
+    subjectId
     image
     content
     language

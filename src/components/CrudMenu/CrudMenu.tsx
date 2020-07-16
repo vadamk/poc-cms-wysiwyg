@@ -2,20 +2,20 @@ import React from 'react';
 import { Menu, Dropdown } from 'antd';
 import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 
-export interface CrudMenuProps {
-  data?: any,
-  onEdit?: (data: any) => void,
-  onDelete?: (data: any) => void,
-  onPreview?: (data: any) => void,
+export interface CrudMenuProps<T> {
+  data?: T,
+  onEdit?: (data: T) => void,
+  onDelete?: (data: T) => void,
+  onPreview?: (data: T) => void,
 }
 
-const CrudMenu: React.FC<CrudMenuProps> = ({
+const CrudMenu = <T extends any>({
   data,
   children,
   onEdit,
   onDelete,
   onPreview,
-}) => {
+}: React.PropsWithChildren<CrudMenuProps<T | undefined>>) => {
   const handleEdit = () => {
     onEdit && onEdit(data);
   }

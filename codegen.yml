@@ -1,4 +1,11 @@
-schema: http://13.48.104.249:86/graphql
+schema: 
+  - ./src/core/graphql/resolvers.ts
+  - http://13.48.104.249:86/graphql
+documents: './src/**/*.(ts|tsx)'
 generates:
-  src/core/graphql/generated/index.ts:
-    - typescript
+  src/core/models/generated.tsx:
+    plugins:
+      - typescript
+      - typescript-operations
+    config:
+      preResolveTypes: true
