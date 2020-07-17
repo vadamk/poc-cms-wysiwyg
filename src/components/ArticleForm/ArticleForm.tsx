@@ -101,7 +101,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
         wrapperCol={{ span: 21 }}
         label="Content"
         name="content"
-        rules={[{ required: true, message: 'Please input title!' }]}
+        rules={[{ required: true, message: 'Please input content!' }]}
       >
         <RichEditor />
       </Form.Item>
@@ -119,8 +119,6 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
         name="image"
         rules={[{ required: true, message: 'Please add image!' }]}
       >
-        {/* <Input autoComplete="off" disabled={isSubmitting} /> */}
-        {/* <UploadImage /> */}
         <ImageUpload />
       </Form.Item>
 
