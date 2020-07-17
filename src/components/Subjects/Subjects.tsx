@@ -71,7 +71,7 @@ const Subjects: React.FC<SubjectsProps> = () => {
   const [updateForm] = useForm();
 
   const { data, loading, refetch } = useQuery<GetSubjectListQuery>(GET_SUBJECTS_LIST);
-  
+
   const [createSubject, createSubjectStatus] = useMutation(CREATE_SUBJECT, {
     onCompleted: () => {
       refetch();
