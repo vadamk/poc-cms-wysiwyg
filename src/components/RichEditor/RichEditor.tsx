@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactQuill from 'react-quill';
+import ReactQuill, { Quill } from 'react-quill';
 
 const toolbarOptions = [
   [{ 'header': [1, 2, 3, 4, false] }],
@@ -11,18 +11,30 @@ const toolbarOptions = [
   ['clean']
 ];
 
+const quillConfig = {
+  clipboard: { matchVisual: false },
+  toolbar: toolbarOptions
+};
+
 export interface RichEditorProps {
   value?: string;
   onChange?: (value: string) => void;
+  onBlur?: () => void;
 }
 
 const RichEditor = React.forwardRef<ReactQuill, RichEditorProps>(({
   value = '',
   onChange = () => null,
+  onBlur = () => null,
 }, ref) => {
+  const innerRef = React.useRef(null);
 
-  const handleChange = (value: string) => {
-    onChange(value);
+  const handleChange = (value: string, delta, source, { getText }) => {
+    onChange(getText().length > 1 ? value : '');
+  }
+
+  const handleBlur = () => {
+    onBlur();
   }
 
   return (
@@ -30,10 +42,8 @@ const RichEditor = React.forwardRef<ReactQuill, RichEditorProps>(({
       ref={ref}
       value={value}
       onChange={handleChange}
-      modules={{
-        clipboard: { matchVisual: false },
-        toolbar: toolbarOptions
-      }}
+      onBlur={handleBlur}
+      modules={quillConfig}
     />
   );
 });
