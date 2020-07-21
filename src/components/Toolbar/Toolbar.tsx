@@ -6,7 +6,7 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import sty from './Toolbar.module.scss';
 import { Route } from 'antd/lib/breadcrumb/Breadcrumb';
 
-export interface Breadcrumb extends Route { }
+export interface Breadcrumb extends Route {}
 
 export interface ToolbarProps {
   title: string;
@@ -21,20 +21,23 @@ const Toolbar: React.FC<ToolbarProps> = ({
   extra,
   footer,
   children,
-  }) => {
+}) => {
   let history = useHistory();
 
-  const routes = React.useMemo<Breadcrumb[]>(() => [
-    {
-      path: '/',
-      breadcrumbName: 'Dashboard',
-    },
-    ...breadcrumbs,
-    {
-      path: history.location.pathname,
-      breadcrumbName: title,
-    }
-  ], [breadcrumbs, history.location.pathname, title]);
+  const routes = React.useMemo<Breadcrumb[]>(
+    () => [
+      {
+        path: '/',
+        breadcrumbName: 'Dashboard',
+      },
+      ...breadcrumbs,
+      {
+        path: history.location.pathname,
+        breadcrumbName: title,
+      },
+    ],
+    [breadcrumbs, history.location.pathname, title],
+  );
 
   return (
     <PageHeader
@@ -44,9 +47,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
       title={title}
       breadcrumb={{
         routes,
-        itemRender: (route) => (
-          <Link to={route.path}>{route.breadcrumbName}</Link>
-        )
+        itemRender: route => <Link to={route.path}>{route.breadcrumbName}</Link>,
       }}
       extra={extra}
       footer={footer}

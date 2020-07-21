@@ -25,7 +25,7 @@ import { SET_AUTHORIZED } from 'components/SignIn';
 
 import sty from './CommonLayout.module.scss';
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Header, Content, Sider } = Layout;
 
 const contentStyles: React.CSSProperties = {
   margin: '24px 16px 0',
@@ -55,13 +55,6 @@ const CommonLayout: React.FC = ({ children }) => {
       marginLeft: isCollapsed ? 80 : 200,
       height: '100vh',
       transition: 'all 200ms',
-    }),
-    [isCollapsed],
-  );
-
-  const headerStyles = React.useMemo<React.CSSProperties>(
-    () => ({
-      width: `calc(100% - ${isCollapsed ? 80 : 200}px)`,
     }),
     [isCollapsed],
   );
@@ -112,7 +105,7 @@ const CommonLayout: React.FC = ({ children }) => {
         </Button>
       </Sider>
       <Layout className={sty.siteLayout} style={layoutStyles}>
-        <Header className={sty.header} style={headerStyles}>
+        <Header className={sty.header}>
           <Dropdown
             overlay={() => (
               <Menu>
@@ -125,9 +118,7 @@ const CommonLayout: React.FC = ({ children }) => {
             <Avatar icon={<UserOutlined />} style={{ cursor: 'pointer' }} />
           </Dropdown>
         </Header>
-        <div className={sty.ghostHeader} />
         <Content style={contentStyles}>{children}</Content>
-        <Footer style={footerStyles}>Next Big Thing AB ©</Footer>
       </Layout>
     </Layout>
   );

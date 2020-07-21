@@ -7,7 +7,7 @@ import { useForm } from 'antd/lib/form/Form';
 import Column from 'antd/lib/table/Column';
 
 import { Language } from 'core/global';
-import { GetSubjectListQuery } from 'core/models/generated';
+import { GetSubjectListQuery, Subject } from 'core/models/generated';
 import { FormValues } from 'core/models';
 import { SubjectFragment } from 'core/graphql/fragments';
 import { removeTypeName } from 'core/utils';
@@ -16,6 +16,11 @@ import Toolbar from 'components/Toolbar';
 import CrudMenu from 'components/CrudMenu';
 
 import CreateSubjectForm from './CreateSubjectForm';
+
+const isEmptySubject = (subject: Subject) => {
+  console.log('subject: ', subject);
+  return ![subject.articles, subject.discoveries].some(arr => arr && arr.length);
+};
 
 export const GET_SUBJECTS_LIST = gql`
   query GetSubjectList {
@@ -145,30 +150,37 @@ const Subjects: React.FC<SubjectsProps> = () => {
     [deleteSubject, deleteSubjectStatus.loading],
   );
 
-  const actionButtons = React.useMemo(() => (
-    <Button type="primary" icon={<PlusOutlined />} onClick={startCreating}>
-      Create
-    </Button>
-  ), []);
+  const actionButtons = React.useMemo(
+    () => (
+      <Button type="primary" icon={<PlusOutlined />} onClick={startCreating}>
+        Create
+      </Button>
+    ),
+    [],
+  );
 
   return (
     <>
       <Toolbar title="Subject" extra={actionButtons} />
-      <Table<any> rowKey="id" loading={loading} dataSource={subjects}>
+      <Table<Subject> rowKey="id" loading={loading} dataSource={subjects as Subject[]}>
         <Column title="Title" dataIndex="title" key="title" width={200} />
         <Column
           title="Language"
           dataIndex="language"
           key="language"
-          render={(key: Language) => <Tag>{key.toUpperCase()}</Tag>}
+          render={(key: Language, record: Subject) => <Tag>{key.toUpperCase()}</Tag>}
         />
         <Column title="Description" dataIndex="description" key="description" />
         <Column
           dataIndex="action"
           key="action"
           width={45}
-          render={(_, record) => (
-            <CrudMenu data={record} onEdit={startUpdating} onDelete={deleteRequest}>
+          render={(_, record: Subject) => (
+            <CrudMenu
+              data={record}
+              onEdit={startUpdating}
+              onDelete={isEmptySubject(record) ? deleteRequest : undefined}
+            >
               <Button type="text" icon={<MoreOutlined />} shape="circle" />
             </CrudMenu>
           )}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { gql } from 'apollo-boost';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { Tabs, Spin, Card, message } from 'antd';
+import { Tabs, Spin, Card, message, Button } from 'antd';
 import { useParams } from 'react-router-dom';
 
 import { Edition } from 'core/global';
@@ -13,6 +13,7 @@ import GuideForm from 'components/GuidesForm';
 import Content from './Content';
 
 import sty from './UpdateGuide.module.scss';
+import { useForm } from 'antd/lib/form/Form';
 
 const { TabPane } = Tabs;
 
@@ -37,10 +38,11 @@ export const UPDATE_GUIDE = gql`
 export interface UpdateGuideProps {}
 
 const UpdateGuide: React.FC<UpdateGuideProps> = () => {
+  const [form] = useForm();
   const { slug } = useParams();
-  
+
   const [formData, setFormData] = React.useState();
-  const [activeTab,  setActiveTab] = React.useState(1);
+  const [activeTab, setActiveTab] = React.useState(2);
 
   const { data, loading } = useQuery(GET_GUIDE, {
     variables: { discoveryId: Number(slug) },
@@ -68,35 +70,39 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
     return [{ path: '/guides', breadcrumbName: 'Guides' }];
   }, []);
 
-  const handleChangeTab = React.useCallback((key) => {
+  const handleChangeTab = React.useCallback(key => {
     setActiveTab(key);
   }, []);
 
-  const handleSubmit = React.useCallback((values) => {
-    const guide = {
-      ...values,
-      id: data?.getDiscovery.id,
-      orderNum: data?.getDiscovery.orderNum,
-    };
+  const handleSubmit = React.useCallback(
+    values => {
+      const guide = {
+        ...values,
+        id: data?.getDiscovery.id,
+        orderNum: data?.getDiscovery.orderNum,
+      };
 
-    updateGuide({ variables: { discovery: guide } });
-  }, [data, updateGuide]);
+      updateGuide({ variables: { discovery: guide } });
+    },
+    [data, updateGuide],
+  );
 
   return (
     <>
       <Toolbar
         title="Update Guide"
         breadcrumbs={breadcrumbs}
-        footer={(
-          <Tabs
-            // type="card"
-            defaultActiveKey={String(activeTab)}
-            onChange={handleChangeTab}
-          >
+        extra={
+          <Button type="primary" onClick={() => form.submit()}>
+            Save changes
+          </Button>
+        }
+        footer={
+          <Tabs defaultActiveKey={String(activeTab)} onChange={handleChangeTab}>
             <TabPane tab="General Info" key="1" />
             <TabPane tab="Manage Content" key="2" />
           </Tabs>
-        )}
+        }
       />
       <Spin spinning={loading}>
         {Number(activeTab) === 1 && formData && (
@@ -104,9 +110,7 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
             <GuideForm onSubmit={handleSubmit} mode="update" initialValues={formData} />
           </Card>
         )}
-        {Number(activeTab) === 2 && formData && (
-          <Content />
-        )}
+        {Number(activeTab) === 2 && formData && <Content form={form} />}
       </Spin>
     </>
   );

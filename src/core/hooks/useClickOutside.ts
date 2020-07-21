@@ -5,7 +5,10 @@ export const useClickOutside = (ref, handler) => {
     () => {
       const listener = event => {
         // Do nothing if clicking ref's element or descendent elements
-        if (!ref.current || (ref.current?.contains && ref.current?.contains(event.target))) {
+        if (
+          !ref.current ||
+          (ref.current?.contains && ref.current?.contains(event.target))
+        ) {
           return;
         }
 
@@ -26,6 +29,6 @@ export const useClickOutside = (ref, handler) => {
     // ... callback/cleanup to run every render. It's not a big deal ...
     // ... but to optimize you can wrap handler in useCallback before ...
     // ... passing it into this hook.
-    [ref, handler]
+    [ref, handler],
   );
-}
+};

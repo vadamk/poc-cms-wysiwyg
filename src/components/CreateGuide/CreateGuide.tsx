@@ -9,6 +9,7 @@ import sty from './CreateGuide.module.scss';
 import { useMutation } from '@apollo/react-hooks';
 import { MutationCreateDiscoveryArgs, CreateDiscoveryInput } from 'core/models/generated';
 import { Card } from 'antd';
+import { useHistory } from 'react-router-dom';
 
 export const CREATE_GUIDE = gql`
   mutation CreateDiscovery($discovery: CreateDiscoveryInput!) {
@@ -21,11 +22,17 @@ export const CREATE_GUIDE = gql`
 
 export interface CreateGuideProps {}
 
-const CreateGuide: React.FC<CreateGuideProps> = ({}) => {
-  const [createGuide] = useMutation<
+const CreateGuide: React.FC<CreateGuideProps> = () => {
+  const history = useHistory();
+
+  const [createGuide, createGuideStatus] = useMutation<
     CreateDiscoveryInput,
     MutationCreateDiscoveryArgs
-  >(CREATE_GUIDE);
+  >(CREATE_GUIDE, {
+    onCompleted: () => {
+      history.push('/guides');
+    },
+  });
 
   const breadcrumbs = React.useMemo<Breadcrumb[]>(() => {
     return [{ path: '/guides', breadcrumbName: 'Guides' }];
@@ -40,7 +47,7 @@ const CreateGuide: React.FC<CreateGuideProps> = ({}) => {
     <>
       <Toolbar title="Create Guide" breadcrumbs={breadcrumbs} />
       <Card>
-        <GuidesForm onSubmit={handleSubmit} />
+        <GuidesForm isSubmitting={createGuideStatus.loading} onSubmit={handleSubmit} />
       </Card>
     </>
   );

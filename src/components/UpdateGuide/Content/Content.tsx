@@ -1,37 +1,66 @@
 import React from 'react';
-import { Row, Col, Empty } from 'antd';
+import { Row, Col, Empty, Card } from 'antd';
+import { useForm } from 'antd/lib/form/Form';
 
-import { Summary } from 'core/models/generated';
+import { Summary, Step } from 'core/models/generated';
 
 import TreeView from 'components/UpdateGuide/TreeView';
-import ContentEditor from 'components/UpdateGuide/ContentEditor';
+import SummaryForm from 'components/UpdateGuide/SummaryForm';
+import StepForm from 'components/UpdateGuide/StepForm';
 
-import './Content.module.scss';
+import sty from './Content.module.scss';
+import { FormInstance } from 'core/models';
 
-export interface ContentProps {}
+const isStep = (obj: Step | Summary) => {
+  return (obj as Summary).stepId === undefined;
+};
 
-const Content: React.FC<ContentProps> = () => {
-  const [currentSummary, setCurentSummary] = React.useState<Summary>();
+export interface ContentProps {
+  form: FormInstance;
+}
 
-  const handleSummaryChange = (summary?: Summary) => {
-    setCurentSummary(summary);
-  }
+const Content: React.FC<ContentProps> = ({ form }) => {
+  const [stepForm] = useForm(form);
+  const [summaryForm] = useForm(form);
+
+  const [current, setCurent] = React.useState<Step | Summary>();
+
+  const handleChange = (node?: Step | Summary) => {
+    setCurent(node);
+    if (node) {
+      const form = isStep(node) ? stepForm : summaryForm;
+      form.setFieldsValue(node);
+      form.resetFields();
+    }
+  };
+
+  const handleStepSubmit = values => {
+    console.log('values: ', values);
+  };
+
+  const handleSummarySubmit = values => {
+    console.log('values: ', values);
+  };
 
   return (
-    <div style={{ height: 'calc(100vh - 220px)' }}>
-      <Row gutter={[10, 10]}>
-        <Col span={6}>
-          <TreeView onSummaryChange={handleSummaryChange} />
-        </Col>
-        <Col span={18}>
-          {currentSummary ? (
-            <ContentEditor summary={currentSummary} />
-          ): (
-            <Empty description="Please choose summary" />
+    <Row gutter={[10, 10]}>
+      <Col span={6}>
+        <TreeView onChange={handleChange} />
+      </Col>
+      <Col span={18}>
+        <Card className={sty.form}>
+          {current ? (
+            isStep(current) ? (
+              <StepForm form={stepForm} onSubmit={handleStepSubmit} />
+            ) : (
+              <SummaryForm form={summaryForm} onSubmit={handleSummarySubmit} />
+            )
+          ) : (
+            <Empty description="Please choose summary or step" />
           )}
-        </Col>
-      </Row>
-    </div>
+        </Card>
+      </Col>
+    </Row>
   );
 };
 

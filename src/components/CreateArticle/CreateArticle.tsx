@@ -45,27 +45,19 @@ const CreateArticle: React.FC<CreateArticleProps> = () => {
     });
   }, [createArticle, form]);
 
-  const actionButtons = React.useMemo(() => (
-    <Button
-      type="primary"
-      loading={createArticleStatus.loading}
-      onClick={handleSubmit}
-    >
-      Save
-    </Button>
-  ), [createArticleStatus.loading, handleSubmit]);
+  const actionButtons = React.useMemo(
+    () => (
+      <Button type="primary" loading={createArticleStatus.loading} onClick={handleSubmit}>
+        Publish
+      </Button>
+    ),
+    [createArticleStatus.loading, handleSubmit],
+  );
 
   return (
     <>
-      <Toolbar
-        title="Create Article"
-        breadcrumbs={breadcrumbs}
-        extra={actionButtons}
-      />
-      <ArticleForm
-        form={form}
-        isSubmitting={createArticleStatus.loading}
-      />
+      <Toolbar title="Create Article" breadcrumbs={breadcrumbs} extra={actionButtons} />
+      <ArticleForm form={form} isSubmitting={createArticleStatus.loading} />
     </>
   );
 };

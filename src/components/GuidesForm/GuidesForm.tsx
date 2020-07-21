@@ -3,7 +3,7 @@ import { useQuery } from '@apollo/react-hooks';
 import { Form, Input, Select, Button, Space, Checkbox } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { Link } from 'react-router-dom';
-import slugify from 'slugify';
+// import slugify from 'slugify';
 
 import { FormProps } from 'core/models';
 import {
@@ -67,12 +67,12 @@ const GuideForm: React.FC<GuideFormProps> = ({
     });
   }, [isEnglish]);
 
-  const slug = React.useMemo(() => {
-    return slugify(title || '', {
-      lower: true,
-      locale: isEnglish ? 'en' : 'sv'
-    });
-  }, [isEnglish, title]);
+  // const slug = React.useMemo(() => {
+  //   return slugify(title || '', {
+  //     lower: true,
+  //     locale: isEnglish ? 'en' : 'sv'
+  //   });
+  // }, [isEnglish, title]);
 
   const handleLangChange = ({ target }) => {
     const nextIsEnglish = target.value === Language.EN;
@@ -82,7 +82,7 @@ const GuideForm: React.FC<GuideFormProps> = ({
   };
 
   const handleSubmit = values => {
-    onSubmit({ ...values, link: values.link || slug });
+    onSubmit(values);
   };
 
   const handleChange = ({ target }) => {
@@ -111,8 +111,8 @@ const GuideForm: React.FC<GuideFormProps> = ({
         />
       </Form.Item>
 
-      <Form.Item label="Slug" name="link">
-        <Input disabled={isSubmitting} placeholder={slug || 'Please input slug'} />
+      <Form.Item label="Link" name="link">
+        <Input disabled={isSubmitting} placeholder="Please input link" />
       </Form.Item>
 
       <Form.Item

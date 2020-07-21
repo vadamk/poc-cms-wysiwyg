@@ -6,6 +6,12 @@ export const SubjectFragment = gql`
     title
     description
     language
+    discoveries {
+      id
+    }
+    articles {
+      id
+    }
   }
 `;
 

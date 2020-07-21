@@ -1,7 +1,5 @@
-@import './snow';
 @import './content';
 @import '~antd/dist/antd.css';
-// @import './antdOverly';
 
 $breakpointLG: 1096px;
 $breakpointMD: 838px;
@@ -31,22 +29,6 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
-}
-
-.ql-toolbar.ql-snow {
-  border-color: #d9d9d9;
-  border-top-left-radius: 2px;
-  border-top-right-radius: 2px;
-}
-
-.ql-container.ql-snow {
-  border-color: #d9d9d9;
-  border-bottom-left-radius: 2px;
-  border-bottom-right-radius: 2px;
-}
-
-.ql-editor {
-  min-height: 280px;
 }
 
 .ripple {

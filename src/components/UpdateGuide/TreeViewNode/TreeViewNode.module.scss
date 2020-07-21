@@ -13,13 +13,24 @@
 
   user-select: none;
   cursor: pointer;
+
+  :global {
+    .ant-btn {
+      transition-duration: 0s;
+    }
+
+    .ant-btn-text {
+      color: #585858;
+    }
+
+    .ant-btn-icon-only > * {
+      font-size: 12px;
+      line-height: 6px;
+    }
+  }
   
   .actions {
     opacity: 0;
-
-    :global .ant-btn-text {
-      color: #999;
-    }
   }
 
   &:hover {

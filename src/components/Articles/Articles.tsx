@@ -110,18 +110,23 @@ const Articles: React.FC<ArticlesProps> = () => {
     }
   };
 
-  const actionButtons = React.useMemo(() => (
-    <Space>
-      <RadioButtons
-        value={viewMode}
-        options={viewOptions}
-        onChange={handleChangeView}
-      />
-      <Link to="/articles/create">
-        <Button type="primary" icon={<PlusOutlined />}>Create</Button>
-      </Link>
-    </Space>
-  ), [viewMode]);
+  const actionButtons = React.useMemo(
+    () => (
+      <Space>
+        <RadioButtons
+          value={viewMode}
+          options={viewOptions}
+          onChange={handleChangeView}
+        />
+        <Link to="/articles/create">
+          <Button type="primary" icon={<PlusOutlined />}>
+            Create
+          </Button>
+        </Link>
+      </Space>
+    ),
+    [viewMode],
+  );
 
   return (
     <>

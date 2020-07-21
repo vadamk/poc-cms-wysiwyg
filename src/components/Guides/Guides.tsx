@@ -1,5 +1,5 @@
 import React from 'react';
-import { Space, Button, Table, Tag, Typography, Modal, message } from 'antd';
+import { Button, Table, Tag, Typography, Modal, message } from 'antd';
 import { Link, useHistory } from 'react-router-dom';
 import { gql } from 'apollo-boost';
 import { PlusOutlined, MoreOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
@@ -78,11 +78,16 @@ const Guides: React.FC<GuidesProps> = () => {
     }
   };
 
-  const actionButtons = React.useMemo(() => (
-    <Link to="/guides/create">
-      <Button type="primary" icon={<PlusOutlined />}>Create</Button>
-    </Link>
-  ), []);
+  const actionButtons = React.useMemo(
+    () => (
+      <Link to="/guides/create">
+        <Button type="primary" icon={<PlusOutlined />}>
+          Create
+        </Button>
+      </Link>
+    ),
+    [],
+  );
 
   return (
     <>
@@ -102,10 +107,14 @@ const Guides: React.FC<GuidesProps> = () => {
           render={(key: Language) => <Tag>{key.toUpperCase()}</Tag>}
         />
         <Column
-          title="Slug"
+          title="Service"
           dataIndex="link"
           key="link"
-          render={text => <Link to={`/`}>/{text}</Link>}
+          render={text => (
+            <a href={text} target="_blank">
+              {text}
+            </a>
+          )}
         />
         <Column
           title="Editions"

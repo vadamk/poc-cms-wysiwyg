@@ -1,5 +1,26 @@
 .ql-editor {
 
+  // 1 = 40pt, Bold, #19C2C6
+  // 2 = 30pt, Bold, #3C3C3C
+  // 3 = 24pt, Bold, #19C2C6
+  h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #19C2C6;
+  }
+
+  h2 {
+    font-size: 1.875rem;
+    font-weight: bold;
+    color: #3C3C3C;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #19C2C6;
+  }
+
   p, li {
     font-family: 'PT serif', Arial;
     font-size: 1.25rem;

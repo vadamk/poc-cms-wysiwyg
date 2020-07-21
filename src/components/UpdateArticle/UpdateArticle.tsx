@@ -66,35 +66,31 @@ const UpdateArticle: React.FC<UpdateArticleProps> = () => {
   }, []);
 
   const handleSubmit = React.useCallback(
-    () => form.validateFields().then((values) => {
-      const article = {
-        ...values,
-        id: data?.getArticle.id,
-        actualTime: +new Date(),
-      };
+    () =>
+      form.validateFields().then(values => {
+        const article = {
+          ...values,
+          id: data?.getArticle.id,
+          actualTime: +new Date(),
+        };
 
-      updateArticle({ variables: { article } });
-    }),
+        updateArticle({ variables: { article } });
+      }),
     [data, form, updateArticle],
   );
 
-  const actionButtons = React.useMemo(() => (
-    <Button
-      loading={updateArticleStatus.loading}
-      type="primary"
-      onClick={handleSubmit}
-    >
-      Save Changes
-    </Button>
-  ), [handleSubmit, updateArticleStatus.loading]);
+  const actionButtons = React.useMemo(
+    () => (
+      <Button loading={updateArticleStatus.loading} type="primary" onClick={handleSubmit}>
+        Save Changes
+      </Button>
+    ),
+    [handleSubmit, updateArticleStatus.loading],
+  );
 
   return (
     <>
-      <Toolbar
-        title="Update Article"
-        breadcrumbs={breadcrumbs}
-        extra={actionButtons}
-      />
+      <Toolbar title="Update Article" breadcrumbs={breadcrumbs} extra={actionButtons} />
       <Spin spinning={loading}>
         {formData && (
           <ArticleForm

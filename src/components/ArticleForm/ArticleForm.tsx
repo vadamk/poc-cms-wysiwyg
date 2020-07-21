@@ -16,7 +16,7 @@ import RichEditor from 'components/RichEditor';
 import RadioButtons from 'components/RadioButtons';
 import ImageUpload from 'components/ImageUpload';
 
-export interface ArticleFormProps extends FormProps { }
+export interface ArticleFormProps extends FormProps {}
 
 const ArticleForm: React.FC<ArticleFormProps> = ({
   form,
@@ -87,21 +87,19 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
                 </Form.Item>
                 <Form.Item label="Subtitle" name="subTitle">
                   <Input.TextArea
-                    rows={4}
+                    rows={2}
                     disabled={isSubmitting}
                     placeholder="Please input subtitle"
                   />
                 </Form.Item>
+                <Form.Item
+                  label="Content"
+                  name="content"
+                  rules={[{ required: true, message: 'Please input content!' }]}
+                >
+                  <RichEditor />
+                </Form.Item>
               </Card>
-            </Col>
-              
-            <Col span={24}>
-              <Form.Item
-                name="content"
-                rules={[{ required: true, message: 'Please input content!' }]}
-              >
-                <RichEditor />
-              </Form.Item>
             </Col>
           </Row>
         </Col>
@@ -131,10 +129,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
                 <Row gutter={[0, 5]}>
                   {curAudienceOptions.map(option => (
                     <Col key={option.label} span={12}>
-                      <Checkbox
-                        disabled={option.disabled}
-                        value={option.value}
-                      >
+                      <Checkbox disabled={option.disabled} value={option.value}>
                         {option.label}
                       </Checkbox>
                     </Col>
