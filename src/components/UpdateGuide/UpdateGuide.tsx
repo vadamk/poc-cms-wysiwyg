@@ -2,6 +2,7 @@ import React from 'react';
 import { gql } from 'apollo-boost';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { Tabs, Spin, Card, message, Button } from 'antd';
+import { useForm } from 'antd/lib/form/Form';
 import { useParams } from 'react-router-dom';
 
 import { Edition } from 'core/global';
@@ -13,7 +14,6 @@ import GuideForm from 'components/GuidesForm';
 import Content from './Content';
 
 import sty from './UpdateGuide.module.scss';
-import { useForm } from 'antd/lib/form/Form';
 
 const { TabPane } = Tabs;
 
@@ -42,7 +42,7 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
   const { slug } = useParams();
 
   const [formData, setFormData] = React.useState();
-  const [activeTab, setActiveTab] = React.useState(2);
+  const [activeTab, setActiveTab] = React.useState(1);
 
   const { data, loading } = useQuery(GET_GUIDE, {
     variables: { discoveryId: Number(slug) },
@@ -107,7 +107,12 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
       <Spin spinning={loading}>
         {Number(activeTab) === 1 && formData && (
           <Card>
-            <GuideForm onSubmit={handleSubmit} mode="update" initialValues={formData} />
+            <GuideForm
+              mode="update"
+              initialValues={formData}
+              isSubmitting={updateGuideStatus.loading}
+              onSubmit={handleSubmit}
+            />
           </Card>
         )}
         {Number(activeTab) === 2 && formData && <Content form={form} />}
