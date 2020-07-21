@@ -73,7 +73,6 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
   }, []);
 
   const handleSubmit = React.useCallback((values) => {
-    console.log('values: ', values);
     const guide = {
       ...values,
       id: data?.getDiscovery.id,

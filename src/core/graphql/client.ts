@@ -52,7 +52,6 @@ export const createClient = () => {
       });
     },
     onError: ({ graphQLErrors }) => {
-      console.log('graphQLErrors: ', graphQLErrors);
       const unauthorizedError = graphQLErrors?.some(({ extensions }) => {
         return extensions?.exception?.status === 401;
       });
