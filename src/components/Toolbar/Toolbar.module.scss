@@ -1,6 +1,10 @@
-.toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 60px;
+.header {
+  margin: -24px -16px 24px;
+  background-color: #fff;
+
+  :global {
+    .ant-page-header.has-breadcrumb {
+      padding-top: 16px;
+    }
+  }
 }

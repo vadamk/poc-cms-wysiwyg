@@ -1,0 +1,21 @@
+.confirmInput {
+  display: flex;
+  align-items: center;
+
+  & > *:not(:last-child) {
+    margin-right: 4px; 
+  }
+}
+
+.input {
+  flex-grow: 1;
+}
+
+.confirmButton {
+  border: 0 none;
+}
+
+.confirmButton, .cancelButton {
+  padding-left: 12px;
+  padding-right: 12px;
+}

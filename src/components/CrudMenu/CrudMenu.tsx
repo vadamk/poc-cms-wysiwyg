@@ -3,10 +3,10 @@ import { Menu, Dropdown } from 'antd';
 import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 
 export interface CrudMenuProps<T> {
-  data?: T,
-  onEdit?: (data: T) => void,
-  onDelete?: (data: T) => void,
-  onPreview?: (data: T) => void,
+  data?: T;
+  onEdit?: (data: T) => void;
+  onDelete?: (data: T) => void;
+  onPreview?: (data: T) => void;
 }
 
 const CrudMenu = <T extends any>({
@@ -18,20 +18,20 @@ const CrudMenu = <T extends any>({
 }: React.PropsWithChildren<CrudMenuProps<T | undefined>>) => {
   const handleEdit = () => {
     onEdit && onEdit(data);
-  }
-  
+  };
+
   const handleDelete = () => {
     onDelete && onDelete(data);
-  }
-  
+  };
+
   const handlePreview = () => {
     onPreview && onPreview(data);
-  }
-  
+  };
+
   return (
     <Dropdown
       trigger={['click']}
-      overlay={(
+      overlay={
         <Menu>
           {onEdit && (
             <Menu.Item icon={<EditOutlined />} onClick={handleEdit}>
@@ -49,7 +49,7 @@ const CrudMenu = <T extends any>({
             </Menu.Item>
           )}
         </Menu>
-      )}
+      }
     >
       {children}
     </Dropdown>

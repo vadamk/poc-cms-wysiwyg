@@ -22,7 +22,10 @@ const uri = `${env.apiUrl}${process.env.REACT_APP_API_PATH}`;
 const cache = new InMemoryCache({
   cacheRedirects: {
     Query: {
-      getArticle: (_, args) => toIdValue(cache.config.dataIdFromObject({ __typename: 'Article', id: args.articleId })),
+      getArticle: (_, args) =>
+        toIdValue(
+          cache.config.dataIdFromObject({ __typename: 'Article', id: args.articleId }),
+        ),
     },
   },
 });
@@ -71,6 +74,6 @@ export const createClient = () => {
       });
     },
   });
-}
+};
 
 export default createClient();

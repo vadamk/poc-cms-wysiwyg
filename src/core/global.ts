@@ -26,7 +26,7 @@ export enum localStorageKeys {
 
 export enum UploadFolder {
   CMS = 'CMS',
-  ORDER = 'ORDER'
+  ORDER = 'ORDER',
 }
 
 type EnvPropTypes = {
@@ -51,7 +51,7 @@ export const editionOptions = [
     value: Edition.BOSS,
   },
   {
-    label: 'Gov\'t',
+    label: "Gov't",
     value: Edition.GOVERNMENT,
   },
 ];

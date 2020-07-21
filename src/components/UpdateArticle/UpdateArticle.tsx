@@ -1,14 +1,16 @@
 import React from 'react';
-import { useParams } from "react-router-dom";
+import { useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
-import { Card, Spin, message, Typography } from 'antd';
-import { useHistory } from "react-router-dom";
+import { Spin, message, Button } from 'antd';
+import { useForm } from 'antd/lib/form/Form';
+import { useHistory } from 'react-router-dom';
 
 import { ArticleFragment } from 'core/graphql/fragments';
-import Toolbar from 'components/Toolbar';
+import Toolbar, { Breadcrumb } from 'components/Toolbar';
 import ArticleForm from 'components/ArticleForm';
 import { Edition } from 'core/global';
+import { FormValues } from 'core/models';
 
 export const GET_ARTICLE = gql`
   query GetArticle($articleId: Int!) {
@@ -31,6 +33,7 @@ export const UPDATE_ARTICLE = gql`
 export interface UpdateArticleProps {}
 
 const UpdateArticle: React.FC<UpdateArticleProps> = () => {
+  const [form] = useForm();
   const history = useHistory();
   const { slug } = useParams();
   const [formData, setFormData] = React.useState();
@@ -44,13 +47,8 @@ const UpdateArticle: React.FC<UpdateArticleProps> = () => {
 
   const { data, loading } = useQuery(GET_ARTICLE, {
     variables: { articleId: Number(slug) },
-    onCompleted: (data) => {
-      const {
-        editions,
-        audiences,
-        subject,
-        ...rest
-      } = data?.getArticle;
+    onCompleted: data => {
+      const { editions, audiences, subject, ...rest } = data?.getArticle;
 
       const formData = {
         ...rest,
@@ -60,38 +58,53 @@ const UpdateArticle: React.FC<UpdateArticleProps> = () => {
       };
 
       setFormData(formData);
-    }
+    },
   });
 
-  const breadcrumbs = React.useMemo(() => {
-    return [{ path: '/articles', title: 'Articles' }];
+  const breadcrumbs = React.useMemo<Breadcrumb[]>(() => {
+    return [{ path: '/articles', breadcrumbName: 'Articles' }];
   }, []);
 
-  const handleSubmit = React.useCallback((values) => {
-    const article = {
-      ...values,
-      id: data?.getArticle.id,
-      actualTime: +new Date(),
-    };
+  const handleSubmit = React.useCallback(
+    () => form.validateFields().then((values) => {
+      const article = {
+        ...values,
+        id: data?.getArticle.id,
+        actualTime: +new Date(),
+      };
 
-    updateArticle({ variables: { article } });
-  }, [data, updateArticle]);
+      updateArticle({ variables: { article } });
+    }),
+    [data, form, updateArticle],
+  );
+
+  const actionButtons = React.useMemo(() => (
+    <Button
+      loading={updateArticleStatus.loading}
+      type="primary"
+      onClick={handleSubmit}
+    >
+      Save Changes
+    </Button>
+  ), [handleSubmit, updateArticleStatus.loading]);
 
   return (
     <>
-      <Toolbar title="Update Article" breadcrumbs={breadcrumbs} />
-      <Card>
-        <Spin spinning={loading}>
-          {formData && (
-            <ArticleForm
-              initialValues={formData}
-              mode="update"
-              isSubmitting={updateArticleStatus.loading}
-              onSubmit={handleSubmit}
-            />
-          )}
-        </Spin>
-      </Card>
+      <Toolbar
+        title="Update Article"
+        breadcrumbs={breadcrumbs}
+        extra={actionButtons}
+      />
+      <Spin spinning={loading}>
+        {formData && (
+          <ArticleForm
+            form={form}
+            initialValues={formData}
+            isSubmitting={updateArticleStatus.loading}
+            onSubmit={handleSubmit}
+          />
+        )}
+      </Spin>
     </>
   );
 };

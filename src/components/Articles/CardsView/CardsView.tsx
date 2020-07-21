@@ -7,9 +7,9 @@ import { Article } from 'core/models/generated';
 import Tags from 'components/Tags';
 import DateTime from 'components/DateTime';
 import CrudMenu from 'components/CrudMenu';
-import { getEditionsOptions, getAudienceOptions } from 'components/Articles';
 
 import sty from './CardsView.module.scss';
+import { getAudienceOptions, getEditionOptions } from 'core/utils';
 
 const { Paragraph, Text } = Typography;
 
@@ -32,40 +32,30 @@ const CardsView: React.FC<CardsViewProps> = ({
         <Col key={article.id} span={6}>
           <Card
             title={article.title}
-            extra={(
-              <CrudMenu<Article>
-                data={article}
-                onEdit={onEdit}
-                onDelete={onDelete}
-              >
+            extra={
+              <CrudMenu<Article> data={article} onEdit={onEdit} onDelete={onDelete}>
                 <Button type="text" icon={<MoreOutlined />} shape="circle" />
               </CrudMenu>
-            )}
+            }
             cover={<img src={article.image} alt="" />}
           >
             <Space direction="vertical">
-              <Paragraph ellipsis={{ rows: 3 }}>
-                {article.subTitle}
-              </Paragraph>
+              <Paragraph ellipsis={{ rows: 3 }}>{article.subTitle}</Paragraph>
               <Space align="start">
                 <Text type="secondary" className={sty.label}>
                   Audiences:
                 </Text>
-                {article?.audiences && (
-                  <Tags options={getAudienceOptions(article?.audiences)} />
-                )}
+                <Tags options={getAudienceOptions(article.audiences || [])} />
               </Space>
               {Boolean(article?.editions?.length) && (
                 <Space align="start">
                   <Text type="secondary" className={sty.label}>
                     Editions:
                   </Text>
-                  {article?.editions && (
-                    <Tags
-                      color="magenta"
-                      options={getEditionsOptions(article?.editions)}
-                    />
-                  )}
+                  <Tags
+                    color="magenta"
+                    options={getEditionOptions(article.editions || [])}
+                  />
                 </Space>
               )}
               <Space align="start">

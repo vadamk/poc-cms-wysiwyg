@@ -1,50 +1,31 @@
 import React from 'react';
 import { gql } from 'apollo-boost';
 import { Link, useHistory } from 'react-router-dom';
-import { useQuery, useMutation } from '@apollo/react-hooks'
-import {
-  Typography,
-  Table,
-  Button,
-  Modal,
-  Space,
-  Select,
-  message,
-  Tag,
-} from 'antd';
+import { useQuery, useMutation } from '@apollo/react-hooks';
+import { Typography, Table, Button, Modal, Space, message, Tag } from 'antd';
 import Column from 'antd/lib/table/Column';
-import {
-  ExclamationCircleOutlined,
-  PlusOutlined,
-  MoreOutlined,
-} from '@ant-design/icons';
+import { ExclamationCircleOutlined, PlusOutlined, MoreOutlined } from '@ant-design/icons';
 
 import {
   DeleteArticleMutation,
   DeleteArticleMutationVariables,
   Article,
-  Audience,
-  SpecialEdition,
 } from 'core/models/generated';
 import { getFromLocalStorage, saveInLocalStorage } from 'core/services/browser';
 import { ArticleFragment } from 'core/graphql/fragments';
-import {
-  localStorageKeys,
-  audienceOptions,
-  editionOptions,
-  Language,
-  Edition,
-} from 'core/global';
+import { localStorageKeys, Language } from 'core/global';
+import { getEditionOptions, getAudienceOptions } from 'core/utils';
+import { RadioChangeEvent } from 'antd/lib/radio';
 
 import Toolbar from 'components/Toolbar';
 import Tags from 'components/Tags';
 import DateTime from 'components/DateTime';
 import CrudMenu from 'components/CrudMenu';
+import RadioButtons from 'components/RadioButtons';
 
 import CardsView from './CardsView';
 
 import sty from './Articles.module.scss';
-import { Maybe } from 'graphql/jsutils/Maybe';
 
 const { Text, Paragraph } = Typography;
 
@@ -55,26 +36,8 @@ enum ViewMode {
 
 const viewOptions = [
   { label: 'Cards', value: ViewMode.CARDS },
-  { label: 'Table', value: ViewMode.TABLE }
+  { label: 'Table', value: ViewMode.TABLE },
 ];
-
-export const getAudienceOptions = (audiences: Maybe<Audience>[]) => {
-  const audiencesTypes = audiences
-    // better to fix on backend [Article]! => [Article!]!
-    .filter(ad => typeof ad?.type === 'string')
-    .map(ad => ad?.type);
-
-  return audienceOptions.filter(o => audiencesTypes.includes(o.value));
-}
-
-export const getEditionsOptions = (editions: Maybe<SpecialEdition>[]) => {
-  const editionTypes = editions
-    // better to fix on backend [Article]! => [Article!]!
-    .filter(ad => typeof ad?.type === 'string')
-    .map(ad => ad?.type);
-
-  return editionOptions.filter(o => editionTypes.includes(o.value));
-}
 
 export const GET_ARTICLES_LIST = gql`
   query GetArticleList {
@@ -94,7 +57,7 @@ export const DELETE_ARTICLE = gql`
 export interface ArticlesProps {}
 
 const Articles: React.FC<ArticlesProps> = () => {
-  const history = useHistory()
+  const history = useHistory();
 
   const [viewMode, setViewMode] = React.useState<ViewMode>(ViewMode.TABLE);
   const { data, loading, refetch } = useQuery(GET_ARTICLES_LIST, {
@@ -112,19 +75,18 @@ const Articles: React.FC<ArticlesProps> = () => {
     onCompleted: () => {
       message.success('Article has been deleted.');
       refetch();
-    }
+    },
   });
 
   const articles = React.useMemo(() => {
-    return (data?.getArticleList || []).reverse()
+    return (data?.getArticleList || []).reverse();
   }, [data]);
 
   const deleteRequest = (article: any) => {
     Modal.confirm({
       title: (
         <span>
-          Are you sure you want to delete{' '}
-          <Text mark>{article.title}</Text>?
+          Are you sure you want to delete <Text mark>{article.title}</Text>?
         </span>
       ),
       icon: <ExclamationCircleOutlined />,
@@ -135,34 +97,36 @@ const Articles: React.FC<ArticlesProps> = () => {
         deleteArticle({ variables: { articleId: article.id } });
       },
     });
-  }
+  };
 
-  const handleChangeView = (value: ViewMode) => {
-    setViewMode(value);
-    saveInLocalStorage(localStorageKeys.articlesView, value);
-  }
+  const handleChangeView = ({ target }: RadioChangeEvent) => {
+    setViewMode(target.value);
+    saveInLocalStorage(localStorageKeys.articlesView, target.value);
+  };
 
   const redirectToUpdate = (article?: Article) => {
     if (article) {
       history.push(`/articles/${article.id}`);
     }
-  }
+  };
+
+  const actionButtons = React.useMemo(() => (
+    <Space>
+      <RadioButtons
+        value={viewMode}
+        options={viewOptions}
+        onChange={handleChangeView}
+      />
+      <Link to="/articles/create">
+        <Button type="primary" icon={<PlusOutlined />}>Create</Button>
+      </Link>
+    </Space>
+  ), [viewMode]);
 
   return (
     <>
-      <Toolbar title="Articles">
-        <Space>
-          <Select
-            value={viewMode}
-            options={viewOptions}
-            onChange={handleChangeView}
-          /> 
-          <Link to="/articles/create">
-            <Button icon={<PlusOutlined />}>Create</Button>
-          </Link>
-        </Space>
-      </Toolbar>
-      
+      <Toolbar title="Articles" extra={actionButtons} />
+
       {viewMode === 'cards' ? (
         <CardsView
           articles={articles}
@@ -171,15 +135,11 @@ const Articles: React.FC<ArticlesProps> = () => {
           onDelete={deleteRequest}
         />
       ) : (
-        <Table
-          rowKey="id"
-          loading={loading}
-          dataSource={articles as any}
-        >
+        <Table rowKey="id" loading={loading} dataSource={articles as any}>
           <Column<Article>
-            title='Title'
-            dataIndex='title'
-            key='title'
+            title="Title"
+            dataIndex="title"
+            key="title"
             width={200}
             render={(text, r) => <Link to={`/articles/${r.id}`}>{text}</Link>}
           />
@@ -187,26 +147,20 @@ const Articles: React.FC<ArticlesProps> = () => {
             title="Language"
             dataIndex="language"
             key="language"
-            render={(key: Language) => (
-              <Tag>{key.toUpperCase()}</Tag>
-            )}
+            render={(key: Language) => <Tag>{key.toUpperCase()}</Tag>}
           />
           <Column
             title="Subtitle"
             dataIndex="subTitle"
             key="subTitle"
-            render={text => (
-              <Paragraph ellipsis={{ rows: 3 }}>
-                {text}
-              </Paragraph>
-            )}
+            render={text => <Paragraph ellipsis={{ rows: 3 }}>{text}</Paragraph>}
           />
           <Column
             title="Editions"
             dataIndex="editions"
             key="editions"
             width={220}
-            render={text => <Tags options={getEditionsOptions(text)} color="magenta" />}
+            render={text => <Tags options={getEditionOptions(text)} color="magenta" />}
           />
           <Column
             title="Audiences"
@@ -231,15 +185,17 @@ const Articles: React.FC<ArticlesProps> = () => {
             key="actions"
             width={45}
             render={(_, article) => (
-              <CrudMenu<Article> data={article} onEdit={redirectToUpdate} onDelete={deleteRequest}>
+              <CrudMenu<Article>
+                data={article}
+                onEdit={redirectToUpdate}
+                onDelete={deleteRequest}
+              >
                 <Button type="text" icon={<MoreOutlined />} shape="circle" />
               </CrudMenu>
             )}
           />
         </Table>
       )}
-      
-
     </>
   );
 };

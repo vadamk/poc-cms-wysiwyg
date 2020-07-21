@@ -1,19 +1,19 @@
 import React from 'react';
-import ReactQuill, { Quill } from 'react-quill';
+import ReactQuill from 'react-quill';
 
 const toolbarOptions = [
-  [{ 'header': [1, 2, 3, 4, false] }],
+  [{ header: [1, 2, 3, 4, false] }],
   ['bold', 'italic', 'underline'],
-  [{ 'align': [] }],
-  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+  [{ align: [] }],
+  [{ list: 'ordered' }, { list: 'bullet' }],
   ['link', 'image', 'video'],
-  [{ 'background': [] }],
-  ['clean']
+  [{ background: [] }],
+  ['clean'],
 ];
 
 const quillConfig = {
   clipboard: { matchVisual: false },
-  toolbar: toolbarOptions
+  toolbar: toolbarOptions,
 };
 
 export interface RichEditorProps {
@@ -22,30 +22,27 @@ export interface RichEditorProps {
   onBlur?: () => void;
 }
 
-const RichEditor = React.forwardRef<ReactQuill, RichEditorProps>(({
-  value = '',
-  onChange = () => null,
-  onBlur = () => null,
-}, ref) => {
-  const innerRef = React.useRef(null);
+const RichEditor = React.forwardRef<ReactQuill, RichEditorProps>(
+  ({ value = '', onChange = () => null, onBlur = () => null }, ref) => {
 
-  const handleChange = (value: string, delta, source, { getText }) => {
-    onChange(getText().length > 1 ? value : '');
-  }
+    const handleChange = (value: string, delta, source, { getText }) => {
+      onChange(getText().length > 1 ? value : '');
+    };
 
-  const handleBlur = () => {
-    onBlur();
-  }
+    const handleBlur = () => {
+      onBlur();
+    };
 
-  return (
-    <ReactQuill
-      ref={ref}
-      value={value}
-      onChange={handleChange}
-      onBlur={handleBlur}
-      modules={quillConfig}
-    />
-  );
-});
+    return (
+      <ReactQuill
+        ref={ref}
+        value={value}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        modules={quillConfig}
+      />
+    );
+  },
+);
 
 export default RichEditor;

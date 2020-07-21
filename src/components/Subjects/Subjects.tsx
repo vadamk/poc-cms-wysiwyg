@@ -1,19 +1,8 @@
 import React from 'react';
 import { gql } from 'apollo-boost';
-import { useQuery, useMutation } from '@apollo/react-hooks'
-import {
-  Typography,
-  Table,
-  Button,
-  Modal,
-  Tag,
-  message,
-} from 'antd';
-import {
-  MoreOutlined,
-  ExclamationCircleOutlined,
-  PlusOutlined,
-} from '@ant-design/icons';
+import { useQuery, useMutation } from '@apollo/react-hooks';
+import { Typography, Table, Button, Modal, Tag, message } from 'antd';
+import { MoreOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 import Column from 'antd/lib/table/Column';
 
@@ -97,82 +86,81 @@ const Subjects: React.FC<SubjectsProps> = () => {
   });
 
   const subjects = React.useMemo(() => {
-    return (data?.getSubjectList || []).reverse()
+    return (data?.getSubjectList || []).reverse();
   }, [data]);
 
   const startCreating = () => {
     setCreating(true);
-  }
+  };
 
   const cancelCreating = () => {
     createForm.resetFields();
     setCreating(false);
-  }
+  };
 
   const handleCreate = () => {
-    createForm
-      .validateFields()
-      .then((values: FormValues) => {
-        createSubject({ variables: { subject: values } });
-      });
-  }
+    createForm.validateFields().then((values: FormValues) => {
+      createSubject({ variables: { subject: values } });
+    });
+  };
 
   const startUpdating = (subject: any) => {
     setEditableSubject(subject);
     updateForm.setFieldsValue(subject);
-  }
+  };
 
   const cancelUpdating = () => {
     setEditableSubject(null);
     updateForm.resetFields();
-  }
+  };
 
   const handleUpdate = () => {
-    updateForm
-      .validateFields()
-      .then((values: FormValues) => {
-        updateSubject({ variables: {
-          subject: { ...removeTypeName(editableSubject), ...values},
-        }});
+    updateForm.validateFields().then((values: FormValues) => {
+      updateSubject({
+        variables: {
+          subject: { ...removeTypeName(editableSubject), ...values },
+        },
       });
-  }
-
-  const deleteRequest = React.useCallback((subject: any) => {
-    Modal.confirm({
-      title: (
-        <span>
-          Are you sure you want to delete{' '}
-          <Typography.Text mark>{subject.title}</Typography.Text>?
-        </span>
-      ),
-      icon: <ExclamationCircleOutlined />,
-      width: 640,
-      okText: 'Delete',
-      okButtonProps: { loading: deleteSubjectStatus.loading },
-      onOk: () => {
-        deleteSubject({ variables: { subjectId: subject.id } });
-      },
     });
-  }, [deleteSubject, deleteSubjectStatus.loading])
+  };
+
+  const deleteRequest = React.useCallback(
+    (subject: any) => {
+      Modal.confirm({
+        title: (
+          <span>
+            Are you sure you want to delete{' '}
+            <Typography.Text mark>{subject.title}</Typography.Text>?
+          </span>
+        ),
+        icon: <ExclamationCircleOutlined />,
+        width: 640,
+        okText: 'Delete',
+        okButtonProps: { loading: deleteSubjectStatus.loading },
+        onOk: () => {
+          deleteSubject({ variables: { subjectId: subject.id } });
+        },
+      });
+    },
+    [deleteSubject, deleteSubjectStatus.loading],
+  );
+
+  const actionButtons = React.useMemo(() => (
+    <Button type="primary" icon={<PlusOutlined />} onClick={startCreating}>
+      Create
+    </Button>
+  ), []);
 
   return (
     <>
-      <Toolbar title="Subject">
-        <Button icon={<PlusOutlined />} onClick={startCreating}>Create</Button>
-      </Toolbar>
-      <Table<any>
-        rowKey="id"
-        loading={loading}
-        dataSource={subjects}
-      >
+      <Toolbar title="Subject" extra={actionButtons} />
+      <Table<any> rowKey="id" loading={loading} dataSource={subjects}>
         <Column title="Title" dataIndex="title" key="title" width={200} />
         <Column
           title="Language"
           dataIndex="language"
           key="language"
-          render={(key: Language) => (
-            <Tag>{key.toUpperCase()}</Tag>
-          )}
+          render={(key: Language) => <Tag>{key.toUpperCase()}</Tag>}
         />
         <Column title="Description" dataIndex="description" key="description" />
         <Column
@@ -198,10 +186,7 @@ const Subjects: React.FC<SubjectsProps> = () => {
         onOk={handleCreate}
         onCancel={cancelCreating}
       >
-        <CreateSubjectForm
-          form={createForm}
-          isSubmitting={createSubjectStatus.loading}
-        />
+        <CreateSubjectForm form={createForm} isSubmitting={createSubjectStatus.loading} />
       </Modal>
 
       {/* Update Subject Modal */}
@@ -215,10 +200,7 @@ const Subjects: React.FC<SubjectsProps> = () => {
         onOk={handleUpdate}
         onCancel={cancelUpdating}
       >
-        <CreateSubjectForm
-          form={updateForm}
-          isSubmitting={createSubjectStatus.loading}
-        />
+        <CreateSubjectForm form={updateForm} isSubmitting={createSubjectStatus.loading} />
       </Modal>
     </>
   );

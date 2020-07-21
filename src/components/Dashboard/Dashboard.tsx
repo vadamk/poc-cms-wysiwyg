@@ -4,7 +4,7 @@ import { DesktopOutlined, MobileOutlined } from '@ant-design/icons';
 
 import RichEditor from 'components/RichEditor';
 
-import sty from './Dashboard.module.scss'
+import sty from './Dashboard.module.scss';
 
 const defaultValue = `
   <p>
@@ -51,11 +51,11 @@ const Dashboard: React.FC = () => {
 
   const handleChange = (value: string) => {
     setValue(value);
-  }
+  };
 
   const handleToggle = () => {
     setMobileMode(!isMobileMode);
-  }
+  };
 
   return (
     <div className={sty.dashboard}>
@@ -82,6 +82,6 @@ const Dashboard: React.FC = () => {
       </div>
     </div>
   );
-}
+};
 
 export default Dashboard;

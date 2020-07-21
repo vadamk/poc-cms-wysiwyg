@@ -41,13 +41,12 @@ const SignIn: React.FC<SignInProps> = () => {
     },
     onError: () => {
       form.setFieldsValue({});
-    }
+    },
   });
 
-
-  const handleSubmit = (values) => {
-    signIn({ variables: { ...values } })
-  }
+  const handleSubmit = values => {
+    signIn({ variables: { ...values } });
+  };
 
   return (
     <Row
@@ -57,7 +56,9 @@ const SignIn: React.FC<SignInProps> = () => {
     >
       <Col span={8}>
         <Card>
-          <Title level={2} style={{ textAlign: 'center', marginBottom: '2rem' }}>Sign In</Title>
+          <Title level={2} style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            Sign In
+          </Title>
           <SignInForm
             form={form}
             isSubmitting={signInStatus.loading}

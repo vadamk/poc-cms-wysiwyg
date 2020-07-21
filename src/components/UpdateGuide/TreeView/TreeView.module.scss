@@ -1,0 +1,10 @@
+.wrapper {
+  position: sticky;
+  top: 56px;
+  max-height: calc(100vh - 56px);
+  overflow: auto;
+}
+
+.createSection {
+  padding: 5px 0;
+}

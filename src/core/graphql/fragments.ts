@@ -47,3 +47,53 @@ export const ArticleFragment = gql`
   ${EditionFragment}
   ${AudienceFragment}
 `;
+
+export const SummaryFragment = gql`
+  fragment SummaryFragment on Summary {
+    id
+    stepId
+    orderNum
+    title
+    content
+  }
+`;
+
+export const StepFragment = gql`
+  fragment StepFragment on Step {
+    id
+    discoveryId
+    orderNum
+    summaries {
+      ...SummaryFragment
+    }
+  }
+  ${SummaryFragment}
+`;
+
+export const DiscoveryFragment = gql`
+  fragment DiscoveryFragment on Discovery {
+    id
+    title
+    subjectId
+    image
+    language
+    orderNum
+    link
+    steps {
+      ...StepFragment
+    }
+    audiences {
+      ...AudienceFragment
+    }
+    editions {
+      ...EditionFragment
+    }
+    subject {
+      ...SubjectFragment
+    }
+  }
+  ${StepFragment}
+  ${SubjectFragment}
+  ${EditionFragment}
+  ${AudienceFragment}
+`;

@@ -1,0 +1,47 @@
+.treeViewItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  width: 100%;
+  padding: 5px 10px;
+  margin-bottom: 1px;
+
+  font-size: 14px;
+
+  background-color: #fff;
+
+  user-select: none;
+  cursor: pointer;
+  
+  .actions {
+    opacity: 0;
+
+    :global .ant-btn-text {
+      color: #999;
+    }
+  }
+
+  &:hover {
+    background-color: #f9f9f9;
+
+    .actions {
+      opacity: 1;
+    }
+  }
+
+  &.active {
+    background-color: #40a9ff;
+    color: #fff;
+
+    :global .ant-btn-text {
+      color: #fff;
+    }
+  }
+
+}
+
+.children {
+  padding: 5px 0;
+  padding-left: 30px;
+}

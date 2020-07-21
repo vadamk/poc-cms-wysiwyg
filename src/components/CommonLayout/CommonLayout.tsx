@@ -13,7 +13,11 @@ import {
 import { Link, useLocation } from 'react-router-dom';
 import { useMutation } from '@apollo/react-hooks';
 
-import { saveInLocalStorage, getFromLocalStorage, removeFromLocalStorage } from 'core/services/browser';
+import {
+  saveInLocalStorage,
+  getFromLocalStorage,
+  removeFromLocalStorage,
+} from 'core/services/browser';
 import { localStorageKeys } from 'core/global';
 
 import Logo from 'components/Logo';
@@ -22,12 +26,6 @@ import { SET_AUTHORIZED } from 'components/SignIn';
 import sty from './CommonLayout.module.scss';
 
 const { Header, Content, Footer, Sider } = Layout;
-
-const headerStyles: React.CSSProperties = {
-  padding: '0 30px',
-  display: 'flex',
-  justifyContent: 'flex-end'
-};
 
 const contentStyles: React.CSSProperties = {
   margin: '24px 16px 0',
@@ -40,9 +38,9 @@ const footerStyles: React.CSSProperties = {
 
 const CommonLayout: React.FC = ({ children }) => {
   const [isCollapsed, setCollapsed] = React.useState(
-    getFromLocalStorage(localStorageKeys.sidebarCollapsed)
+    getFromLocalStorage(localStorageKeys.sidebarCollapsed),
   );
-  
+
   const [setAuthorized] = useMutation(SET_AUTHORIZED);
 
   const { pathname } = useLocation();
@@ -52,30 +50,43 @@ const CommonLayout: React.FC = ({ children }) => {
     return match || [];
   }, [pathname]);
 
-  const layoutStyles = React.useMemo<React.CSSProperties>(() => ({
-    marginLeft: isCollapsed ? 80 : 200,
-    minHeight: '100vh',
-    transition: 'all 200ms',
-  }), [isCollapsed]);
+  const layoutStyles = React.useMemo<React.CSSProperties>(
+    () => ({
+      marginLeft: isCollapsed ? 80 : 200,
+      height: '100vh',
+      transition: 'all 200ms',
+    }),
+    [isCollapsed],
+  );
 
-  const switchButtonStyles = React.useMemo<React.CSSProperties>(() => ({
-    position: 'absolute',
-    bottom: 0,
-    display: 'block',
-    width: '100%',
-    paddingLeft: isCollapsed ? '32px' : '24px',
-    textAlign: 'left',
-  }), [isCollapsed]);
-  
+  const headerStyles = React.useMemo<React.CSSProperties>(
+    () => ({
+      width: `calc(100% - ${isCollapsed ? 80 : 200}px)`,
+    }),
+    [isCollapsed],
+  );
+
+  const switchButtonStyles = React.useMemo<React.CSSProperties>(
+    () => ({
+      position: 'absolute',
+      bottom: 0,
+      display: 'block',
+      width: '100%',
+      paddingLeft: isCollapsed ? '32px' : '24px',
+      textAlign: 'left',
+    }),
+    [isCollapsed],
+  );
+
   const toggleCollapsed = () => {
     setCollapsed(!isCollapsed);
     saveInLocalStorage(localStorageKeys.sidebarCollapsed, !isCollapsed);
-  }
-  
+  };
+
   const logout = () => {
     setAuthorized({ variables: { isAuthorized: false } });
     removeFromLocalStorage(localStorageKeys.token);
-  }
+  };
 
   return (
     <Layout>
@@ -96,29 +107,26 @@ const CommonLayout: React.FC = ({ children }) => {
             <Link to="/guides">Guides</Link>
           </Menu.Item>
         </Menu>
-        <Button
-          type="text"
-          style={switchButtonStyles}
-          onClick={toggleCollapsed}
-        >
+        <Button type="text" style={switchButtonStyles} onClick={toggleCollapsed}>
           {isCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
         </Button>
       </Sider>
       <Layout className={sty.siteLayout} style={layoutStyles}>
-        <Header className={sty.siteLayoutBackground} style={headerStyles}>
-          <Dropdown overlay={() => (
-            <Menu>
-              <Menu.Item icon={<LogoutOutlined />} onClick={logout}>
-                Logout
-              </Menu.Item>
-            </Menu>
-          )}>
+        <Header className={sty.header} style={headerStyles}>
+          <Dropdown
+            overlay={() => (
+              <Menu>
+                <Menu.Item icon={<LogoutOutlined />} onClick={logout}>
+                  Logout
+                </Menu.Item>
+              </Menu>
+            )}
+          >
             <Avatar icon={<UserOutlined />} style={{ cursor: 'pointer' }} />
           </Dropdown>
         </Header>
-        <Content style={contentStyles}>
-          {children}
-        </Content>
+        <div className={sty.ghostHeader} />
+        <Content style={contentStyles}>{children}</Content>
         <Footer style={footerStyles}>Next Big Thing AB ©</Footer>
       </Layout>
     </Layout>

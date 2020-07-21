@@ -2,7 +2,6 @@ import { gql, Resolvers, ApolloClient } from 'apollo-boost';
 import { ApolloCache } from 'apollo-cache';
 
 export const typeDefs = gql`
-
   extend type Query {
     isAuthorized: Boolean!
   }

@@ -6,11 +6,7 @@ export interface DateTimeProps {
 }
 
 const DateTime: React.FC<DateTimeProps> = ({ timestamp }) => {
-  return (
-    <>
-      {moment(timestamp).format('YYYY/MM/DD H:mm')}
-    </>
-  );
+  return <>{moment(timestamp).format('YYYY/MM/DD H:mm')}</>;
 };
 
 export default DateTime;

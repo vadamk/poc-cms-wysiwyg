@@ -1,10 +1,9 @@
 import React from 'react';
 import { useQuery } from '@apollo/react-hooks';
-import { Form, Input, Select, Button, Space, Checkbox } from 'antd';
+import { Form, Input, Select, Checkbox, Card, Row, Col } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
-import { Link } from 'react-router-dom';
 
-import { FormProps } from 'core/models';
+import { FormProps, Option } from 'core/models';
 import {
   langOptions,
   audienceOptions,
@@ -17,25 +16,13 @@ import RichEditor from 'components/RichEditor';
 import RadioButtons from 'components/RadioButtons';
 import ImageUpload from 'components/ImageUpload';
 
-const layout = {
-  labelCol: { span: 3 },
-  wrapperCol: { span: 12 },
-};
-
-const tailLayout = {
-  wrapperCol: { offset: 3, span: 12 },
-};
-
-export interface ArticleFormProps extends FormProps {
-  mode?: 'create' | 'update';
-}
+export interface ArticleFormProps extends FormProps { }
 
 const ArticleForm: React.FC<ArticleFormProps> = ({
   form,
   initialValues = {
     language: Language.SV,
   },
-  mode = 'create',
   isSubmitting = false,
   onSubmit = () => null,
 }) => {
@@ -46,15 +33,13 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
 
   const subjectOptions = React.useMemo(() => {
     return (subjectsStatus.data?.getSubjectList || [])
-      .filter(
-        subject => isEnglish 
-          ? subject.language === Language.EN
-          : subject.language === Language.SV
+      .filter(subject =>
+        isEnglish ? subject.language === Language.EN : subject.language === Language.SV,
       )
       .map(({ title, id }) => ({ label: title, value: id }));
   }, [isEnglish, subjectsStatus.data]);
 
-  const curAudienceOptions = React.useMemo(() => {
+  const curAudienceOptions = React.useMemo<Option[]>(() => {
     return audienceOptions.map(audience => {
       if (isEnglish) {
         return { ...audience, disabled: true };
@@ -73,104 +58,112 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
     const audiences = nextIsEnglish ? [Audiences.SWEDEN_JOB] : [];
     internalForm.setFieldsValue({ audiences });
     setEnglish(nextIsEnglish);
-  }
+  };
 
   return (
     <Form
-      {...layout}
       name="basic"
+      layout="vertical"
       initialValues={initialValues}
       form={internalForm}
       onFinish={onSubmit}
     >
-      <Form.Item
-        wrapperCol={{ span: 21 }}
-        label="Title"
-        name="title"
-        rules={[{ required: true, message: 'Please input title!' }]}
-      >
-        <Input
-          autoFocus
-          autoComplete="off"
-          disabled={isSubmitting}
-          placeholder="Please input title"
-        />
-      </Form.Item>
+      <Row gutter={[20, 20]}>
+        <Col span={18}>
+          <Row gutter={[20, 20]}>
+            <Col span={24}>
+              <Card>
+                <Form.Item
+                  label="Title"
+                  name="title"
+                  rules={[{ required: true, message: 'Please input title!' }]}
+                >
+                  <Input
+                    autoFocus
+                    autoComplete="off"
+                    disabled={isSubmitting}
+                    placeholder="Please input title"
+                  />
+                </Form.Item>
+                <Form.Item label="Subtitle" name="subTitle">
+                  <Input.TextArea
+                    rows={4}
+                    disabled={isSubmitting}
+                    placeholder="Please input subtitle"
+                  />
+                </Form.Item>
+              </Card>
+            </Col>
+              
+            <Col span={24}>
+              <Form.Item
+                name="content"
+                rules={[{ required: true, message: 'Please input content!' }]}
+              >
+                <RichEditor />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Col>
 
-      <Form.Item
-        wrapperCol={{ span: 21 }}
-        label="Content"
-        name="content"
-        rules={[{ required: true, message: 'Please input content!' }]}
-      >
-        <RichEditor />
-      </Form.Item>
-
-      <Form.Item label="Subtitle" name="subTitle">
-        <Input.TextArea
-          rows={4}
-          disabled={isSubmitting} 
-          placeholder="Please input subtitle"
-        />
-      </Form.Item>
-
-      <Form.Item
-        label="Image"
-        name="image"
-        rules={[{ required: true, message: 'Please add image!' }]}
-      >
-        <ImageUpload />
-      </Form.Item>
-
-      <Form.Item label="Language" name="language">
-        <RadioButtons 
-          disabled={isSubmitting}
-          options={langOptions}
-          onChange={handleLangChange}
-        />
-      </Form.Item>
-
-      <Form.Item
-        label="Audiences"
-        name="audiences"
-        rules={[{ required: true, message: 'Please select at least 1 audience!' }]}
-      >
-        <Checkbox.Group options={curAudienceOptions} />
-      </Form.Item>
-
-      <Form.Item
-        label="Subject"
-        name="subjectId"
-        rules={[{ required: true, message: 'Please choose subject!' }]}>
-        <Select
-          showSearch
-          disabled={isSubmitting}
-          loading={subjectsStatus.loading}
-          options={subjectOptions}
-          placeholder="Please choose subject"
-          filterOption={(input, option) => 
-            String(option?.label)
-              .toLowerCase()
-              .indexOf(input.toLowerCase()) >= 0
-          }
-        />
-      </Form.Item>
-
-      <Form.Item label="Editions" name="editions">
-        <Checkbox.Group options={editionOptions} />
-      </Form.Item>
-
-      <Form.Item {...tailLayout}>
-        <Space>
-          <Button type="primary" htmlType="submit">
-            {mode === 'create' ? 'Create' : 'Update'}
-          </Button>
-          <Link to="/articles">
-            <Button type="default">Cancel</Button>
-          </Link>
-        </Space>
-      </Form.Item>
-
+        <Col span={6}>
+          <Card>
+            <Form.Item
+              label="Image"
+              name="image"
+              rules={[{ required: true, message: 'Please add image!' }]}
+            >
+              <ImageUpload />
+            </Form.Item>
+            <Form.Item label="Language" name="language">
+              <RadioButtons
+                disabled={isSubmitting}
+                options={langOptions}
+                onChange={handleLangChange}
+              />
+            </Form.Item>
+            <Form.Item
+              label="Audiences"
+              name="audiences"
+              rules={[{ required: true, message: 'Please select at least 1 audience!' }]}
+            >
+              <Checkbox.Group>
+                <Row gutter={[0, 5]}>
+                  {curAudienceOptions.map(option => (
+                    <Col key={option.label} span={12}>
+                      <Checkbox
+                        disabled={option.disabled}
+                        value={option.value}
+                      >
+                        {option.label}
+                      </Checkbox>
+                    </Col>
+                  ))}
+                </Row>
+              </Checkbox.Group>
+            </Form.Item>
+            <Form.Item
+              label="Subject"
+              name="subjectId"
+              rules={[{ required: true, message: 'Please choose subject!' }]}
+            >
+              <Select
+                showSearch
+                disabled={isSubmitting}
+                loading={subjectsStatus.loading}
+                options={subjectOptions}
+                placeholder="Please choose subject"
+                filterOption={(input, option) =>
+                  String(option?.label).toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              />
+            </Form.Item>
+            <Form.Item label="Editions" name="editions">
+              <Checkbox.Group options={editionOptions} />
+            </Form.Item>
+          </Card>
+        </Col>
+      </Row>
     </Form>
   );
 };

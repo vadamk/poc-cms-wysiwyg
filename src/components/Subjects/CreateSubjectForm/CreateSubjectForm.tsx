@@ -18,12 +18,7 @@ const CreateSubjectForm: React.FC<CreateSubjectFormProps> = ({
   initialValues = { language: Language.SV },
   isSubmitting = false,
 }) => (
-  <Form
-    {...layout}
-    name="basic"
-    form={form}
-    initialValues={initialValues}
-  >
+  <Form {...layout} name="basic" form={form} initialValues={initialValues}>
     <Form.Item
       label="Title"
       name="title"
