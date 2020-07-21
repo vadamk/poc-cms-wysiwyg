@@ -1,8 +1,8 @@
 import React from 'react';
 import { Input, Button } from 'antd';
-import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 
 import sty from './ConfirmInput.module.scss';
+import { useClickOutside } from 'core/hooks/useClickOutside';
 
 export interface ConfirmInputProps {
   isLoading?: boolean;
@@ -16,8 +16,16 @@ const ConfirmInput: React.FC<ConfirmInputProps> = React.forwardRef(({
   onOk = () => null,
   onCancel = () => null,
   onChange = () => null,
-}) => {
+}, ref) => {
+  const inputRef = React.useRef(null);
+
   const [value, setValue] = React.useState('');
+
+  useClickOutside(inputRef, () => {
+    if (value === '') {
+      onCancel();
+    }
+  });
 
   const handleChange = React.useCallback(({ target }: React.ChangeEvent<HTMLInputElement>) => {
     setValue(target.value);
@@ -46,6 +54,7 @@ const ConfirmInput: React.FC<ConfirmInputProps> = React.forwardRef(({
     <div className={sty.confirmInput}>
       <Input
         autoFocus
+        ref={inputRef}
         disabled={isLoading}
         className={sty.input}
         value={value}

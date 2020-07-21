@@ -1,7 +1,7 @@
 import React from 'react';
 import { gql } from 'apollo-boost';
-import { useQuery } from '@apollo/react-hooks';
-import { Tabs, Spin } from 'antd';
+import { useQuery, useMutation } from '@apollo/react-hooks';
+import { Tabs, Spin, Card, message } from 'antd';
 import { useParams } from 'react-router-dom';
 
 import { Edition } from 'core/global';
@@ -25,12 +25,22 @@ export const GET_GUIDE = gql`
   ${DiscoveryFragment}
 `;
 
+export const UPDATE_GUIDE = gql`
+  mutation UpdateDiscovery($discovery: UpdateDiscoveryInput!) {
+    updateDiscovery(discovery: $discovery) {
+      ...DiscoveryFragment
+    }
+  }
+  ${DiscoveryFragment}
+`;
+
 export interface UpdateGuideProps {}
 
-const UpdateGuide: React.FC<UpdateGuideProps> = ({}) => {
+const UpdateGuide: React.FC<UpdateGuideProps> = () => {
   const { slug } = useParams();
+  
   const [formData, setFormData] = React.useState();
-  const [activeTab,  setActiveTab] = React.useState(2);
+  const [activeTab,  setActiveTab] = React.useState(1);
 
   const { data, loading } = useQuery(GET_GUIDE, {
     variables: { discoveryId: Number(slug) },
@@ -48,6 +58,12 @@ const UpdateGuide: React.FC<UpdateGuideProps> = ({}) => {
     },
   });
 
+  const [updateGuide, updateGuideStatus] = useMutation(UPDATE_GUIDE, {
+    onCompleted: () => {
+      message.success('Guide has been updated.');
+    },
+  });
+
   const breadcrumbs = React.useMemo<Breadcrumb[]>(() => {
     return [{ path: '/guides', breadcrumbName: 'Guides' }];
   }, []);
@@ -55,6 +71,17 @@ const UpdateGuide: React.FC<UpdateGuideProps> = ({}) => {
   const handleChangeTab = React.useCallback((key) => {
     setActiveTab(key);
   }, []);
+
+  const handleSubmit = React.useCallback((values) => {
+    console.log('values: ', values);
+    const guide = {
+      ...values,
+      id: data?.getDiscovery.id,
+      orderNum: data?.getDiscovery.orderNum,
+    };
+
+    updateGuide({ variables: { discovery: guide } });
+  }, [data, updateGuide]);
 
   return (
     <>
@@ -74,7 +101,9 @@ const UpdateGuide: React.FC<UpdateGuideProps> = ({}) => {
       />
       <Spin spinning={loading}>
         {Number(activeTab) === 1 && formData && (
-          <GuideForm mode="update" initialValues={formData} />
+          <Card>
+            <GuideForm onSubmit={handleSubmit} mode="update" initialValues={formData} />
+          </Card>
         )}
         {Number(activeTab) === 2 && formData && (
           <Content />
