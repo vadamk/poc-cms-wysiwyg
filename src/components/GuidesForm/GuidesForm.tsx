@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@apollo/react-hooks';
-import { Form, Input, Select, Button, Space, Checkbox } from 'antd';
+import { Form, Input, Select, Button, Space, Checkbox, InputNumber } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { Link } from 'react-router-dom';
 // import slugify from 'slugify';
@@ -34,6 +34,7 @@ const GuideForm: React.FC<GuideFormProps> = ({
   form,
   initialValues = {
     language: Language.SV,
+    stepCount: 3,
   },
   mode = 'create',
   isSubmitting = false,
@@ -42,7 +43,7 @@ const GuideForm: React.FC<GuideFormProps> = ({
   const [internalForm] = useForm(form);
 
   const [isEnglish, setEnglish] = React.useState(initialValues.language === Language.EN);
-  const [title, setTitle] = React.useState(initialValues.title);
+  // const [title, setTitle] = React.useState(initialValues.title);
   const subjectsStatus = useQuery(GET_SUBJECTS_LIST);
 
   const subjectOptions = React.useMemo(() => {
@@ -85,9 +86,9 @@ const GuideForm: React.FC<GuideFormProps> = ({
     onSubmit(values);
   };
 
-  const handleChange = ({ target }) => {
-    setTitle(target.value);
-  };
+  // const handleChange = ({ target }) => {
+  //   setTitle(target.value);
+  // };
 
   return (
     <Form
@@ -107,7 +108,7 @@ const GuideForm: React.FC<GuideFormProps> = ({
           autoComplete="off"
           disabled={isSubmitting}
           placeholder="Please input title"
-          onChange={handleChange}
+          // onChange={handleChange}
         />
       </Form.Item>
 
@@ -160,16 +161,24 @@ const GuideForm: React.FC<GuideFormProps> = ({
         <Checkbox.Group options={editionOptions} />
       </Form.Item>
 
-      <Form.Item {...tailLayout}>
-        <Space>
-          <Button type="primary" htmlType="submit">
-            {mode === 'create' ? 'Create' : 'Update'}
-          </Button>
-          <Link to="/guides">
-            <Button type="default">Cancel</Button>
-          </Link>
-        </Space>
-      </Form.Item>
+      {mode === 'create' && (
+        <Form.Item label="Number of steps" name="stepCount">
+          <InputNumber min={1} max={5} />
+        </Form.Item>
+      )}
+
+      {mode === 'create' && (
+        <Form.Item {...tailLayout}>
+          <Space>
+            <Button type="primary" htmlType="submit">
+              Create
+            </Button>
+            <Link to="/guides">
+              <Button type="default">Cancel</Button>
+            </Link>
+          </Space>
+        </Form.Item>
+      )}
     </Form>
   );
 };

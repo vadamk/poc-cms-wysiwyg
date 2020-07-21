@@ -39,7 +39,7 @@ const CreateGuide: React.FC<CreateGuideProps> = () => {
   }, []);
 
   const handleSubmit = values => {
-    const discovery = { ...values, stepCount: 1, orderNum: 1 };
+    const discovery = { ...values, orderNum: 1 };
     createGuide({ variables: { discovery } });
   };
 

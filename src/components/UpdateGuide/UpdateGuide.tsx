@@ -38,7 +38,8 @@ export const UPDATE_GUIDE = gql`
 export interface UpdateGuideProps {}
 
 const UpdateGuide: React.FC<UpdateGuideProps> = () => {
-  const [form] = useForm();
+  const [generalInfoform] = useForm();
+  const [contentForm] = useForm();
   const { slug } = useParams();
 
   const [formData, setFormData] = React.useState();
@@ -47,6 +48,7 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
   const { data, loading } = useQuery(GET_GUIDE, {
     variables: { discoveryId: Number(slug) },
     onCompleted: data => {
+      console.log('data: ', data);
       const { editions, audiences, subject, ...rest } = data?.getDiscovery;
 
       const formData = {
@@ -87,13 +89,25 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
     [data, updateGuide],
   );
 
+  const handleSaveChanges = () => {
+    if (activeTab === 1) {
+      generalInfoform.submit()
+    } else {
+      contentForm.submit();
+    }
+  }
+
   return (
     <>
       <Toolbar
         title="Update Guide"
         breadcrumbs={breadcrumbs}
         extra={
-          <Button type="primary" onClick={() => form.submit()}>
+          <Button
+            type="primary"
+            loading={updateGuideStatus.loading}
+            onClick={handleSaveChanges}
+          >
             Save changes
           </Button>
         }
@@ -109,13 +123,14 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
           <Card>
             <GuideForm
               mode="update"
+              form={generalInfoform}
               initialValues={formData}
               isSubmitting={updateGuideStatus.loading}
               onSubmit={handleSubmit}
             />
           </Card>
         )}
-        {Number(activeTab) === 2 && formData && <Content form={form} />}
+        {Number(activeTab) === 2 && formData && <Content form={contentForm} />}
       </Spin>
     </>
   );
