@@ -43,9 +43,12 @@ export const DELETE_SUMMARY = gql`
 `;
 
 export const CREATE_STEP = gql`
-  mutation CreateStep($discoveryId: Int!, $orderNum: Int!) {
-    createStep(discoveryId: $discoveryId, orderNum: $orderNum) {
+  mutation CreateStep($input: CreateStepInput!) {
+    createStep(input: $input) {
       id
+      discoveryId
+      title
+      description
       orderNum
     }
   }
@@ -99,7 +102,8 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
       setCreatingStep(false);
 
       // optimistic strategy
-      const nextSteps = update(steps, { $push: [step] });
+      const nextSteps = update(steps, { $push: [{ ...step, summaries: [] }] });
+      console.log('nextSteps: ', nextSteps);
       setSteps(nextSteps);
     },
   });
@@ -174,10 +178,12 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
   const handleCreateStep = React.useCallback((value) => {
     createStep({
       variables: {
-        discoveryId,
-        orderNum: steps.length + 1,
-        title: value,
-        description: '',
+        input: {
+          discoveryId,
+          orderNum: steps.length + 1,
+          title: value,
+          description: `${value} description`,
+        }
       },
     });
   }, [createStep, discoveryId, steps.length]);
@@ -212,7 +218,7 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
         title: (
           <>
             Are you sure you want to delete{' '}
-            <Typography.Text mark>Step {index + 1}</Typography.Text>?
+            <Typography.Text mark>{step.title || `Step ${index + 1}`}</Typography.Text>?
           </>
         ),
         icon: <ExclamationCircleOutlined />,
@@ -300,7 +306,7 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
 
   return (
     <div className={sty.wrapper}>
-      {steps.map((step, stIndex) => (
+      {steps?.map((step, stIndex) => (
         <DndCard
           key={step.id}
           id={step.id}
@@ -310,13 +316,12 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
           beginDragging={() => console.log('begin')}
         >
           <TreeViewNode
-            key={step.id}
-            title={step.title || `Step ${step.orderNum + 1}`}
+            title={step.title || `Step ${stIndex + 1}`}
             defaultExpanded={stIndex === 0}
             isActive={step.id === current?.id}
             onClick={() => chooseCurrent(step)}
             actions={[
-              steps.length > 1 && (
+              steps?.length > 1 && (
                 <Button
                   shape="circle"
                   type="text"
@@ -326,7 +331,7 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
               ),
             ]}
           >
-            {(step.summaries as Summary[]).map((sum, sumIndex) => (
+            {(step.summaries as Summary[])?.map((sum, sumIndex) => (
               <DndCard
                 key={sum.id}
                 id={sum.id}
@@ -349,7 +354,7 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
                 />
               </DndCard>
             ))}
-            {step.summaries.length < 5 && (
+            {step?.summaries?.length < 5 && (
               <div className={sty.createSection}>
                 {stepForCreating?.id === step.id ? (
                   <ConfirmInput
@@ -373,7 +378,7 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
           </TreeViewNode>
         </DndCard>
       ))}
-      {steps.length < 5 && (
+      {steps?.length < 5 && (
         <div className={sty.createSection}>
           {isCreatingStep ? (
             <ConfirmInput

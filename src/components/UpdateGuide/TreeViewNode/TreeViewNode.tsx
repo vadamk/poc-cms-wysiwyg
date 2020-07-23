@@ -69,7 +69,7 @@ const TreeViewNode: React.FC<TreeViewNodeProps> = ({
           {title}
         </span>
         <div className={sty.actions} onClick={handleActionClick}>
-          {actions.map((action, index) => (
+          {actions?.map((action, index) => (
             <React.Fragment key={index}>{action}</React.Fragment>
           ))}
         </div>
