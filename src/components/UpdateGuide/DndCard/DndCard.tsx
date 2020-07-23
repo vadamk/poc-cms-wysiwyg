@@ -17,6 +17,7 @@ export interface DndCardProps {
   type: string;
   moveCard: (dragIndex: number, hoverIndex: number) => void;
   beginDragging?: () => void;
+  onDrop: (dragIndex: number, hoverIndex: number) => void;
 }
 
 interface DragItem {
@@ -32,10 +33,16 @@ const DndCard: React.FC<DndCardProps> = ({
   type = ItemTypes.CARD,
   moveCard = () => null,
   beginDragging = () => null,
+  onDrop = () => null,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [, drop] = useDrop({
     accept: type,
+    drop: (item: DragItem) => {
+      const dragIndex = item.index;
+      const hoverIndex = index;
+      onDrop(dragIndex, hoverIndex);
+    },
     hover(item: DragItem, monitor: DropTargetMonitor) {
       if (!ref.current) {
         return;

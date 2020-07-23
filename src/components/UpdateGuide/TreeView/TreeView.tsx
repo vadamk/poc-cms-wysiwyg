@@ -3,7 +3,7 @@ import { gql } from 'apollo-boost';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useParams } from 'react-router-dom';
 import update from 'immutability-helper';
-import { Button, Typography, Modal, message } from 'antd';
+import { Button, Typography, Modal, message, Spin } from 'antd';
 import {
   PlusOutlined,
   DeleteOutlined,
@@ -60,17 +60,17 @@ export const DELETE_STEP = gql`
   }
 `;
 
-// export const SET_SUMMRY_ORDER = gql`
-//   mutation SetSummaryOrder($order: Int!) {
-//     moveStep(order: $order)
-//   }
-// `;
+export const SET_SUMMRY_ORDER = gql`
+  mutation SortDiscoverySummaries($order: [SummaryOrderInput!]!) {
+    sortDiscoverySummaries(order: $order)
+  }
+`;
 
-// export const SET_STEP_ORDER = gql`
-//   mutation SetStepOrder($order: Int!) {
-//     setStepOrder(order: $order)
-//   }
-// `;
+export const SET_STEP_ORDER = gql`
+  mutation SortDiscoverySteps($order: [StepOrderInput!]!) {
+    sortDiscoverySteps(order: $order)
+  }
+`;
 
 export interface TreeViewProps {
   onChange: (summary?: Summary | Step) => void;
@@ -115,13 +115,13 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
     },
   });
 
-  // const [setStepsOrder, setStepsOrderStatus] = useMutation(SET_STEP_ORDER, {
-  //   refetchQueries: [{ query: GET_GUIDE, variables: { discoveryId } }],
-  // });
+  const [setStepsOrder, setStepsOrderStatus] = useMutation(SET_STEP_ORDER, {
+    refetchQueries: [{ query: GET_GUIDE, variables: { discoveryId } }],
+  });
 
-  // const [setSummaryOrder, setSummaryOrderStatus] = useMutation(SET_SUMMRY_ORDER, {
-  //   refetchQueries: [{ query: GET_GUIDE, variables: { discoveryId } }],
-  // });
+  const [setSummaryOrder, setSummaryOrderStatus] = useMutation(SET_SUMMRY_ORDER, {
+    refetchQueries: [{ query: GET_GUIDE, variables: { discoveryId } }],
+  });
 
   const [createSummary, createSummaryStatus] = useMutation(CREATE_SUMMARY, {
     refetchQueries: [{ query: GET_GUIDE, variables: { discoveryId } }],
@@ -273,14 +273,36 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
       });
 
       setSteps(nextSteps);
-
-      const order = steps[stepIndex].summaries.map((sum, index) => ({
-        [(sum as Summary).id]: index,
-      }))
-
-      // setSummaryOrder({ variables: { order } })
     },
     [steps],
+  );
+
+  const dropSummary = React.useCallback(
+    (stepIndex: number, dragIndex: number, hoverIndex: number) => {
+      const dragCard = steps[stepIndex].summaries[dragIndex];
+      const nextSteps = update(steps, {
+        [stepIndex]: step =>
+          update(step, {
+            summaries: summaries =>
+              update(summaries, {
+                $splice: [
+                  [dragIndex, 1],
+                  [hoverIndex, 0, dragCard],
+                ],
+              }),
+          }),
+      });
+
+      setSteps(nextSteps);
+
+      const order = (steps[stepIndex].summaries as Summary[]).map((sum, index) => ({
+        id: sum.id,
+        orderNum: index + 1,
+      }));
+
+      setSummaryOrder({ variables: { order } })
+    },
+    [setSummaryOrder, steps],
   );
 
   const moveStep = React.useCallback(
@@ -294,110 +316,129 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
       });
 
       setSteps(nextSteps);
-
-      const order = nextSteps.map((step, index) => ({
-        [step.id]: index,
-      }));
-
-      // setStepsOrder({ variables: { order } })
     },
     [steps],
   );
 
+  const dropStep = React.useCallback(
+    (dragIndex: number, hoverIndex: number) => {
+      const dragCard = steps[dragIndex];
+      const nextSteps = update(steps, {
+        $splice: [
+          [dragIndex, 1],
+          [hoverIndex, 0, dragCard],
+        ],
+      });
+
+      setSteps(nextSteps);
+
+      const order = nextSteps.map((step, index) => ({
+        id: step.id,
+        orderNum: index + 1,
+      }));
+
+      setStepsOrder({ variables: { order } })
+    },
+    [setStepsOrder, steps],
+  );
+
   return (
     <div className={sty.wrapper}>
-      {steps?.map((step, stIndex) => (
-        <DndCard
-          key={step.id}
-          id={step.id}
-          index={stIndex}
-          type={String(discoveryId)}
-          moveCard={moveStep}
-          beginDragging={() => console.log('begin')}
-        >
-          <TreeViewNode
-            title={step.title || `Step ${stIndex + 1}`}
-            defaultExpanded={stIndex === 0}
-            isActive={step.id === current?.id}
-            onClick={() => chooseCurrent(step)}
-            actions={[
-              steps?.length > 1 && (
-                <Button
-                  shape="circle"
-                  type="text"
-                  icon={<DeleteOutlined />}
-                  onClick={() => startDeletingStep(step, stIndex)}
-                />
-              ),
-            ]}
+      <Spin spinning={setStepsOrderStatus.loading || setSummaryOrderStatus.loading}>
+        {steps?.map((step, stIndex) => (
+          <DndCard
+            key={step.id}
+            id={step.id}
+            index={stIndex}
+            type={String(discoveryId)}
+            moveCard={moveStep}
+            onDrop={dropStep}
           >
-            {(step.summaries as Summary[])?.map((sum, sumIndex) => (
-              <DndCard
-                key={sum.id}
-                id={sum.id}
-                index={sumIndex}
-                type={String(sum.stepId)}
-                moveCard={(...atrs) => moveSummary(stIndex, ...atrs)}
-              >
-                <TreeViewNode
-                  title={sum?.title}
-                  isActive={sum.id === current?.id}
-                  onClick={() => chooseCurrent(sum)}
-                  actions={[
-                    <Button
-                      shape="circle"
-                      type="text"
-                      icon={<DeleteOutlined />}
-                      onClick={() => startDeletingSummary(sum)}
-                    />,
-                  ]}
-                />
-              </DndCard>
-            ))}
-            {step?.summaries?.length < 5 && (
-              <div className={sty.createSection}>
-                {stepForCreating?.id === step.id ? (
-                  <ConfirmInput
-                    isLoading={createSummaryStatus.loading}
-                    onOk={handleCreateSummary}
-                    onCancel={cancelCreatingSummary}
-                  />
-                ) : (
+            <TreeViewNode
+              title={step.title || `Step ${stIndex + 1}`}
+              defaultExpanded={stIndex === 0}
+              isActive={step.id === current?.id}
+              onClick={() => chooseCurrent(step)}
+              actions={[
+                steps?.length > 1 && (
                   <Button
-                    key={`${step.id}_createButton`}
-                    type="dashed"
-                    icon={<PlusOutlined />}
-                    style={{ width: '100%' }}
-                    onClick={() => startCreatingSummary(step)}
-                  >
-                    Add Summary
-                  </Button>
-                )}
-              </div>
-            )}
-          </TreeViewNode>
-        </DndCard>
-      ))}
-      {steps?.length < 5 && (
-        <div className={sty.createSection}>
-          {isCreatingStep ? (
-            <ConfirmInput
-              isLoading={createStepStatus.loading}
-              onOk={handleCreateStep}
-              onCancel={cancelCreatingStep}
-            />
-          ) : (
-            <Button
-              type="dashed"
-              icon={<PlusOutlined />}
-              style={{ width: '100%' }}
-              onClick={() => startCreatingStep()}
+                    shape="circle"
+                    type="text"
+                    icon={<DeleteOutlined />}
+                    onClick={() => startDeletingStep(step, stIndex)}
+                  />
+                ),
+              ]}
             >
-              Add Step
-            </Button>
-          )}
-        </div>
-      )}
+              {(step.summaries as Summary[])?.map((sum, sumIndex) => (
+                <DndCard
+                  key={sum.id}
+                  id={sum.id}
+                  index={sumIndex}
+                  type={String(sum.stepId)}
+                  moveCard={(...atrs) => moveSummary(stIndex, ...atrs)}
+                  onDrop={(...atrs) => dropSummary(stIndex, ...atrs)}
+                >
+                  <TreeViewNode
+                    title={sum?.title}
+                    isActive={sum.id === current?.id}
+                    onClick={() => chooseCurrent(sum)}
+                    actions={[
+                      <Button
+                        shape="circle"
+                        type="text"
+                        icon={<DeleteOutlined />}
+                        onClick={() => startDeletingSummary(sum)}
+                      />,
+                    ]}
+                  />
+                </DndCard>
+              ))}
+              {step?.summaries?.length < 5 && (
+                <div className={sty.createSection}>
+                  {stepForCreating?.id === step.id ? (
+                    <ConfirmInput
+                      isLoading={createSummaryStatus.loading}
+                      onOk={handleCreateSummary}
+                      onCancel={cancelCreatingSummary}
+                    />
+                  ) : (
+                    <Button
+                      key={`${step.id}_createButton`}
+                      type="dashed"
+                      icon={<PlusOutlined />}
+                      style={{ width: '100%' }}
+                      onClick={() => startCreatingSummary(step)}
+                    >
+                      Add Summary
+                    </Button>
+                  )}
+                </div>
+              )}
+            </TreeViewNode>
+          </DndCard>
+        ))}
+        {steps?.length < 5 && (
+          <div className={sty.createSection}>
+            {isCreatingStep ? (
+              <ConfirmInput
+                isLoading={createStepStatus.loading}
+                onOk={handleCreateStep}
+                onCancel={cancelCreatingStep}
+              />
+            ) : (
+              <Button
+                type="dashed"
+                icon={<PlusOutlined />}
+                style={{ width: '100%' }}
+                onClick={() => startCreatingStep()}
+              >
+                Add Step
+              </Button>
+            )}
+          </div>
+        )}
+      </Spin>
     </div>
   );
 };
