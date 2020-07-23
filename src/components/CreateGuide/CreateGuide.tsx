@@ -9,7 +9,8 @@ import sty from './CreateGuide.module.scss';
 import { useMutation } from '@apollo/react-hooks';
 import { MutationCreateDiscoveryArgs, CreateDiscoveryInput } from 'core/models/generated';
 import { Card } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
+import { GET_GUIDE } from 'components/UpdateGuide';
 
 export const CREATE_GUIDE = gql`
   mutation CreateDiscovery($discovery: CreateDiscoveryInput!) {
@@ -24,11 +25,15 @@ export interface CreateGuideProps {}
 
 const CreateGuide: React.FC<CreateGuideProps> = () => {
   const history = useHistory();
+  const { slug } = useParams();
+
+  const discoveryId = React.useMemo(() => Number(slug), [slug]);
 
   const [createGuide, createGuideStatus] = useMutation<
     CreateDiscoveryInput,
     MutationCreateDiscoveryArgs
   >(CREATE_GUIDE, {
+    refetchQueries: [{ query: GET_GUIDE, variables: { discoveryId } }],
     onCompleted: () => {
       history.push('/guides');
     },

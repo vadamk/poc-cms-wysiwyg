@@ -68,6 +68,8 @@ export const StepFragment = gql`
   fragment StepFragment on Step {
     id
     discoveryId
+    title
+    description
     orderNum
     summaries {
       ...SummaryFragment

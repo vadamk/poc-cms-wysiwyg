@@ -8,6 +8,7 @@ enum ItemTypes {
 
 const style: React.CSSProperties = {
   position: 'relative',
+  transform: 'translate3d(0px, 0px, 0px)',
 };
 
 export interface DndCardProps {
@@ -15,6 +16,7 @@ export interface DndCardProps {
   index: number;
   type: string;
   moveCard: (dragIndex: number, hoverIndex: number) => void;
+  beginDragging?: () => void;
 }
 
 interface DragItem {
@@ -29,6 +31,7 @@ const DndCard: React.FC<DndCardProps> = ({
   index,
   type = ItemTypes.CARD,
   moveCard = () => null,
+  beginDragging = () => null,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [, drop] = useDrop({
@@ -87,6 +90,9 @@ const DndCard: React.FC<DndCardProps> = ({
     collect: (monitor: any) => ({
       isDragging: monitor.isDragging(),
     }),
+    begin: () => {
+      beginDragging();
+    }
   });
 
   const opacity = isDragging ? 0.2 : 1;

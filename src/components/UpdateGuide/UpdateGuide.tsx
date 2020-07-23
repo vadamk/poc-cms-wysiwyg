@@ -48,7 +48,6 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
   const { data, loading } = useQuery(GET_GUIDE, {
     variables: { discoveryId: Number(slug) },
     onCompleted: data => {
-      console.log('data: ', data);
       const { editions, audiences, subject, ...rest } = data?.getDiscovery;
 
       const formData = {
@@ -102,20 +101,20 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
       <Toolbar
         title="Update Guide"
         breadcrumbs={breadcrumbs}
-        extra={
-          <Button
-            type="primary"
-            loading={updateGuideStatus.loading}
-            onClick={handleSaveChanges}
-          >
-            Save changes
-          </Button>
-        }
         footer={
-          <Tabs defaultActiveKey={String(activeTab)} onChange={handleChangeTab}>
-            <TabPane tab="General Info" key="1" />
-            <TabPane tab="Manage Content" key="2" />
-          </Tabs>
+          <div className={sty.pageHeader}>
+            <Tabs defaultActiveKey={String(activeTab)} onChange={handleChangeTab}>
+              <TabPane tab="General Info" key="1" />
+              <TabPane tab="Manage Content" key="2" />
+            </Tabs>
+            <Button
+              type="primary"
+              loading={updateGuideStatus.loading}
+              onClick={handleSaveChanges}
+            >
+              Save changes
+            </Button>
+          </div>
         }
       />
       <Spin spinning={loading}>

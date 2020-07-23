@@ -35,7 +35,11 @@ const StepForm: React.FC<StepFormProps> = ({
           placeholder="Please input title"
         />
       </Form.Item>
-      <Form.Item label="Description" name="description">
+      <Form.Item
+        label="Description"
+        name="description"
+        rules={[{ required: true, message: 'Please input description!' }]}
+      >
         <Input.TextArea
           rows={2}
           disabled={isSubmitting}

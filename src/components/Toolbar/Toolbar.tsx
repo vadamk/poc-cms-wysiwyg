@@ -41,8 +41,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
 
   return (
     <PageHeader
-      backIcon={breadcrumbs.length ? <ArrowLeftOutlined /> : null}
-      onBack={history.goBack}
+      // backIcon={breadcrumbs.length ? <ArrowLeftOutlined /> : null}
+      // onBack={history.goBack}
       className={sty.header}
       title={title}
       breadcrumb={{
