@@ -67,7 +67,7 @@ const Guides: React.FC<GuidesProps> = () => {
       okText: 'Delete',
       okButtonProps: { loading: deleteGuideStatus.loading },
       onOk: () => {
-        deleteGuide({ variables: { guideId: guide.id } });
+        deleteGuide({ variables: { discoveryId: guide.id } });
       },
     });
   };

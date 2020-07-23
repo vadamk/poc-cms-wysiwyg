@@ -112,7 +112,11 @@ const GuideForm: React.FC<GuideFormProps> = ({
         />
       </Form.Item>
 
-      <Form.Item label="Link" name="link">
+      <Form.Item
+        label="Link"
+        name="link"
+        rules={[{ required: true, message: 'Please input link!' }]}
+      >
         <Input disabled={isSubmitting} placeholder="Please input link" />
       </Form.Item>
 
