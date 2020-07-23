@@ -10,7 +10,7 @@ import { useMutation } from '@apollo/react-hooks';
 import { MutationCreateDiscoveryArgs, CreateDiscoveryInput } from 'core/models/generated';
 import { Card } from 'antd';
 import { useHistory, useParams } from 'react-router-dom';
-import { GET_GUIDE } from 'components/UpdateGuide';
+import { GET_GUIDES_LIST } from 'components/Guides';
 
 export const CREATE_GUIDE = gql`
   mutation CreateDiscovery($discovery: CreateDiscoveryInput!) {
@@ -33,7 +33,7 @@ const CreateGuide: React.FC<CreateGuideProps> = () => {
     CreateDiscoveryInput,
     MutationCreateDiscoveryArgs
   >(CREATE_GUIDE, {
-    refetchQueries: [{ query: GET_GUIDE, variables: { discoveryId } }],
+    refetchQueries: [{ query: GET_GUIDES_LIST }],
     onCompleted: () => {
       history.push('/guides');
     },
