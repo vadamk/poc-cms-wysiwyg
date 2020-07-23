@@ -162,8 +162,12 @@ const GuideForm: React.FC<GuideFormProps> = ({
       </Form.Item>
 
       {mode === 'create' && (
-        <Form.Item label="Number of steps" name="stepCount">
-          <InputNumber min={1} max={5} />
+        <Form.Item
+          label="Number of steps"
+          name="stepCount"
+          rules={[{ required: true, message: 'Please set count of steps!' }]}
+        >
+          <InputNumber min={1} max={5} disabled={isSubmitting} />
         </Form.Item>
       )}
 

@@ -5,12 +5,13 @@ import { DiscoveryFragment } from 'core/graphql/fragments';
 import Toolbar, { Breadcrumb } from 'components/Toolbar';
 import GuidesForm from 'components/GuidesForm';
 
-import sty from './CreateGuide.module.scss';
 import { useMutation } from '@apollo/react-hooks';
 import { MutationCreateDiscoveryArgs, CreateDiscoveryInput } from 'core/models/generated';
 import { Card } from 'antd';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { GET_GUIDES_LIST } from 'components/Guides';
+
+import sty from './CreateGuide.module.scss';
 
 export const CREATE_GUIDE = gql`
   mutation CreateDiscovery($discovery: CreateDiscoveryInput!) {
@@ -25,9 +26,6 @@ export interface CreateGuideProps {}
 
 const CreateGuide: React.FC<CreateGuideProps> = () => {
   const history = useHistory();
-  const { slug } = useParams();
-
-  const discoveryId = React.useMemo(() => Number(slug), [slug]);
 
   const [createGuide, createGuideStatus] = useMutation<
     CreateDiscoveryInput,
