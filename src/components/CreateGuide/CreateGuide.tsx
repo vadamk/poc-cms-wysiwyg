@@ -6,7 +6,7 @@ import Toolbar, { Breadcrumb } from 'components/Toolbar';
 import GuidesForm from 'components/GuidesForm';
 
 import { useMutation } from '@apollo/react-hooks';
-import { MutationCreateDiscoveryArgs, CreateDiscoveryInput } from 'core/models/generated';
+import { CreateDiscoveryMutationVariables, CreateDiscoveryMutation } from 'core/models/generated';
 import { Card } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { GET_GUIDES_LIST } from 'components/Guides';
@@ -28,12 +28,12 @@ const CreateGuide: React.FC<CreateGuideProps> = () => {
   const history = useHistory();
 
   const [createGuide, createGuideStatus] = useMutation<
-    CreateDiscoveryInput,
-    MutationCreateDiscoveryArgs
+    CreateDiscoveryMutation,
+    CreateDiscoveryMutationVariables
   >(CREATE_GUIDE, {
     refetchQueries: [{ query: GET_GUIDES_LIST }],
-    onCompleted: () => {
-      history.push('/guides');
+    onCompleted: ({ createDiscovery: { id } }) => {
+      history.push(`/guides/${id}`);
     },
   });
 

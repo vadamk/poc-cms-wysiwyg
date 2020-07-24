@@ -9,7 +9,7 @@ import { getAudienceOptions, getEditionOptions } from 'core/utils';
 import { DiscoveryFragment } from 'core/graphql/fragments';
 
 import Toolbar from 'components/Toolbar';
-import { Discovery } from 'core/models/generated';
+import { Discovery, GetDiscoveryListQuery } from 'core/models/generated';
 import { Language } from 'core/global';
 import CrudMenu from 'components/CrudMenu';
 import DateTime from 'components/DateTime';
@@ -40,7 +40,7 @@ export interface GuidesProps {}
 const Guides: React.FC<GuidesProps> = () => {
   const history = useHistory();
 
-  const { data, loading, refetch } = useQuery(GET_GUIDES_LIST, {
+  const { data, loading, refetch } = useQuery<GetDiscoveryListQuery>(GET_GUIDES_LIST, {
     pollInterval: 10000,
   });
 
@@ -52,7 +52,7 @@ const Guides: React.FC<GuidesProps> = () => {
   });
 
   const guides = React.useMemo(() => {
-    return (data?.getDiscoveryList || []).reverse();
+    return (data?.getDiscoveryList || []);
   }, [data]);
 
   const deleteRequest = (guide: any) => {
