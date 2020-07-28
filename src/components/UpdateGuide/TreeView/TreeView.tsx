@@ -28,7 +28,7 @@ const normalizeTree = (steps: Step[]) =>
     }));
 
 export const CREATE_SUMMARY = gql`
-  mutation CreateSummary($summary: CreateSummaryInput!) {
+  mutation CreateSummary($summary: CreateDiscoverySummaryInput!) {
     createSummary(summary: $summary) {
       ...SummaryFragment
     }
@@ -43,7 +43,7 @@ export const DELETE_SUMMARY = gql`
 `;
 
 export const CREATE_STEP = gql`
-  mutation CreateStep($input: CreateStepInput!) {
+  mutation CreateStep($input: CreateDiscoveryStepInput!) {
     createStep(input: $input) {
       id
       discoveryId
@@ -61,13 +61,13 @@ export const DELETE_STEP = gql`
 `;
 
 export const SET_SUMMRY_ORDER = gql`
-  mutation SortDiscoverySummaries($order: [SummaryOrderInput!]!) {
+  mutation SortDiscoverySummaries($order: [DiscoverySummaryOrderInput!]!) {
     sortDiscoverySummaries(order: $order)
   }
 `;
 
 export const SET_STEP_ORDER = gql`
-  mutation SortDiscoverySteps($order: [StepOrderInput!]!) {
+  mutation SortDiscoverySteps($order: [DiscoveryStepOrderInput!]!) {
     sortDiscoverySteps(order: $order)
   }
 `;

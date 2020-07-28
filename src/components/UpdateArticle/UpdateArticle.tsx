@@ -10,7 +10,6 @@ import { ArticleFragment } from 'core/graphql/fragments';
 import Toolbar, { Breadcrumb } from 'components/Toolbar';
 import ArticleForm from 'components/ArticleForm';
 import { Edition } from 'core/global';
-import { FormValues } from 'core/models';
 
 export const GET_ARTICLE = gql`
   query GetArticle($articleId: Int!) {
@@ -22,8 +21,8 @@ export const GET_ARTICLE = gql`
 `;
 
 export const UPDATE_ARTICLE = gql`
-  mutation UpdateArticle($article: UpdateArticleInput!) {
-    updateArticle(article: $article) {
+  mutation UpdateArticle($article: UpdateArticleInput!, $articleId: Int!) {
+    updateArticle(article: $article, articleId: $articleId) {
       ...ArticleFragment
     }
   }
@@ -48,13 +47,13 @@ const UpdateArticle: React.FC<UpdateArticleProps> = () => {
   const { data, loading } = useQuery(GET_ARTICLE, {
     variables: { articleId: Number(slug) },
     onCompleted: data => {
-      const { editions, audiences, subject, ...rest } = data?.getArticle;
+      const { editions, audiences, subjects, ...rest } = data?.getArticle;
 
       const formData = {
         ...rest,
         editions: editions.map(ed => Edition[ed.type.trim()]),
         audiences: audiences.map(ad => ad.type),
-        subjectId: subject.id,
+        subjects: subjects.map(s => s.id),
       };
 
       setFormData(formData);
@@ -74,7 +73,7 @@ const UpdateArticle: React.FC<UpdateArticleProps> = () => {
           actualTime: +new Date(),
         };
 
-        updateArticle({ variables: { article } });
+        updateArticle({ variables: { article, articleId: article.id } });
       }),
     [data, form, updateArticle],
   );

@@ -23,8 +23,8 @@ export const CREATE_ARTICLE = gql`
 export interface CreateArticleProps {}
 
 const CreateArticle: React.FC<CreateArticleProps> = () => {
-  let history = useHistory();
-  let [form] = useForm();
+  const history = useHistory();
+  const [form] = useForm();
 
   const [createArticle, createArticleStatus] = useMutation(CREATE_ARTICLE, {
     onCompleted: () => {
@@ -48,7 +48,7 @@ const CreateArticle: React.FC<CreateArticleProps> = () => {
   const actionButtons = React.useMemo(
     () => (
       <Button type="primary" loading={createArticleStatus.loading} onClick={handleSubmit}>
-        Publish
+        Save
       </Button>
     ),
     [createArticleStatus.loading, handleSubmit],

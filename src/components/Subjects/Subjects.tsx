@@ -1,7 +1,7 @@
 import React from 'react';
 import { gql } from 'apollo-boost';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { Typography, Table, Button, Modal, Tag, message } from 'antd';
+import { Typography, Table, Button, Modal, Tag, message, Tabs } from 'antd';
 import { MoreOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 import Column from 'antd/lib/table/Column';
@@ -17,14 +17,17 @@ import CrudMenu from 'components/CrudMenu';
 
 import CreateSubjectForm from './CreateSubjectForm';
 
+import sty from './Subjects.module.scss';
+
+const { TabPane } = Tabs;
+
 const isEmptySubject = (subject: Subject) => {
-  console.log('subject: ', subject);
   return ![subject.articles, subject.discoveries].some(arr => arr && arr.length);
 };
 
 export const GET_SUBJECTS_LIST = gql`
   query GetSubjectList {
-    getSubjectList {
+    getSubjectList(language: "SV") {
       ...SubjectFragment
     }
   }
@@ -60,6 +63,7 @@ export interface SubjectsProps {}
 const Subjects: React.FC<SubjectsProps> = () => {
   const [isCreating, setCreating] = React.useState(false);
   const [editableSubject, setEditableSubject] = React.useState<any>(null);
+  const [activeTab, setActiveTab] = React.useState(1);
 
   const [createForm] = useForm();
   const [updateForm] = useForm();
@@ -150,6 +154,10 @@ const Subjects: React.FC<SubjectsProps> = () => {
     [deleteSubject, deleteSubjectStatus.loading],
   );
 
+  const handleChangeTab = React.useCallback(key => {
+    setActiveTab(key);
+  }, []);
+
   const actionButtons = React.useMemo(
     () => (
       <Button type="primary" icon={<PlusOutlined />} onClick={startCreating}>
@@ -161,15 +169,25 @@ const Subjects: React.FC<SubjectsProps> = () => {
 
   return (
     <>
-      <Toolbar title="Subject" extra={actionButtons} />
-      <Table<Subject> rowKey="id" loading={loading} dataSource={subjects as Subject[]}>
+      <Toolbar
+        title="Subject"
+        footer={
+          <div className={sty.pageHeader}>
+            <Tabs defaultActiveKey={String(activeTab)} onChange={handleChangeTab}>
+              <TabPane tab="English" key="1" />
+              <TabPane tab="Swedish" key="2" />
+            </Tabs>
+            {actionButtons}
+          </div>
+        }
+      />
+      <Table<Subject>
+        rowKey="id"
+        loading={loading}
+        pagination={false}
+        dataSource={subjects as Subject[]}
+      >
         <Column title="Title" dataIndex="title" key="title" width={200} />
-        <Column
-          title="Language"
-          dataIndex="language"
-          key="language"
-          render={(key: Language, record: Subject) => <Tag>{key.toUpperCase()}</Tag>}
-        />
         <Column title="Description" dataIndex="description" key="description" />
         <Column
           dataIndex="action"

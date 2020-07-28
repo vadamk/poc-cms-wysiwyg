@@ -58,8 +58,8 @@ export type Subject = {
   title: Scalars['String'];
   description?: Maybe<Scalars['String']>;
   language: Scalars['String'];
-  discoveries?: Maybe<Array<Maybe<Discovery>>>;
-  articles?: Maybe<Array<Maybe<Article>>>;
+  discoveries: Array<Maybe<Discovery>>;
+  articles: Array<Maybe<Article>>;
 };
 
 export type SpecialEdition = {
@@ -73,16 +73,16 @@ export type SpecialEdition = {
 export type Article = {
   __typename?: 'Article';
   id: Scalars['Int'];
-  subjectId: Scalars['Int'];
   title: Scalars['String'];
   subTitle?: Maybe<Scalars['String']>;
   image: Scalars['String'];
   content: Scalars['String'];
   language: Scalars['String'];
   actualTime: Scalars['Timestamp'];
+  isPublished: Scalars['Boolean'];
   audiences?: Maybe<Array<Maybe<Audience>>>;
   editions?: Maybe<Array<Maybe<SpecialEdition>>>;
-  subject: Subject;
+  subjects: Array<Maybe<Subject>>;
 };
 
 export type Audience = {
@@ -96,16 +96,17 @@ export type Audience = {
 export type Discovery = {
   __typename?: 'Discovery';
   id: Scalars['Int'];
-  subjectId: Scalars['Int'];
   title: Scalars['String'];
   image: Scalars['String'];
   language: Scalars['String'];
+  actualTime: Scalars['Timestamp'];
+  isPublished: Scalars['Boolean'];
   orderNum: Scalars['Int'];
-  link: Scalars['String'];
+  link?: Maybe<Scalars['String']>;
   steps: Array<Maybe<Step>>;
   audiences?: Maybe<Array<Maybe<Audience>>>;
   editions?: Maybe<Array<Maybe<SpecialEdition>>>;
-  subject: Subject;
+  subjects: Array<Maybe<Subject>>;
 };
 
 export type UploadOutput = {
@@ -124,7 +125,6 @@ export type Query = {
   getDiscoveryStep: Step;
   getDiscoverySummary: Summary;
   getSubjectList: Array<Maybe<Subject>>;
-  getSubjectListWithContent: Array<Maybe<Subject>>;
   getUploadUrl: UploadOutput;
   isAuthorized: Scalars['Boolean'];
 };
@@ -150,7 +150,7 @@ export type QueryGetDiscoverySummaryArgs = {
 };
 
 
-export type QueryGetSubjectListWithContentArgs = {
+export type QueryGetSubjectListArgs = {
   language: Scalars['String'];
 };
 
@@ -192,6 +192,8 @@ export type Mutation = {
   removeServiceAudience: Scalars['String'];
   removeServiceEdition: Scalars['String'];
   setAuthorized: Scalars['Boolean'];
+  sortDiscoverySteps: Scalars['Boolean'];
+  sortDiscoverySummaries: Scalars['Boolean'];
   updateArticle: Article;
   updateDiscovery: Discovery;
   updateDiscoveryStep: Scalars['Boolean'];
@@ -253,8 +255,7 @@ export type MutationCreateDiscoveryArgs = {
 
 
 export type MutationCreateStepArgs = {
-  orderNum: Scalars['Int'];
-  discoveryId: Scalars['Int'];
+  input: CreateDiscoveryStepInput;
 };
 
 
@@ -264,7 +265,7 @@ export type MutationCreateSubjectArgs = {
 
 
 export type MutationCreateSummaryArgs = {
-  summary: CreateSummaryInput;
+  summary: CreateDiscoverySummaryInput;
 };
 
 
@@ -339,18 +340,30 @@ export type MutationSetAuthorizedArgs = {
 };
 
 
+export type MutationSortDiscoveryStepsArgs = {
+  order: Array<DiscoveryStepOrderInput>;
+};
+
+
+export type MutationSortDiscoverySummariesArgs = {
+  order: Array<DiscoverySummaryOrderInput>;
+};
+
+
 export type MutationUpdateArticleArgs = {
   article: UpdateArticleInput;
+  articleId: Scalars['Int'];
 };
 
 
 export type MutationUpdateDiscoveryArgs = {
   discovery: UpdateDiscoveryInput;
+  discoveryId: Scalars['Int'];
 };
 
 
 export type MutationUpdateDiscoveryStepArgs = {
-  input: UpdateStepInput;
+  input: UpdateDiscoveryStepInput;
   stepId: Scalars['Int'];
 };
 
@@ -361,16 +374,18 @@ export type MutationUpdateSubjectArgs = {
 
 
 export type MutationUpdateSummaryArgs = {
-  summary: UpdateSummaryInput;
+  summary: UpdateDiscoverySummaryInput;
 };
 
 export type CreateDiscoveryInput = {
-  subjectId: Scalars['Int'];
+  subjectIDs: Array<Scalars['Int']>;
   title: Scalars['String'];
   image: Scalars['String'];
   language: Scalars['String'];
+  isPublished?: Maybe<Scalars['Boolean']>;
+  actualTime: Scalars['Timestamp'];
   orderNum: Scalars['Int'];
-  link: Scalars['String'];
+  link?: Maybe<Scalars['String']>;
   stepCount?: Maybe<Scalars['Int']>;
   audiences: Array<Audiences>;
   editions?: Maybe<Array<Edition>>;
@@ -392,25 +407,26 @@ export enum Edition {
 }
 
 export type UpdateDiscoveryInput = {
-  id: Scalars['Int'];
-  subjectId: Scalars['Int'];
+  subjectIDs: Array<Scalars['Int']>;
   title: Scalars['String'];
   image: Scalars['String'];
   language: Scalars['String'];
+  isPublished?: Maybe<Scalars['Boolean']>;
+  actualTime: Scalars['Timestamp'];
   orderNum: Scalars['Int'];
-  link: Scalars['String'];
+  link?: Maybe<Scalars['String']>;
   audiences: Array<Audiences>;
   editions?: Maybe<Array<Edition>>;
 };
 
-export type CreateSummaryInput = {
+export type CreateDiscoverySummaryInput = {
   stepId: Scalars['Int'];
   title: Scalars['String'];
   content: Scalars['String'];
   orderNum: Scalars['Float'];
 };
 
-export type UpdateSummaryInput = {
+export type UpdateDiscoverySummaryInput = {
   stepId: Scalars['Int'];
   title: Scalars['String'];
   content: Scalars['String'];
@@ -418,31 +434,49 @@ export type UpdateSummaryInput = {
   id: Scalars['Int'];
 };
 
-export type UpdateStepInput = {
+export type DiscoverySummaryOrderInput = {
+  id: Scalars['Int'];
+  orderNum: Scalars['Int'];
+};
+
+export type CreateDiscoveryStepInput = {
+  discoveryId: Scalars['Int'];
   title: Scalars['String'];
-  description: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  orderNum: Scalars['Int'];
+};
+
+export type UpdateDiscoveryStepInput = {
+  title: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+};
+
+export type DiscoveryStepOrderInput = {
+  id: Scalars['Int'];
+  orderNum: Scalars['Int'];
 };
 
 export type CreateArticleInput = {
-  subjectId: Scalars['Int'];
+  subjectIDs: Array<Scalars['Int']>;
   title: Scalars['String'];
   subTitle?: Maybe<Scalars['String']>;
   image: Scalars['String'];
   content: Scalars['String'];
   language: Scalars['String'];
+  isPublished?: Maybe<Scalars['Boolean']>;
   actualTime: Scalars['Timestamp'];
   audiences: Array<Audiences>;
   editions?: Maybe<Array<Edition>>;
 };
 
 export type UpdateArticleInput = {
-  id: Scalars['Int'];
-  subjectId: Scalars['Int'];
+  subjectIDs: Array<Scalars['Int']>;
   title: Scalars['String'];
   subTitle?: Maybe<Scalars['String']>;
   image: Scalars['String'];
   content: Scalars['String'];
   language: Scalars['String'];
+  isPublished?: Maybe<Scalars['Boolean']>;
   actualTime: Scalars['Timestamp'];
   audiences: Array<Audiences>;
   editions?: Maybe<Array<Edition>>;
@@ -460,6 +494,17 @@ export type UpdateSubjectInput = {
   description?: Maybe<Scalars['String']>;
   language: Scalars['String'];
 };
+
+export type GetSubjectListForBothLangQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetSubjectListForBothLangQuery = { __typename?: 'Query', enSubjects: Array<Maybe<(
+    { __typename?: 'Subject' }
+    & SubjectFragmentFragment
+  )>>, svSubjects: Array<Maybe<(
+    { __typename?: 'Subject' }
+    & SubjectFragmentFragment
+  )>> };
 
 export type GetArticleListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -581,6 +626,7 @@ export type GetArticleQuery = { __typename?: 'Query', getArticle?: Maybe<(
 
 export type UpdateArticleMutationVariables = Exact<{
   article: UpdateArticleInput;
+  articleId: Scalars['Int'];
 }>;
 
 
@@ -590,7 +636,7 @@ export type UpdateArticleMutation = { __typename?: 'Mutation', updateArticle: (
   ) };
 
 export type UpdateSummaryMutationVariables = Exact<{
-  summary: UpdateSummaryInput;
+  summary: UpdateDiscoverySummaryInput;
 }>;
 
 
@@ -600,7 +646,7 @@ export type UpdateSummaryMutation = { __typename?: 'Mutation', updateSummary: (
   ) };
 
 export type UpdateDiscoveryStepMutationVariables = Exact<{
-  input: UpdateStepInput;
+  input: UpdateDiscoveryStepInput;
   stepId: Scalars['Int'];
 }>;
 
@@ -608,7 +654,7 @@ export type UpdateDiscoveryStepMutationVariables = Exact<{
 export type UpdateDiscoveryStepMutation = { __typename?: 'Mutation', updateDiscoveryStep: boolean };
 
 export type CreateSummaryMutationVariables = Exact<{
-  summary: CreateSummaryInput;
+  summary: CreateDiscoverySummaryInput;
 }>;
 
 
@@ -625,12 +671,11 @@ export type DeleteSummaryMutationVariables = Exact<{
 export type DeleteSummaryMutation = { __typename?: 'Mutation', deleteSummary: string };
 
 export type CreateStepMutationVariables = Exact<{
-  discoveryId: Scalars['Int'];
-  orderNum: Scalars['Int'];
+  input: CreateDiscoveryStepInput;
 }>;
 
 
-export type CreateStepMutation = { __typename?: 'Mutation', createStep: { __typename?: 'Step', id: number, orderNum: number } };
+export type CreateStepMutation = { __typename?: 'Mutation', createStep: { __typename?: 'Step', id: number, discoveryId?: Maybe<number>, title: string, description: string, orderNum: number } };
 
 export type DeleteStepMutationVariables = Exact<{
   stepId: Scalars['Int'];
@@ -638,6 +683,20 @@ export type DeleteStepMutationVariables = Exact<{
 
 
 export type DeleteStepMutation = { __typename?: 'Mutation', deleteStep: string };
+
+export type SortDiscoverySummariesMutationVariables = Exact<{
+  order: Array<DiscoverySummaryOrderInput>;
+}>;
+
+
+export type SortDiscoverySummariesMutation = { __typename?: 'Mutation', sortDiscoverySummaries: boolean };
+
+export type SortDiscoveryStepsMutationVariables = Exact<{
+  order: Array<DiscoveryStepOrderInput>;
+}>;
+
+
+export type SortDiscoveryStepsMutation = { __typename?: 'Mutation', sortDiscoverySteps: boolean };
 
 export type GetGuideQueryVariables = Exact<{
   discoveryId: Scalars['Int'];
@@ -651,6 +710,7 @@ export type GetGuideQuery = { __typename?: 'Query', getDiscovery?: Maybe<(
 
 export type UpdateDiscoveryMutationVariables = Exact<{
   discovery: UpdateDiscoveryInput;
+  discoveryId: Scalars['Int'];
 }>;
 
 
@@ -659,22 +719,22 @@ export type UpdateDiscoveryMutation = { __typename?: 'Mutation', updateDiscovery
     & DiscoveryFragmentFragment
   ) };
 
-export type SubjectFragmentFragment = { __typename?: 'Subject', id: number, title: string, description?: Maybe<string>, language: string, discoveries?: Maybe<Array<Maybe<{ __typename?: 'Discovery', id: number }>>>, articles?: Maybe<Array<Maybe<{ __typename?: 'Article', id: number }>>> };
+export type SubjectFragmentFragment = { __typename?: 'Subject', id: number, title: string, description?: Maybe<string>, language: string };
 
 export type EditionFragmentFragment = { __typename?: 'SpecialEdition', id: number, type: string };
 
 export type AudienceFragmentFragment = { __typename?: 'Audience', id: number, type: string };
 
-export type ArticleFragmentFragment = { __typename?: 'Article', id: number, title: string, subTitle?: Maybe<string>, subjectId: number, image: string, content: string, language: string, actualTime: any, audiences?: Maybe<Array<Maybe<(
+export type ArticleFragmentFragment = { __typename?: 'Article', id: number, title: string, subTitle?: Maybe<string>, image: string, content: string, language: string, actualTime: any, audiences?: Maybe<Array<Maybe<(
     { __typename?: 'Audience' }
     & AudienceFragmentFragment
   )>>>, editions?: Maybe<Array<Maybe<(
     { __typename?: 'SpecialEdition' }
     & EditionFragmentFragment
-  )>>>, subject: (
+  )>>>, subjects: Array<Maybe<(
     { __typename?: 'Subject' }
     & SubjectFragmentFragment
-  ) };
+  )>> };
 
 export type SummaryFragmentFragment = { __typename?: 'Summary', id: number, stepId: number, orderNum: number, title: string, content: string };
 
@@ -683,7 +743,7 @@ export type StepFragmentFragment = { __typename?: 'Step', id: number, discoveryI
     & SummaryFragmentFragment
   )>> };
 
-export type DiscoveryFragmentFragment = { __typename?: 'Discovery', id: number, title: string, subjectId: number, image: string, language: string, orderNum: number, link: string, steps: Array<Maybe<(
+export type DiscoveryFragmentFragment = { __typename?: 'Discovery', id: number, title: string, image: string, language: string, orderNum: number, link?: Maybe<string>, steps: Array<Maybe<(
     { __typename?: 'Step' }
     & StepFragmentFragment
   )>>, audiences?: Maybe<Array<Maybe<(
@@ -692,10 +752,10 @@ export type DiscoveryFragmentFragment = { __typename?: 'Discovery', id: number, 
   )>>>, editions?: Maybe<Array<Maybe<(
     { __typename?: 'SpecialEdition' }
     & EditionFragmentFragment
-  )>>>, subject: (
+  )>>>, subjects: Array<Maybe<(
     { __typename?: 'Subject' }
     & SubjectFragmentFragment
-  ) };
+  )>> };
 
 export type Unnamed_1_QueryVariables = Exact<{ [key: string]: never; }>;
 

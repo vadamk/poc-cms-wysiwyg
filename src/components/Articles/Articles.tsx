@@ -2,7 +2,7 @@ import React from 'react';
 import { gql } from 'apollo-boost';
 import { Link, useHistory } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { Typography, Table, Button, Modal, Space, message, Tag } from 'antd';
+import { Typography, Table, Button, Modal, Space, message, Tag, Badge } from 'antd';
 import Column from 'antd/lib/table/Column';
 import { ExclamationCircleOutlined, PlusOutlined, MoreOutlined } from '@ant-design/icons';
 
@@ -140,7 +140,12 @@ const Articles: React.FC<ArticlesProps> = () => {
           onDelete={deleteRequest}
         />
       ) : (
-        <Table rowKey="id" loading={loading} dataSource={articles as any}>
+        <Table
+          rowKey="id"
+          loading={loading}
+          dataSource={articles as any}
+          pagination={false}
+        >
           <Column<Article>
             title="Title"
             dataIndex="title"
@@ -183,6 +188,18 @@ const Articles: React.FC<ArticlesProps> = () => {
               <Text type="secondary" className={sty.dateTime}>
                 <DateTime timestamp={text} />
               </Text>
+            )}
+          />
+          <Column
+            title="Published"
+            dataIndex="isPublished"
+            key="isPublished"
+            width={100}
+            render={isPublished => (
+              <>
+                <Badge status={isPublished ? 'success' : 'default'} />
+                {isPublished ? 'Published' : 'Draft'}
+              </>
             )}
           />
           <Column<Article>

@@ -7,11 +7,12 @@ import GuidesForm from 'components/GuidesForm';
 
 import { useMutation } from '@apollo/react-hooks';
 import { CreateDiscoveryMutationVariables, CreateDiscoveryMutation } from 'core/models/generated';
-import { Card } from 'antd';
+import { Card, Button } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { GET_GUIDES_LIST } from 'components/Guides';
 
 import sty from './CreateGuide.module.scss';
+import { useForm } from 'antd/lib/form/Form';
 
 export const CREATE_GUIDE = gql`
   mutation CreateDiscovery($discovery: CreateDiscoveryInput!) {
@@ -26,6 +27,7 @@ export interface CreateGuideProps {}
 
 const CreateGuide: React.FC<CreateGuideProps> = () => {
   const history = useHistory();
+  const [form] = useForm();
 
   const [createGuide, createGuideStatus] = useMutation<
     CreateDiscoveryMutation,
@@ -41,17 +43,29 @@ const CreateGuide: React.FC<CreateGuideProps> = () => {
     return [{ path: '/guides', breadcrumbName: 'Guides' }];
   }, []);
 
-  const handleSubmit = values => {
+  const handleSubmit = React.useCallback(values => {
     const discovery = { ...values, orderNum: 1 };
     createGuide({ variables: { discovery } });
-  };
+  }, [createGuide]);
+
+  const actionButtons = React.useMemo(
+    () => (
+      <Button type="primary" loading={createGuideStatus.loading} onClick={handleSubmit}>
+        Create
+      </Button>
+    ),
+    [createGuideStatus.loading, handleSubmit],
+  );
 
   return (
     <>
-      <Toolbar title="Create Guide" breadcrumbs={breadcrumbs} />
-      <Card>
-        <GuidesForm isSubmitting={createGuideStatus.loading} onSubmit={handleSubmit} />
-      </Card>
+      <Toolbar title="Create Guide" breadcrumbs={breadcrumbs} extra={actionButtons} />
+      <GuidesForm
+        form={form}
+        mode="create"
+        isSubmitting={createGuideStatus.loading}
+        onSubmit={handleSubmit}
+      />
     </>
   );
 };

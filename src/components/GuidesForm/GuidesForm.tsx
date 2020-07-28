@@ -1,11 +1,23 @@
 import React from 'react';
 import { useQuery } from '@apollo/react-hooks';
-import { Form, Input, Select, Button, Space, Checkbox, InputNumber } from 'antd';
+import {
+  Form,
+  Input,
+  Select,
+  Button,
+  Space,
+  Checkbox,
+  InputNumber,
+  Switch,
+  Card,
+  Col,
+  Row,
+} from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { Link } from 'react-router-dom';
 // import slugify from 'slugify';
 
-import { FormProps } from 'core/models';
+import { FormProps, Option } from 'core/models';
 import {
   langOptions,
   audienceOptions,
@@ -13,18 +25,9 @@ import {
   Language,
   Audiences,
 } from 'core/global';
-import { GET_SUBJECTS_LIST } from 'components/Subjects';
+import { GET_SUBJECTS_LIST } from 'components/ArticleForm';
 import RadioButtons from 'components/RadioButtons';
 import ImageUpload from 'components/ImageUpload';
-
-const layout = {
-  labelCol: { span: 3 },
-  wrapperCol: { span: 12 },
-};
-
-const tailLayout = {
-  wrapperCol: { offset: 3, span: 12 },
-};
 
 export interface GuideFormProps extends FormProps {
   mode?: 'create' | 'update';
@@ -47,14 +50,12 @@ const GuideForm: React.FC<GuideFormProps> = ({
   const subjectsStatus = useQuery(GET_SUBJECTS_LIST);
 
   const subjectOptions = React.useMemo(() => {
-    return (subjectsStatus.data?.getSubjectList || [])
-      .filter(subject =>
-        isEnglish ? subject.language === Language.EN : subject.language === Language.SV,
-      )
+    const { data } = subjectsStatus;
+    return (isEnglish ? data?.enSubjects : data?.svSubjects) || []
       .map(({ title, id }) => ({ label: title, value: id }));
-  }, [isEnglish, subjectsStatus.data]);
+  }, [isEnglish, subjectsStatus]);
 
-  const curAudienceOptions = React.useMemo(() => {
+  const curAudienceOptions = React.useMemo<Option[]>(() => {
     return audienceOptions.map(audience => {
       if (isEnglish) {
         return { ...audience, disabled: true };
@@ -92,101 +93,120 @@ const GuideForm: React.FC<GuideFormProps> = ({
 
   return (
     <Form
-      {...layout}
       name="basic"
+      layout="vertical"
       initialValues={initialValues}
       form={internalForm}
       onFinish={handleSubmit}
     >
-      <Form.Item
-        label="Title"
-        name="title"
-        rules={[{ required: true, message: 'Please input title!' }]}
-      >
-        <Input
-          autoFocus
-          autoComplete="off"
-          disabled={isSubmitting}
-          placeholder="Please input title"
-          // onChange={handleChange}
-        />
-      </Form.Item>
+      <Row gutter={[20, 20]}>
+        <Col span={18}>
+          <Row gutter={[20, 20]}>
+            <Col span={24}>
+              <Card>
+                <Form.Item
+                  label="Title"
+                  name="title"
+                  rules={[{ required: true, message: 'Please input title!' }]}
+                >
+                  <Input
+                    autoFocus
+                    autoComplete="off"
+                    disabled={isSubmitting}
+                    placeholder="Please input title"
+                    // onChange={handleChange}
+                  />
+                </Form.Item>
 
-      <Form.Item
-        label="Link"
-        name="link"
-        rules={[{ required: true, message: 'Please input link!' }]}
-      >
-        <Input disabled={isSubmitting} placeholder="Please input link" />
-      </Form.Item>
+                <Form.Item
+                  label="Link"
+                  name="link"
+                >
+                  <Input disabled={isSubmitting} placeholder="Please input link" />
+                </Form.Item>
+              </Card>
+            </Col>
+          </Row>
+        </Col>
 
-      <Form.Item
-        label="Image"
-        name="image"
-        rules={[{ required: true, message: 'Please add image!' }]}
-      >
-        <ImageUpload />
-      </Form.Item>
+        <Col span={6}>
+          <Card>
+            {mode !== 'create' && (
+              <Form.Item
+                label="Published"
+                name="isPublished">
+                <Switch />
+              </Form.Item>
+            )}
 
-      <Form.Item label="Language" name="language">
-        <RadioButtons
-          disabled={isSubmitting}
-          options={langOptions}
-          onChange={handleLangChange}
-        />
-      </Form.Item>
+            <Form.Item
+              label="Image"
+              name="image"
+              rules={[{ required: true, message: 'Please add image!' }]}
+            >
+              <ImageUpload />
+            </Form.Item>
 
-      <Form.Item
-        label="Audiences"
-        name="audiences"
-        rules={[{ required: true, message: 'Please select at least 1 audience!' }]}
-      >
-        <Checkbox.Group options={curAudienceOptions} />
-      </Form.Item>
+            <Form.Item label="Language" name="language">
+              <RadioButtons
+                disabled={isSubmitting}
+                options={langOptions}
+                onChange={handleLangChange}
+              />
+            </Form.Item>
 
-      <Form.Item
-        label="Subject"
-        name="subjectId"
-        rules={[{ required: true, message: 'Please choose subject!' }]}
-      >
-        <Select
-          showSearch
-          disabled={isSubmitting}
-          loading={subjectsStatus.loading}
-          options={subjectOptions}
-          placeholder="Please choose subject"
-          filterOption={(input, option) =>
-            String(option?.label).toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        />
-      </Form.Item>
+            <Form.Item
+              label="Audiences"
+              name="audiences"
+              rules={[{ required: true, message: 'Please select at least 1 audience!' }]}
+            >
+              <Checkbox.Group>
+                <Row gutter={[0, 5]}>
+                  {curAudienceOptions.map(option => (
+                    <Col key={option.label} span={12}>
+                      <Checkbox disabled={option.disabled} value={option.value}>
+                        {option.label}
+                      </Checkbox>
+                    </Col>
+                  ))}
+                </Row>
+              </Checkbox.Group>
+            </Form.Item>
 
-      <Form.Item label="Editions" name="editions">
-        <Checkbox.Group options={editionOptions} />
-      </Form.Item>
+            <Form.Item
+              label="Subject"
+              name="subjectIDs"
+              rules={[{ required: true, message: 'Please choose subject!' }]}
+            >
+              <Select
+                showSearch
+                mode="multiple"
+                disabled={isSubmitting}
+                loading={subjectsStatus.loading}
+                options={subjectOptions}
+                placeholder="Please choose subject"
+                filterOption={(input, option) =>
+                  String(option?.label).toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              />
+            </Form.Item>
 
-      {mode === 'create' && (
-        <Form.Item
-          label="Number of steps"
-          name="stepCount"
-          rules={[{ required: true, message: 'Please set count of steps!' }]}
-        >
-          <InputNumber min={1} max={5} disabled={isSubmitting} />
-        </Form.Item>
-      )}
+            <Form.Item label="Editions" name="editions">
+              <Checkbox.Group options={editionOptions} />
+            </Form.Item>
 
-      {mode === 'create' && (
-        <Form.Item {...tailLayout}>
-          <Space>
-            <Button type="primary" htmlType="submit">
-              Create
-            </Button>
-            <Link to="/guides">
-              <Button type="default">Cancel</Button>
-            </Link>
-          </Space>
-        </Form.Item>
-      )}
+            {mode === 'create' && (
+              <Form.Item
+                label="Number of steps"
+                name="stepCount"
+                rules={[{ required: true, message: 'Please set count of steps!' }]}
+              >
+                <InputNumber min={1} max={5} disabled={isSubmitting} />
+              </Form.Item>
+            )}
+          </Card>
+        </Col>
+      </Row>
     </Form>
   );
 };

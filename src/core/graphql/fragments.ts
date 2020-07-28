@@ -6,12 +6,6 @@ export const SubjectFragment = gql`
     title
     description
     language
-    discoveries {
-      id
-    }
-    articles {
-      id
-    }
   }
 `;
 
@@ -34,18 +28,18 @@ export const ArticleFragment = gql`
     id
     title
     subTitle
-    subjectId
     image
     content
     language
     actualTime
+    isPublished
     audiences {
       ...AudienceFragment
     }
     editions {
       ...EditionFragment
     }
-    subject {
+    subjects {
       ...SubjectFragment
     }
   }
@@ -82,11 +76,11 @@ export const DiscoveryFragment = gql`
   fragment DiscoveryFragment on Discovery {
     id
     title
-    subjectId
     image
     language
     orderNum
     link
+    isPublished
     steps {
       ...StepFragment
     }
@@ -96,7 +90,7 @@ export const DiscoveryFragment = gql`
     editions {
       ...EditionFragment
     }
-    subject {
+    subjects {
       ...SubjectFragment
     }
   }

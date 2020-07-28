@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Table, Tag, Typography, Modal, message } from 'antd';
+import { Button, Table, Tag, Typography, Modal, message, Badge } from 'antd';
 import { Link, useHistory } from 'react-router-dom';
 import { gql } from 'apollo-boost';
 import { PlusOutlined, MoreOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
@@ -92,29 +92,18 @@ const Guides: React.FC<GuidesProps> = () => {
   return (
     <>
       <Toolbar title="Guides" extra={actionButtons} />
-      <Table rowKey="id" loading={loading} dataSource={guides as any}>
+      <Table
+        rowKey="id"
+        loading={loading}
+        dataSource={guides as any}
+        pagination={false}
+      >
         <Column<Discovery>
           title="Title"
           dataIndex="title"
           key="title"
           width={200}
           render={(text, r) => <Link to={`/guides/${r.id}`}>{text}</Link>}
-        />
-        <Column
-          title="Language"
-          dataIndex="language"
-          key="language"
-          render={(key: Language) => <Tag>{key.toUpperCase()}</Tag>}
-        />
-        <Column
-          title="Service"
-          dataIndex="link"
-          key="link"
-          render={text => (
-            <a href={text} target="_blank">
-              {text}
-            </a>
-          )}
         />
         <Column
           title="Editions"
@@ -131,6 +120,13 @@ const Guides: React.FC<GuidesProps> = () => {
           render={text => <Tags options={getAudienceOptions(text)} />}
         />
         <Column
+          title="Language"
+          dataIndex="language"
+          key="language"
+          width={100}
+          render={(key: Language) => <Tag>{key.toUpperCase()}</Tag>}
+        />
+        <Column
           title="Edited"
           dataIndex="actualTime"
           key="actualTime"
@@ -139,6 +135,18 @@ const Guides: React.FC<GuidesProps> = () => {
             <Text type="secondary" className={sty.dateTime}>
               <DateTime timestamp={text} />
             </Text>
+          )}
+        />
+        <Column
+          title="Published"
+          dataIndex="isPublished"
+          key="isPublished"
+          width={100}
+          render={isPublished => (
+            <>
+              <Badge status={isPublished ? 'success' : 'default'} />
+              {isPublished ? 'Published' : 'Draft'}
+            </>
           )}
         />
         <Column<Discovery>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuery } from '@apollo/react-hooks';
-import { Form, Input, Select, Checkbox, Card, Row, Col } from 'antd';
+import { Form, Input, Select, Checkbox, Card, Row, Col, Switch } from 'antd';
+import { gql } from 'apollo-boost';
 import { useForm } from 'antd/lib/form/Form';
 
 import { FormProps, Option } from 'core/models';
@@ -11,10 +12,27 @@ import {
   Language,
   Audiences,
 } from 'core/global';
-import { GET_SUBJECTS_LIST } from 'components/Subjects';
+import { SubjectFragment } from 'core/graphql/fragments';
 import RichEditor from 'components/RichEditor';
 import RadioButtons from 'components/RadioButtons';
 import ImageUpload from 'components/ImageUpload';
+
+export const GET_SUBJECTS_LIST = gql`
+  query GetSubjectListForBothLang {
+    enSubjects: getSubjectList(language: "EN") {
+      id
+      title
+      description
+      language
+    }
+    svSubjects: getSubjectList(language: "SV") {
+      id
+      title
+      description
+      language
+    }
+  }
+`;
 
 export interface ArticleFormProps extends FormProps {}
 
@@ -32,12 +50,10 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
   const subjectsStatus = useQuery(GET_SUBJECTS_LIST);
 
   const subjectOptions = React.useMemo(() => {
-    return (subjectsStatus.data?.getSubjectList || [])
-      .filter(subject =>
-        isEnglish ? subject.language === Language.EN : subject.language === Language.SV,
-      )
+    const { data } = subjectsStatus;
+    return (isEnglish ? data?.enSubjects : data?.svSubjects) || []
       .map(({ title, id }) => ({ label: title, value: id }));
-  }, [isEnglish, subjectsStatus.data]);
+  }, [isEnglish, subjectsStatus]);
 
   const curAudienceOptions = React.useMemo<Option[]>(() => {
     return audienceOptions.map(audience => {
@@ -107,12 +123,19 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
         <Col span={6}>
           <Card>
             <Form.Item
+              label="Published"
+              name="isPublished">
+              <Switch />
+            </Form.Item>
+
+            <Form.Item
               label="Image"
               name="image"
               rules={[{ required: true, message: 'Please add image!' }]}
             >
               <ImageUpload />
             </Form.Item>
+
             <Form.Item label="Language" name="language">
               <RadioButtons
                 disabled={isSubmitting}
@@ -120,6 +143,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
                 onChange={handleLangChange}
               />
             </Form.Item>
+
             <Form.Item
               label="Audiences"
               name="audiences"
@@ -139,11 +163,12 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
             </Form.Item>
             <Form.Item
               label="Subject"
-              name="subjectId"
+              name="subjectIDs"
               rules={[{ required: true, message: 'Please choose subject!' }]}
             >
               <Select
                 showSearch
+                mode="multiple"
                 disabled={isSubmitting}
                 loading={subjectsStatus.loading}
                 options={subjectOptions}
