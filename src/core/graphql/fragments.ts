@@ -33,6 +33,7 @@ export const ArticleFragment = gql`
     language
     actualTime
     isPublished
+    readDuration
     audiences {
       ...AudienceFragment
     }

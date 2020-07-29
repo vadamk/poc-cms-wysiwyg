@@ -135,7 +135,9 @@ const GuideForm: React.FC<GuideFormProps> = ({
             {mode !== 'create' && (
               <Form.Item
                 label="Public"
-                name="isPublished">
+                name="isPublished"
+                valuePropName="checked"
+              >
                 <Switch />
               </Form.Item>
             )}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@apollo/react-hooks';
-import { Form, Input, Select, Checkbox, Card, Row, Col, Switch } from 'antd';
+import { Form, Input, Select, Checkbox, Card, Row, Col, Switch, InputNumber } from 'antd';
 import { gql } from 'apollo-boost';
 import { useForm } from 'antd/lib/form/Form';
 
@@ -39,6 +39,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
   form,
   initialValues = {
     language: Language.SV,
+    readDuration: 10,
   },
   isSubmitting = false,
   onSubmit = () => null,
@@ -125,7 +126,9 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
           <Card>
             <Form.Item
               label="Public"
-              name="isPublished">
+              name="isPublished"
+              valuePropName="checked"
+            >
               <Switch />
             </Form.Item>
 
@@ -135,6 +138,14 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
               rules={[{ required: true, message: 'Please add image!' }]}
             >
               <ImageUpload />
+            </Form.Item>
+            
+            <Form.Item
+              label="Duration"
+              name="readDuration"
+              rules={[{ required: true, message: 'Please set duration!' }]}
+            >
+              <InputNumber min={1} max={200} disabled={isSubmitting} />
             </Form.Item>
 
             <Form.Item label="Language" name="language">
