@@ -1,13 +1,12 @@
 import React from 'react';
 import { gql } from 'apollo-boost';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { Typography, Table, Button, Modal, Tag, message, Tabs } from 'antd';
+import { Typography, Table, Button, Modal, message, Tabs } from 'antd';
 import { MoreOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 import Column from 'antd/lib/table/Column';
 
-import { Language } from 'core/global';
-import { GetSubjectListQuery, Subject } from 'core/models/generated';
+import { Subject } from 'core/models/generated';
 import { FormValues } from 'core/models';
 import { SubjectFragment } from 'core/graphql/fragments';
 import { removeTypeName } from 'core/utils';
@@ -18,21 +17,13 @@ import CrudMenu from 'components/CrudMenu';
 import CreateSubjectForm from './CreateSubjectForm';
 
 import sty from './Subjects.module.scss';
+import { GET_SUBJECTS_LIST } from 'components/ArticleForm';
 
 const { TabPane } = Tabs;
 
 const isEmptySubject = (subject: Subject) => {
   return ![subject.articles, subject.discoveries].some(arr => arr && arr.length);
 };
-
-export const GET_SUBJECTS_LIST = gql`
-  query GetSubjectList {
-    getSubjectList(language: "SV") {
-      ...SubjectFragment
-    }
-  }
-  ${SubjectFragment}
-`;
 
 export const CREATE_SUBJECT = gql`
   mutation CreateSubject($subject: CreateSubjectInput!) {
@@ -63,12 +54,12 @@ export interface SubjectsProps {}
 const Subjects: React.FC<SubjectsProps> = () => {
   const [isCreating, setCreating] = React.useState(false);
   const [editableSubject, setEditableSubject] = React.useState<any>(null);
-  const [activeTab, setActiveTab] = React.useState(1);
+  const [activeTab, setActiveTab] = React.useState<'sv' | 'en'>('sv');
 
   const [createForm] = useForm();
   const [updateForm] = useForm();
 
-  const { data, loading, refetch } = useQuery<GetSubjectListQuery>(GET_SUBJECTS_LIST);
+  const { data, loading, refetch } = useQuery(GET_SUBJECTS_LIST);
 
   const [createSubject, createSubjectStatus] = useMutation(CREATE_SUBJECT, {
     onCompleted: () => {
@@ -95,8 +86,8 @@ const Subjects: React.FC<SubjectsProps> = () => {
   });
 
   const subjects = React.useMemo(() => {
-    return (data?.getSubjectList || []).reverse();
-  }, [data]);
+    return (activeTab === 'en' ? data?.enSubjects : data?.svSubjects) || [];
+  }, [activeTab, data]);
 
   const startCreating = () => {
     setCreating(true);
@@ -174,8 +165,8 @@ const Subjects: React.FC<SubjectsProps> = () => {
         footer={
           <div className={sty.pageHeader}>
             <Tabs defaultActiveKey={String(activeTab)} onChange={handleChangeTab}>
-              <TabPane tab="English" key="1" />
-              <TabPane tab="Swedish" key="2" />
+              <TabPane tab="Swedish" key="sv" />
+              <TabPane tab="English" key="en" />
             </Tabs>
             {actionButtons}
           </div>

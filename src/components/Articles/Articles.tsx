@@ -79,7 +79,7 @@ const Articles: React.FC<ArticlesProps> = () => {
   });
 
   const articles = React.useMemo(() => {
-    return (data?.getArticleList || []).reverse();
+    return (data?.getArticleList || []).sort((a, b) => b.actualTime - a.actualTime);
   }, [data]);
 
   const deleteRequest = (article: any) => {
@@ -151,7 +151,11 @@ const Articles: React.FC<ArticlesProps> = () => {
             dataIndex="title"
             key="title"
             width={200}
-            render={(text, r) => <Link to={`/articles/${r.id}`}>{text}</Link>}
+            render={(text, r) => (
+              <Text ellipsis style={{ width: 200 }}>
+                <Link to={`/articles/${r.id}`}>{text}</Link>
+              </Text>
+            )}
           />
           <Column
             title="Language"
@@ -166,18 +170,16 @@ const Articles: React.FC<ArticlesProps> = () => {
             render={text => <Paragraph ellipsis={{ rows: 3 }}>{text}</Paragraph>}
           />
           <Column
-            title="Editions"
-            dataIndex="editions"
-            key="editions"
-            width={220}
-            render={text => <Tags options={getEditionOptions(text)} color="magenta" />}
-          />
-          <Column
-            title="Audiences"
-            dataIndex="audiences"
-            key="audiences"
-            width={220}
-            render={text => <Tags options={getAudienceOptions(text)} />}
+            title="Visibility"
+            dataIndex="isPublished"
+            key="isPublished"
+            width={120}
+            render={isPublished => (
+              <>
+                <Badge status={isPublished ? 'success' : 'default'} />
+                {isPublished ? 'Public' : 'Private'}
+              </>
+            )}
           />
           <Column
             title="Edited"
@@ -191,16 +193,18 @@ const Articles: React.FC<ArticlesProps> = () => {
             )}
           />
           <Column
-            title="Published"
-            dataIndex="isPublished"
-            key="isPublished"
-            width={100}
-            render={isPublished => (
-              <>
-                <Badge status={isPublished ? 'success' : 'default'} />
-                {isPublished ? 'Published' : 'Draft'}
-              </>
-            )}
+            title="Audiences"
+            dataIndex="audiences"
+            key="audiences"
+            width={220}
+            render={text => <Tags options={getAudienceOptions(text)} />}
+          />
+          <Column
+            title="Editions"
+            dataIndex="editions"
+            key="editions"
+            width={220}
+            render={text => <Tags options={getEditionOptions(text)} color="magenta" />}
           />
           <Column<Article>
             dataIndex="actions"

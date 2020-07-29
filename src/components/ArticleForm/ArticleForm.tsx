@@ -12,20 +12,19 @@ import {
   Language,
   Audiences,
 } from 'core/global';
-import { SubjectFragment } from 'core/graphql/fragments';
 import RichEditor from 'components/RichEditor';
 import RadioButtons from 'components/RadioButtons';
 import ImageUpload from 'components/ImageUpload';
 
 export const GET_SUBJECTS_LIST = gql`
   query GetSubjectListForBothLang {
-    enSubjects: getSubjectList(language: "EN") {
+    enSubjects: getSubjectList(language: "en") {
       id
       title
       description
       language
     }
-    svSubjects: getSubjectList(language: "SV") {
+    svSubjects: getSubjectList(language: "sv") {
       id
       title
       description
@@ -51,9 +50,11 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
 
   const subjectOptions = React.useMemo(() => {
     const { data } = subjectsStatus;
-    return (isEnglish ? data?.enSubjects : data?.svSubjects) || []
+    return ((isEnglish ? data?.enSubjects : data?.svSubjects) || [])
       .map(({ title, id }) => ({ label: title, value: id }));
   }, [isEnglish, subjectsStatus]);
+
+  console.log('subjectOptions: ', subjectOptions);
 
   const curAudienceOptions = React.useMemo<Option[]>(() => {
     return audienceOptions.map(audience => {
@@ -123,7 +124,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
         <Col span={6}>
           <Card>
             <Form.Item
-              label="Published"
+              label="Public"
               name="isPublished">
               <Switch />
             </Form.Item>

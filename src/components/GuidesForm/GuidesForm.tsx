@@ -51,7 +51,8 @@ const GuideForm: React.FC<GuideFormProps> = ({
 
   const subjectOptions = React.useMemo(() => {
     const { data } = subjectsStatus;
-    return (isEnglish ? data?.enSubjects : data?.svSubjects) || []
+    console.log('data: ', data);
+    return ((isEnglish ? data?.enSubjects : data?.svSubjects) || [])
       .map(({ title, id }) => ({ label: title, value: id }));
   }, [isEnglish, subjectsStatus]);
 
@@ -133,7 +134,7 @@ const GuideForm: React.FC<GuideFormProps> = ({
           <Card>
             {mode !== 'create' && (
               <Form.Item
-                label="Published"
+                label="Public"
                 name="isPublished">
                 <Switch />
               </Form.Item>

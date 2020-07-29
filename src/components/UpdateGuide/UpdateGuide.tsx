@@ -81,7 +81,7 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
         ...rest,
         editions: editions.map(ed => Edition[ed.type.trim()]),
         audiences: audiences.map(ad => ad.type),
-        subjects: subjects.map(s => s.id),
+        subjectIDs: subjects.map(s => s.id),
       };
 
       setFormData(formData);
@@ -135,21 +135,21 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
 
   const handleSubmit = React.useCallback(
     values => {
-      const guide = {
+      const discovery = {
         ...values,
-        id: data?.getDiscovery.id,
         orderNum: data?.getDiscovery.orderNum,
+        actualTime: +new Date(),
       };
-
-      updateGuide({ variables: { discovery: guide } });
+      const discoveryId = data?.getDiscovery.id;
+      updateGuide({ variables: { discovery, discoveryId } });
     },
     [data, updateGuide],
   );
 
-  const handleSaveChanges = React.useCallback(() => {
+  const saveChanges = React.useCallback(() => {
     console.log('activeTab: ', activeTab);
     if (activeTab === 1) {
-      generalInfoForm.submit()
+      generalInfoForm.submit();
     } else {
       if (current && isStep(current)) {
         stepForm.submit();
@@ -190,7 +190,7 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
             <Button
               type="primary"
               loading={isSubmitting}
-              onClick={handleSaveChanges}
+              onClick={saveChanges}
             >
               Save Changes
             </Button>

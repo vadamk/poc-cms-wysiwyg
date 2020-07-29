@@ -52,7 +52,8 @@ const Guides: React.FC<GuidesProps> = () => {
   });
 
   const guides = React.useMemo(() => {
-    return (data?.getDiscoveryList || []);
+    return (data?.getDiscoveryList || [])
+      .sort((a, b) => b?.actualTime - a?.actualTime);
   }, [data]);
 
   const deleteRequest = (guide: any) => {
@@ -138,14 +139,14 @@ const Guides: React.FC<GuidesProps> = () => {
           )}
         />
         <Column
-          title="Published"
+          title="Visibility"
           dataIndex="isPublished"
           key="isPublished"
-          width={100}
+          width={120}
           render={isPublished => (
             <>
               <Badge status={isPublished ? 'success' : 'default'} />
-              {isPublished ? 'Published' : 'Draft'}
+              {isPublished ? 'Public' : 'Private'}
             </>
           )}
         />

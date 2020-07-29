@@ -81,6 +81,7 @@ export const DiscoveryFragment = gql`
     orderNum
     link
     isPublished
+    # actualTime
     steps {
       ...StepFragment
     }

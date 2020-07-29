@@ -44,17 +44,26 @@ const CreateGuide: React.FC<CreateGuideProps> = () => {
   }, []);
 
   const handleSubmit = React.useCallback(values => {
-    const discovery = { ...values, orderNum: 1 };
+    const discovery = {
+      ...values,
+      orderNum: 1,
+      actualTime: +new Date()
+    };
+
     createGuide({ variables: { discovery } });
   }, [createGuide]);
 
+  const submitForm = React.useCallback(() => {
+    form.submit()
+  }, [form]);
+
   const actionButtons = React.useMemo(
     () => (
-      <Button type="primary" loading={createGuideStatus.loading} onClick={handleSubmit}>
+      <Button type="primary" loading={createGuideStatus.loading} onClick={submitForm}>
         Create
       </Button>
     ),
-    [createGuideStatus.loading, handleSubmit],
+    [createGuideStatus.loading, submitForm],
   );
 
   return (

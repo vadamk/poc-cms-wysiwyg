@@ -53,7 +53,7 @@ const UpdateArticle: React.FC<UpdateArticleProps> = () => {
         ...rest,
         editions: editions.map(ed => Edition[ed.type.trim()]),
         audiences: audiences.map(ad => ad.type),
-        subjects: subjects.map(s => s.id),
+        subjectIDs: subjects.map(s => s.id),
       };
 
       setFormData(formData);
@@ -67,13 +67,9 @@ const UpdateArticle: React.FC<UpdateArticleProps> = () => {
   const handleSubmit = React.useCallback(
     () =>
       form.validateFields().then(values => {
-        const article = {
-          ...values,
-          id: data?.getArticle.id,
-          actualTime: +new Date(),
-        };
-
-        updateArticle({ variables: { article, articleId: article.id } });
+        const article = { ...values, actualTime: +new Date() };
+        const articleId = data?.getArticle.id;
+        updateArticle({ variables: { article, articleId } });
       }),
     [data, form, updateArticle],
   );
