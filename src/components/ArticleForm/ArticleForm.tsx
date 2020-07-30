@@ -51,8 +51,9 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
 
   const subjectOptions = React.useMemo(() => {
     const { data } = subjectsStatus;
-    return ((isEnglish ? data?.enSubjects : data?.svSubjects) || [])
-      .map(({ title, id }) => ({ label: title, value: id }));
+    return (
+      (isEnglish ? data?.enSubjects : data?.svSubjects) || []
+    ).map(({ title, id }) => ({ label: title, value: id }));
   }, [isEnglish, subjectsStatus]);
 
   console.log('subjectOptions: ', subjectOptions);
@@ -124,11 +125,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
 
         <Col span={6}>
           <Card>
-            <Form.Item
-              label="Public"
-              name="isPublished"
-              valuePropName="checked"
-            >
+            <Form.Item label="Public" name="isPublished" valuePropName="checked">
               <Switch />
             </Form.Item>
 
@@ -139,7 +136,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
             >
               <ImageUpload />
             </Form.Item>
-            
+
             <Form.Item
               label="Duration"
               name="readDuration"

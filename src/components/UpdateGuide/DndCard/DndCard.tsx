@@ -99,7 +99,7 @@ const DndCard: React.FC<DndCardProps> = ({
     }),
     begin: () => {
       beginDragging();
-    }
+    },
   });
 
   const opacity = isDragging ? 0.2 : 1;

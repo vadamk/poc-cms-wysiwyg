@@ -1,18 +1,19 @@
 import React from 'react';
 import { gql } from 'apollo-boost';
+import { useForm } from 'antd/lib/form/Form';
+import { useMutation } from '@apollo/react-hooks';
+import { Button } from 'antd';
+import { useHistory } from 'react-router-dom';
 
 import { DiscoveryFragment } from 'core/graphql/fragments';
+import {
+  CreateDiscoveryMutationVariables,
+  CreateDiscoveryMutation,
+} from 'core/models/generated';
+
 import Toolbar, { Breadcrumb } from 'components/Toolbar';
 import GuidesForm from 'components/GuidesForm';
-
-import { useMutation } from '@apollo/react-hooks';
-import { CreateDiscoveryMutationVariables, CreateDiscoveryMutation } from 'core/models/generated';
-import { Card, Button } from 'antd';
-import { useHistory } from 'react-router-dom';
 import { GET_GUIDES_LIST } from 'components/Guides';
-
-import sty from './CreateGuide.module.scss';
-import { useForm } from 'antd/lib/form/Form';
 
 export const CREATE_GUIDE = gql`
   mutation CreateDiscovery($discovery: CreateDiscoveryInput!) {
@@ -43,18 +44,21 @@ const CreateGuide: React.FC<CreateGuideProps> = () => {
     return [{ path: '/guides', breadcrumbName: 'Guides' }];
   }, []);
 
-  const handleSubmit = React.useCallback(values => {
-    const discovery = {
-      ...values,
-      orderNum: 1,
-      actualTime: +new Date()
-    };
+  const handleSubmit = React.useCallback(
+    values => {
+      const discovery = {
+        ...values,
+        orderNum: 1,
+        actualTime: +new Date(),
+      };
 
-    createGuide({ variables: { discovery } });
-  }, [createGuide]);
+      createGuide({ variables: { discovery } });
+    },
+    [createGuide],
+  );
 
   const submitForm = React.useCallback(() => {
-    form.submit()
+    form.submit();
   }, [form]);
 
   const actionButtons = React.useMemo(

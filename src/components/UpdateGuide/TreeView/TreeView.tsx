@@ -175,18 +175,21 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
     setSteps(normalizeTree(data?.getDiscovery.steps));
   }, [data]);
 
-  const handleCreateStep = React.useCallback((value) => {
-    createStep({
-      variables: {
-        input: {
-          discoveryId,
-          orderNum: steps.length + 1,
-          title: value,
-          description: `${value} description`,
-        }
-      },
-    });
-  }, [createStep, discoveryId, steps.length]);
+  const handleCreateStep = React.useCallback(
+    value => {
+      createStep({
+        variables: {
+          input: {
+            discoveryId,
+            orderNum: steps.length + 1,
+            title: value,
+            description: `${value} description`,
+          },
+        },
+      });
+    },
+    [createStep, discoveryId, steps.length],
+  );
 
   const startCreatingSummary = React.useCallback((step: Step) => {
     setStepForCreating(step);
@@ -300,7 +303,7 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
         orderNum: index + 1,
       }));
 
-      setSummaryOrder({ variables: { order } })
+      setSummaryOrder({ variables: { order } });
     },
     [setSummaryOrder, steps],
   );
@@ -337,7 +340,7 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
         orderNum: index + 1,
       }));
 
-      setStepsOrder({ variables: { order } })
+      setStepsOrder({ variables: { order } });
     },
     [setStepsOrder, steps],
   );

@@ -98,33 +98,33 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
     refetchQueries: [{ query: GET_GUIDE, variables: { discoveryId } }],
     onCompleted: () => {
       message.success('Summary has been updated.');
-    }
+    },
   });
 
   const [updateStep, updateStepStatus] = useMutation(UPDATE_STEP, {
     refetchQueries: [{ query: GET_GUIDE, variables: { discoveryId } }],
     onCompleted: () => {
       message.success('Step has been updated.');
-    }
+    },
   });
 
   const handleStepSubmit = values => {
     updateStep({
       variables: {
         stepId: current?.id,
-        input: values
-      }
+        input: values,
+      },
     });
   };
 
   const handleSummarySubmit = values => {
     updateSummary({
       variables: {
-        summary: { ...removeTypeName(current), ...values }
-      }
+        summary: { ...removeTypeName(current), ...values },
+      },
     });
   };
-  
+
   const breadcrumbs = React.useMemo<Breadcrumb[]>(() => {
     return [{ path: '/guides', breadcrumbName: 'Guides' }];
   }, []);
@@ -169,12 +169,10 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
   };
 
   const isSubmitting = React.useMemo(() => {
-    return [
-      updateGuideStatus,
-      updateStepStatus,
-      updateSummaryStatus
-    ].some(status => status.loading);
-  }, [updateGuideStatus, updateStepStatus, updateSummaryStatus])
+    return [updateGuideStatus, updateStepStatus, updateSummaryStatus].some(
+      status => status.loading,
+    );
+  }, [updateGuideStatus, updateStepStatus, updateSummaryStatus]);
 
   return (
     <>
@@ -187,11 +185,7 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
               <TabPane tab="General Info" key="1" />
               <TabPane tab="Manage Content" key="2" />
             </Tabs>
-            <Button
-              type="primary"
-              loading={isSubmitting}
-              onClick={saveChanges}
-            >
+            <Button type="primary" loading={isSubmitting} onClick={saveChanges}>
               Save Changes
             </Button>
           </div>

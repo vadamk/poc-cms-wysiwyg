@@ -52,8 +52,7 @@ const Guides: React.FC<GuidesProps> = () => {
   });
 
   const guides = React.useMemo(() => {
-    return (data?.getDiscoveryList || [])
-      .sort((a, b) => b?.actualTime - a?.actualTime);
+    return (data?.getDiscoveryList || []).sort((a, b) => b?.actualTime - a?.actualTime);
   }, [data]);
 
   const deleteRequest = (guide: any) => {
@@ -93,12 +92,7 @@ const Guides: React.FC<GuidesProps> = () => {
   return (
     <>
       <Toolbar title="Guides" extra={actionButtons} />
-      <Table
-        rowKey="id"
-        loading={loading}
-        dataSource={guides as any}
-        pagination={false}
-      >
+      <Table rowKey="id" loading={loading} dataSource={guides as any} pagination={false}>
         <Column<Discovery>
           title="Title"
           dataIndex="title"
