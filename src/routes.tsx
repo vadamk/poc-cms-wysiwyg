@@ -54,7 +54,7 @@ const Routes = () => {
           <CommonLayout>
             <Switch>
               <Route exact path="/">
-                <Dashboard />
+                <Redirect to="/subjects" />
               </Route>
               <Route exact path="/subjects">
                 <Subjects />

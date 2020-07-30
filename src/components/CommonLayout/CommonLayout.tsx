@@ -32,10 +32,6 @@ const contentStyles: React.CSSProperties = {
   overflow: 'initial',
 };
 
-const footerStyles: React.CSSProperties = {
-  textAlign: 'center',
-};
-
 const CommonLayout: React.FC = ({ children }) => {
   const [isCollapsed, setCollapsed] = React.useState(
     getFromLocalStorage(localStorageKeys.sidebarCollapsed),
@@ -85,7 +81,7 @@ const CommonLayout: React.FC = ({ children }) => {
     <Layout>
       <Sider className={sty.sider} collapsed={isCollapsed}>
         <div className={cx(sty.logo, isCollapsed && sty.collapsed)}>
-          <Link to="/">
+          <Link to="/subjects">
             <Logo />
           </Link>
         </div>

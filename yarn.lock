@@ -6309,6 +6309,11 @@ gzip-size@5.1.1:
     duplexer "^0.1.1"
     pify "^4.0.1"
 
+hamlet@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/hamlet/-/hamlet-0.3.3.tgz#f1c8af2e4deeaa4766b2886e67f964c6c897db74"
+  integrity sha1-8civLk3uqkdmsohuZ/lkxsiX23Q=
+
 handle-thing@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/handle-thing/-/handle-thing-2.0.1.tgz#857f79ce359580c340d43081cc648970d0bb234e"
