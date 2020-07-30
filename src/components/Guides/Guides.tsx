@@ -104,7 +104,7 @@ const Guides: React.FC<GuidesProps> = () => {
           dataIndex="title"
           key="title"
           width={200}
-          render={(text, r) => <Link to={`/guides/${r.id}`}>{text}</Link>}
+          render={(text, r) => <Link to={`/guide/${r.id}`}>{text}</Link>}
         />
         <Column
           title="Editions"
