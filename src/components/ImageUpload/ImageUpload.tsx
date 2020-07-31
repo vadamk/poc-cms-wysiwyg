@@ -3,6 +3,8 @@ import axios from 'axios';
 import { gql } from 'apollo-boost';
 import { Upload, message } from 'antd';
 import { UploadChangeParam, UploadFile } from 'antd/lib/upload/interface';
+import ImgCrop from 'antd-img-crop';
+import Compressor from 'compressorjs';
 
 import { useImperativeQuery } from 'core/hooks/apollo';
 import {
@@ -80,7 +82,16 @@ const ImageUpload = React.forwardRef<Upload, ImageUploadProps>(
     };
 
     const handleCustomRequest = ({ action, file, onSuccess, onError }) => {
-      uploadToTheServer(action, file, onSuccess, onError);
+      new Compressor(file, {
+        maxWidth: 630,
+        convertSize: 0,
+        quality: 1,
+        success: (resultFile: any) => {
+          uploadToTheServer(action, resultFile, onSuccess, onError);
+        }
+      });
+
+      // uploadToTheServer(action, file, onSuccess, onError);
     };
 
     const beforeUpload = file => {
@@ -101,19 +112,21 @@ const ImageUpload = React.forwardRef<Upload, ImageUploadProps>(
     );
 
     return (
-      <Upload
-        ref={ref}
-        method="PUT"
-        action={getAction}
-        customRequest={handleCustomRequest}
-        beforeUpload={beforeUpload}
-        showUploadList={false}
-        listType="picture-card"
-        className={sty.uploader}
-        onChange={handleChange}
-      >
-        {imageURL ? <img src={imageURL} alt="upload preview" /> : uploadButton}
-      </Upload>
+      <ImgCrop aspect={1.88059701}>
+        <Upload
+          ref={ref}
+          method="PUT"
+          action={getAction}
+          customRequest={handleCustomRequest}
+          beforeUpload={beforeUpload}
+          showUploadList={false}
+          listType="picture-card"
+          className={sty.uploader}
+          onChange={handleChange}
+        >
+          {imageURL ? <img src={imageURL} alt="upload preview" /> : uploadButton}
+        </Upload>
+      </ImgCrop>
     );
   },
 );

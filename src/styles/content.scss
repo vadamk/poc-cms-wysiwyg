@@ -84,4 +84,14 @@
     top: 1px;
     content: counter(list) '.';
   }
+
+  .ql-video {
+    width: 100%;
+    height: 1000000px;
+    max-height: 300px;
+
+    @media (max-width: 576px) {
+      max-height: 180px;
+    }
+	}
 }
