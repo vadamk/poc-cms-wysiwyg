@@ -12,7 +12,6 @@ import { useQuery } from '@apollo/react-hooks';
 import CommonLayout from './components/CommonLayout';
 import PureLayout from 'components/PureLayout';
 
-import Dashboard from 'components/Dashboard';
 import SignIn from 'components/SignIn';
 import Subjects from 'components/Subjects';
 import Articles from 'components/Articles';
