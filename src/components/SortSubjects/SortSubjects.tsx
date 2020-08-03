@@ -80,7 +80,7 @@ const SortSubjects: React.FC<SortSubjectsProps> = () => {
     if (getSubjectsStatus.data) {
       const { getAudienceSubjects: subjects } = getSubjectsStatus.data;
       setSubjectOptions(
-        getSubjectsOptions(subjects.reverse())
+        getSubjectsOptions(subjects)
       );
     }
   }, [getSubjectsStatus.data]);
