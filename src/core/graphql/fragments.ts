@@ -51,9 +51,12 @@ export const ArticleFragment = gql`
     editions {
       ...EditionFragment
     }
-    # subjects {
-    #   ...SubjectFragment
-    # }
+    subjects {
+      id
+      title
+      description
+      language
+    }
   }
   ${EditionFragment}
 `;

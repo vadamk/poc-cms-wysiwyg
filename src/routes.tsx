@@ -25,6 +25,11 @@ import SortSubjects from 'components/SortSubjects';
 const GET_AUTHORIZED = gql`
   query IsAuthorized {
     isAuthorized @client
+  }
+`;
+
+const GET_SHARED_DATA = gql`
+  query SharedData {
     enAudiences: getAudiences(language: "en") {
       id
       title
@@ -51,16 +56,17 @@ const CustomRoute = ({ children, allow = true, redirect, ...rest }: PrivatRouteP
 
 const Routes = () => {
   const { data } = useQuery(GET_AUTHORIZED);
+  useQuery(GET_SHARED_DATA);
 
   return (
     <Router>
       <Switch>
-        <CustomRoute exact path="/login" redirect="/" allow={!data?.isAuthorized}>
+        <CustomRoute exact path="/login" redirect="/subjects" allow={!data?.isAuthorized}>
           <PureLayout>
             <SignIn />
           </PureLayout>
         </CustomRoute>
-        <CustomRoute path="/" allow={data?.isAuthorized}>
+        <CustomRoute path="/" allow={Boolean(data?.isAuthorized)}>
           <CommonLayout>
             <Switch>
               <Route exact path="/">

@@ -71,7 +71,9 @@ const SortSubjects: React.FC<SortSubjectsProps> = () => {
   const [getSubjects, getSubjectsStatus] = useLazyQuery(GET_AUDIENCE_SUBJECTS);
 
   React.useEffect(() => {
-    getSubjects({ variables: { audienceId: currentId } });
+    if (currentId) {
+      getSubjects({ variables: { audienceId: currentId } });
+    }
   }, [currentId, getSubjects]);
 
   React.useEffect(() => {
@@ -84,7 +86,10 @@ const SortSubjects: React.FC<SortSubjectsProps> = () => {
   }, [getSubjectsStatus.data]);
 
   const [setSubjectOrder, setSubjectOrderStatus] = useMutation(SET_SUBJECTS_ORDER, {
-    refetchQueries: [{ query: GET_AUDIENCE_SUBJECTS, variables: { audienceId: currentId } }]
+    refetchQueries: [{
+      query: GET_AUDIENCE_SUBJECTS,
+      variables: { audienceId: currentId }
+    }]
   });
 
   const breadcrumbs = React.useMemo<Breadcrumb[]>(() => {
