@@ -13,11 +13,12 @@ import {
 import { GuideStep, GuideStepSummary } from 'core/models/generated';
 import { SummaryFragment } from 'core/graphql/fragments';
 import { GET_GUIDE } from 'components/UpdateGuide';
-import TreeViewNode from 'components/UpdateGuide/TreeViewNode';
-import DndCard from 'components/UpdateGuide/DndCard';
+import TreeViewNode from 'components/TreeViewNode';
+import DndCard from 'components/DndCard';
 import ConfirmInput from 'components/ConfirmInput';
 
 import sty from './TreeView.module.scss';
+import { basicReorder } from 'core/utils';
 
 const normalizeTree = (steps: GuideStep[]) =>
   (steps || [])
@@ -335,14 +336,7 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
 
   const moveGuideStep = React.useCallback(
     (dragIndex: number, hoverIndex: number) => {
-      const dragCard = steps[dragIndex];
-      const nextGuideSteps = update(steps, {
-        $splice: [
-          [dragIndex, 1],
-          [hoverIndex, 0, dragCard],
-        ],
-      });
-
+      const nextGuideSteps = basicReorder(steps, dragIndex, hoverIndex);
       setGuideSteps(nextGuideSteps);
     },
     [steps],
@@ -350,13 +344,7 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
 
   const dropGuideStep = React.useCallback(
     (dragIndex: number, hoverIndex: number) => {
-      const dragCard = steps[dragIndex];
-      const nextGuideSteps = update(steps, {
-        $splice: [
-          [dragIndex, 1],
-          [hoverIndex, 0, dragCard],
-        ],
-      });
+      const nextGuideSteps = basicReorder(steps, dragIndex, hoverIndex);
 
       setGuideSteps(nextGuideSteps);
 

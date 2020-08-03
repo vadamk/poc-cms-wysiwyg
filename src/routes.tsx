@@ -20,6 +20,7 @@ import UpdateArticle from 'components/UpdateArticle';
 import Guides from 'components/Guides';
 import CreateGuide from 'components/CreateGuide';
 import UpdateGuide from 'components/UpdateGuide';
+import SortSubjects from 'components/SortSubjects';
 
 const GET_AUTHORIZED = gql`
   query IsAuthorized {
@@ -71,6 +72,9 @@ const Routes = () => {
               </Route>
               <Route exact path="/subjects">
                 <Subjects />
+              </Route>
+              <Route exact path="/subjects/sort">
+                <SortSubjects />
               </Route>
               <Switch>
                 <Route exact path="/guides">

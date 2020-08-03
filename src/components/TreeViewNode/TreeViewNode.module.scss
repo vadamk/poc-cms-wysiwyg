@@ -29,6 +29,12 @@
     }
   }
   
+  .handle {
+    margin-right: 5px;
+    font-size: 14px;
+    color: #8d8d8d;
+  }
+  
   .actions {
     opacity: 0;
   }
@@ -48,6 +54,11 @@
     :global .ant-btn-text {
       color: #fff;
     }
+  }
+
+  &.lg {
+    padding: 10px 20px;
+    font-size: 1rem;
   }
 
 }

@@ -15,13 +15,15 @@ export interface DndCardProps {
   id: any;
   index: number;
   type: string;
+  originalIndex?: number;
   moveCard: (dragIndex: number, hoverIndex: number) => void;
-  beginDragging?: () => void;
+  beginDragging?: (item) => void;
   onDrop: (dragIndex: number, hoverIndex: number) => void;
 }
 
 interface DragItem {
   index: number;
+  originalIndex?: number;
   id: string;
   type: string;
 }
@@ -30,6 +32,7 @@ const DndCard: React.FC<DndCardProps> = ({
   id,
   children,
   index,
+  originalIndex,
   type = ItemTypes.CARD,
   moveCard = () => null,
   beginDragging = () => null,
@@ -47,6 +50,7 @@ const DndCard: React.FC<DndCardProps> = ({
       if (!ref.current) {
         return;
       }
+
       const dragIndex = item.index;
       const hoverIndex = index;
 
@@ -93,12 +97,19 @@ const DndCard: React.FC<DndCardProps> = ({
   });
 
   const [{ isDragging }, drag] = useDrag({
-    item: { type: type, id, index },
+    item: { type: type, id, index, originalIndex },
     collect: (monitor: any) => ({
       isDragging: monitor.isDragging(),
     }),
-    begin: () => {
-      beginDragging();
+    begin: (item) => {
+      beginDragging(item);
+    },
+    end: (dropResult, monitor) => {
+      const { index, originalIndex } = monitor.getItem();
+      const didDrop = monitor.didDrop()
+      if (!didDrop && originalIndex !== undefined) {
+        moveCard(index, originalIndex)
+      }
     },
   });
 

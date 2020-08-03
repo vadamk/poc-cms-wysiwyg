@@ -8,6 +8,7 @@ import { FormProps, Option } from 'core/models';
 import { langOptions, Language, Audiences } from 'core/global';
 import { getAudienceOptions } from 'core/utils';
 import { useQuery } from '@apollo/react-hooks';
+import RadioButtons from 'components/RadioButtons';
 
 const layout = {
   labelCol: { span: 5 },
@@ -58,8 +59,8 @@ const CreateSubjectForm: React.FC<CreateSubjectFormProps> = ({
   }, [audiences])
 
   const handleLanguageChange = React.useCallback(
-    value => {
-      const nextLangIsEnglish = value === Language.EN;
+    ({ target }) => {
+      const nextLangIsEnglish = target.value === Language.EN;
       const audienceIDs = nextLangIsEnglish ? [swedenJobId] : [];
       internalForm.setFieldsValue({ audienceIDs });
       setEnglish(nextLangIsEnglish);
@@ -102,7 +103,7 @@ const CreateSubjectForm: React.FC<CreateSubjectFormProps> = ({
       </Form.Item>
 
       <Form.Item label="Language" name="language">
-        <Select
+        <RadioButtons
           disabled={isSubmitting}
           options={langOptions}
           onChange={handleLanguageChange}

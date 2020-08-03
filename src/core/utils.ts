@@ -1,3 +1,5 @@
+import update from 'immutability-helper';
+
 import { Option } from 'core/models';
 import { SpecialEdition, Audience, Subject } from 'core/models/generated';
 import { editionOptions, audienceOptions } from 'core/global';
@@ -29,9 +31,21 @@ export const getAudienceOptions = (audiences: Audience[]): Option[] => {
 
 export const getSubjectsOptions = (subjects?: Subject[]): Option[] => {
   return (
-    subjects?.map(subject => ({
+    subjects?.map((subject, index) => ({
       label: subject?.title,
       value: subject?.id,
+      index,
     })) || []
   );
 };
+
+export const basicReorder = <T = any>(
+  items: T[],
+  dragIndex: number,
+  targetIndex: number
+): T[] => update(items, {
+  $splice: [
+    [dragIndex, 1],
+    [targetIndex, 0, items[dragIndex]],
+  ],
+});
