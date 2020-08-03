@@ -78,7 +78,7 @@ const SortSubjects: React.FC<SortSubjectsProps> = () => {
     if (getSubjectsStatus.data) {
       const { getAudienceSubjects: subjects } = getSubjectsStatus.data;
       setSubjectOptions(
-        getSubjectsOptions(subjects)
+        getSubjectsOptions(subjects.reverse())
       );
     }
   }, [getSubjectsStatus.data]);
@@ -166,7 +166,11 @@ const SortSubjects: React.FC<SortSubjectsProps> = () => {
                         moveCard={moveSubject}
                         onDrop={dropSubject}
                       >
-                        <TreeViewNode size="lg" showHandle title={audience.label} />
+                        <TreeViewNode
+                          size="lg"
+                          showHandle
+                          title={`[${audience.value}] ${audience.label}`}
+                        />
                       </DndCard>
                     ))
                     : <Empty description="No Subjects" />

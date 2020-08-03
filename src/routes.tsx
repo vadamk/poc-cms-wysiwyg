@@ -52,10 +52,6 @@ const CustomRoute = ({ children, allow = true, redirect, ...rest }: PrivatRouteP
 const Routes = () => {
   const { data } = useQuery(GET_AUTHORIZED);
 
-  if (data === undefined) {
-    return null;
-  }
-
   return (
     <Router>
       <Switch>
