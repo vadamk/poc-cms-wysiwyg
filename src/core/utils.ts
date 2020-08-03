@@ -1,22 +1,37 @@
-import { Option, Maybe } from 'core/models';
-import { SpecialEdition, Audience } from 'core/models/generated';
+import { Option } from 'core/models';
+import { SpecialEdition, Audience, Subject } from 'core/models/generated';
 import { editionOptions, audienceOptions } from 'core/global';
 
 export const removeTypeName = ({ __typename, ...o }: any = {}) => o;
 
-export const typedToOptions = (options: Option[], typed: Maybe<Maybe<{ type }>[]>) => {
-  if (!typed) {
+export const getEditionOptions = (editions: SpecialEdition[]): Option[] => {
+  if (!editions) {
     return [];
   }
 
-  const types = typed.map(t => t?.type);
-  return options.filter(o => types.includes(o.value));
+  const types = editions?.map(t => t?.type);
+  return editionOptions.filter(o => types.includes(o.value));
 };
 
-export const getEditionOptions = (editions: Maybe<Maybe<SpecialEdition>[]>) => {
-  return typedToOptions(editionOptions, editions);
+export const getAudienceOptions = (audiences: Audience[]): Option[] => {
+  if (!audiences) {
+    return [];
+  }
+
+  return audiences.map(audience => {
+    const option = audienceOptions.find(option => option.value === audience.title);
+    return {
+      label: option?.label || '',
+      value: audience.id,
+    };
+  });
 };
 
-export const getAudienceOptions = (audiences: Maybe<Maybe<Audience>[]>) => {
-  return typedToOptions(audienceOptions, audiences);
+export const getSubjectsOptions = (subjects?: Subject[]): Option[] => {
+  return (
+    subjects?.map(subject => ({
+      label: subject?.title,
+      value: subject?.id,
+    })) || []
+  );
 };

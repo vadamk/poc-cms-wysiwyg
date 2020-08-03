@@ -1,50 +1,53 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
 import { gql } from 'apollo-boost';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { Tabs, Spin, message, Button, Row, Col, Card, Empty } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
-import { useParams } from 'react-router-dom';
 
 import { Edition } from 'core/global';
-import { DiscoveryFragment, SummaryFragment } from 'core/graphql/fragments';
+import { GuideFragment, SummaryFragment } from 'core/graphql/fragments';
+import { removeTypeName } from 'core/utils';
+import { GuideStep, GuideStepSummary } from 'core/models/generated';
 
+import TreeView from 'components/UpdateGuide/TreeView';
+import SummaryForm from 'components/UpdateGuide/SummaryForm';
+import StepForm from 'components/UpdateGuide/StepForm';
 import Toolbar, { Breadcrumb } from 'components/Toolbar';
 import GuideForm from 'components/GuidesForm';
 
 import sty from './UpdateGuide.module.scss';
-import { removeTypeName } from 'core/utils';
-import TreeView from 'components/UpdateGuide/TreeView';
-import SummaryForm from 'components/UpdateGuide/SummaryForm';
-import StepForm from 'components/UpdateGuide/StepForm';
-import { Step, Summary } from 'core/models/generated';
 
 const { TabPane } = Tabs;
 
-const isStep = (obj: Step | Summary) => {
-  return (obj as Summary).stepId === undefined;
+const isStep = (obj: GuideStep | GuideStepSummary) => {
+  return (obj as GuideStepSummary).stepId === undefined;
 };
 
 export const GET_GUIDE = gql`
-  query GetGuide($discoveryId: Int!) {
-    getDiscovery(discoveryId: $discoveryId) {
-      ...DiscoveryFragment
+  query GetGuide($guideId: Int!) {
+    getGuide(guideId: $guideId) {
+      ...GuideFragment
     }
   }
-  ${DiscoveryFragment}
+  ${GuideFragment}
 `;
 
 export const UPDATE_GUIDE = gql`
-  mutation UpdateDiscovery($discovery: UpdateDiscoveryInput!, $discoveryId: Int!) {
-    updateDiscovery(discovery: $discovery, discoveryId: $discoveryId) {
-      ...DiscoveryFragment
+  mutation UpdateGuide($input: UpdateGuideInput!, $guideId: Int!) {
+    updateGuide(input: $input, guideId: $guideId) {
+      ...GuideFragment
     }
   }
-  ${DiscoveryFragment}
+  ${GuideFragment}
 `;
 
 export const UPDATE_SUMMARY = gql`
-  mutation UpdateSummary($summary: UpdateDiscoverySummaryInput!) {
-    updateSummary(summary: $summary) {
+  mutation UpdateGuideStepSummary(
+    $input: UpdateGuideStepSummaryInput!
+    $summaryId: Int!
+  ) {
+    updateGuideStepSummary(input: $input, summaryId: $summaryId) {
       ...SummaryFragment
     }
   }
@@ -52,8 +55,8 @@ export const UPDATE_SUMMARY = gql`
 `;
 
 export const UPDATE_STEP = gql`
-  mutation UpdateDiscoveryStep($input: UpdateDiscoveryStepInput!, $stepId: Int!) {
-    updateDiscoveryStep(input: $input, stepId: $stepId)
+  mutation UpdateGuideStep($input: UpdateGuideStepInput!, $stepId: Int!) {
+    updateGuideStep(input: $input, stepId: $stepId)
   }
 `;
 
@@ -68,14 +71,14 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
 
   const [formData, setFormData] = React.useState();
   const [activeTab, setActiveTab] = React.useState(1);
-  const [current, setCurent] = React.useState<Step | Summary>();
+  const [current, setCurent] = React.useState<GuideStep | GuideStepSummary>();
 
-  const discoveryId = React.useMemo(() => Number(slug), [slug]);
+  const guideId = React.useMemo(() => Number(slug), [slug]);
 
   const { data, loading } = useQuery(GET_GUIDE, {
-    variables: { discoveryId: Number(slug) },
+    variables: { guideId: Number(slug) },
     onCompleted: data => {
-      const { editions, audiences, subjects, ...rest } = data?.getDiscovery;
+      const { editions, audiences, subjects, ...rest } = data?.getGuide;
 
       const formData = {
         ...rest,
@@ -95,14 +98,14 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
   });
 
   const [updateSummary, updateSummaryStatus] = useMutation(UPDATE_SUMMARY, {
-    refetchQueries: [{ query: GET_GUIDE, variables: { discoveryId } }],
+    refetchQueries: [{ query: GET_GUIDE, variables: { guideId } }],
     onCompleted: () => {
       message.success('Summary has been updated.');
     },
   });
 
   const [updateStep, updateStepStatus] = useMutation(UPDATE_STEP, {
-    refetchQueries: [{ query: GET_GUIDE, variables: { discoveryId } }],
+    refetchQueries: [{ query: GET_GUIDE, variables: { guideId } }],
     onCompleted: () => {
       message.success('Step has been updated.');
     },
@@ -118,11 +121,14 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
   };
 
   const handleSummarySubmit = values => {
-    updateSummary({
-      variables: {
-        summary: { ...removeTypeName(current), ...values },
-      },
-    });
+    if (current) {
+      const { id: summaryId, ...rest } = current;
+      updateSummary({
+        variables: {
+          input: { ...removeTypeName(rest), ...values, summaryId },
+        },
+      });
+    }
   };
 
   const breadcrumbs = React.useMemo<Breadcrumb[]>(() => {
@@ -135,13 +141,13 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
 
   const handleSubmit = React.useCallback(
     values => {
-      const discovery = {
+      const input = {
         ...values,
-        orderNum: data?.getDiscovery.orderNum,
+        orderNum: data?.getGuide.orderNum,
         actualTime: +new Date(),
       };
-      const discoveryId = data?.getDiscovery.id;
-      updateGuide({ variables: { discovery, discoveryId } });
+      const guideId = data?.getGuide.id;
+      updateGuide({ variables: { input, guideId } });
     },
     [data, updateGuide],
   );
@@ -159,7 +165,7 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
     }
   }, [activeTab, current, generalInfoForm, stepForm, summaryForm]);
 
-  const handleChange = async (node?: Step | Summary) => {
+  const handleChange = async (node?: GuideStep | GuideStepSummary) => {
     setCurent(node);
     if (node) {
       const form = isStep(node) ? stepForm : summaryForm;
@@ -185,50 +191,56 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
               <TabPane tab="General Info" key="1" />
               <TabPane tab="Manage Content" key="2" />
             </Tabs>
-            <Button type="primary" loading={isSubmitting} onClick={saveChanges}>
-              Save Changes
-            </Button>
+            {current && (
+              <Button type="primary" loading={isSubmitting} onClick={saveChanges}>
+                Save Changes
+              </Button>
+            )}
           </div>
         }
       />
       <Spin spinning={loading}>
-        {Number(activeTab) === 1 && formData && (
-          <GuideForm
-            mode="update"
-            form={generalInfoForm}
-            initialValues={formData}
-            isSubmitting={updateGuideStatus.loading}
-            onSubmit={handleSubmit}
-          />
-        )}
-        {Number(activeTab) === 2 && formData && (
-          <Row gutter={[10, 10]}>
-            <Col span={6}>
-              <TreeView onChange={handleChange} />
-            </Col>
-            <Col span={18}>
-              <Card className={sty.form}>
-                {current ? (
-                  isStep(current) ? (
-                    <StepForm
-                      form={stepForm}
-                      isSubmitting={updateStepStatus.loading}
-                      onSubmit={handleStepSubmit}
-                    />
-                  ) : (
-                    <SummaryForm
-                      form={summaryForm}
-                      isSubmitting={updateSummaryStatus.loading}
-                      onSubmit={handleSummarySubmit}
-                    />
-                  )
-                ) : (
-                  <Empty description="Please choose summary or step" />
-                )}
-              </Card>
-            </Col>
-          </Row>
-        )}
+        {formData ? (
+          <>
+            {Number(activeTab) === 1 && (
+              <GuideForm
+                mode="update"
+                form={generalInfoForm}
+                initialValues={formData}
+                isSubmitting={updateGuideStatus.loading}
+                onSubmit={handleSubmit}
+              />
+            )}
+            {Number(activeTab) === 2 && (
+              <Row gutter={[10, 10]}>
+                <Col span={6}>
+                  <TreeView onChange={handleChange} />
+                </Col>
+                <Col span={18}>
+                  <Card className={sty.form}>
+                    {current ? (
+                      isStep(current) ? (
+                        <StepForm
+                          form={stepForm}
+                          isSubmitting={updateStepStatus.loading}
+                          onSubmit={handleStepSubmit}
+                        />
+                      ) : (
+                        <SummaryForm
+                          form={summaryForm}
+                          isSubmitting={updateSummaryStatus.loading}
+                          onSubmit={handleSummarySubmit}
+                        />
+                      )
+                    ) : (
+                      <Empty description="Please choose summary or step" />
+                    )}
+                  </Card>
+                </Col>
+              </Row>
+            )}
+          </>
+        ) : <Empty description="Guide has not been found." />}
       </Spin>
     </>
   );

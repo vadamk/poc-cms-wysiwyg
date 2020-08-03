@@ -24,6 +24,7 @@ export type AdminEntity = {
   role: Scalars['String'];
 };
 
+
 export type AuthOutput = {
   __typename?: 'AuthOutput';
   token: Scalars['String'];
@@ -32,8 +33,8 @@ export type AuthOutput = {
   user: AdminEntity;
 };
 
-export type Summary = {
-  __typename?: 'Summary';
+export type GuideStepSummary = {
+  __typename?: 'GuideStepSummary';
   id: Scalars['Int'];
   stepId: Scalars['Int'];
   orderNum: Scalars['Int'];
@@ -41,31 +42,22 @@ export type Summary = {
   content: Scalars['String'];
 };
 
-export type Step = {
-  __typename?: 'Step';
+export type GuideStep = {
+  __typename?: 'GuideStep';
   id: Scalars['Int'];
-  discoveryId?: Maybe<Scalars['Int']>;
+  guideId: Scalars['Int'];
   title: Scalars['String'];
   description: Scalars['String'];
-  orderNum: Scalars['Float'];
-  summaries: Array<Maybe<Summary>>;
-};
-
-export type Subject = {
-  __typename?: 'Subject';
-  id: Scalars['Int'];
-  title: Scalars['String'];
-  description?: Maybe<Scalars['String']>;
-  language: Scalars['String'];
-  discoveries: Array<Maybe<Discovery>>;
-  articles: Array<Maybe<Article>>;
+  image: Scalars['String'];
+  orderNum: Scalars['Int'];
+  summaries: Array<Maybe<GuideStepSummary>>;
 };
 
 export type SpecialEdition = {
   __typename?: 'SpecialEdition';
   id: Scalars['Int'];
   type: Scalars['String'];
-  discoveries: Array<Maybe<Discovery>>;
+  guides: Array<Maybe<Guide>>;
   articles: Array<Maybe<Article>>;
 };
 
@@ -74,36 +66,52 @@ export type Article = {
   id: Scalars['Int'];
   title: Scalars['String'];
   subTitle?: Maybe<Scalars['String']>;
+  headerImage: Scalars['String'];
   image: Scalars['String'];
   content: Scalars['String'];
-  language: Scalars['String'];
+  language: Language;
   actualTime: Scalars['Timestamp'];
+  readDuration: Scalars['Int'];
   isPublished: Scalars['Boolean'];
-  audiences: Array<Maybe<Audience>>;
+  orderNum: Scalars['Int'];
   editions: Array<Maybe<SpecialEdition>>;
   subjects: Array<Maybe<Subject>>;
 };
 
+export enum Language {
+  Sv = 'sv',
+  En = 'en'
+}
+
 export type Audience = {
   __typename?: 'Audience';
   id: Scalars['Int'];
-  type: Scalars['String'];
-  discoveries: Array<Maybe<Discovery>>;
-  articles: Array<Maybe<Article>>;
+  title: Scalars['String'];
+  language: Language;
 };
 
-export type Discovery = {
-  __typename?: 'Discovery';
+export type Subject = {
+  __typename?: 'Subject';
   id: Scalars['Int'];
   title: Scalars['String'];
-  image: Scalars['String'];
-  language: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  language: Language;
+  guides: Array<Maybe<Guide>>;
+  articles: Array<Maybe<Article>>;
+  audiences: Array<Maybe<Audience>>;
+};
+
+export type Guide = {
+  __typename?: 'Guide';
+  id: Scalars['Int'];
+  title: Scalars['String'];
+  headerImage: Scalars['String'];
+  language: Language;
   actualTime: Scalars['Timestamp'];
   isPublished: Scalars['Boolean'];
   orderNum: Scalars['Int'];
   link?: Maybe<Scalars['String']>;
-  steps: Array<Maybe<Step>>;
-  audiences?: Maybe<Array<Maybe<Audience>>>;
+  steps: Array<Maybe<GuideStep>>;
   editions?: Maybe<Array<Maybe<SpecialEdition>>>;
   subjects: Array<Maybe<Subject>>;
 };
@@ -118,35 +126,59 @@ export type UploadOutput = {
 export type Query = {
   __typename?: 'Query';
   getArticle?: Maybe<Article>;
-  getArticleList: Array<Maybe<Article>>;
-  getDiscovery?: Maybe<Discovery>;
-  getDiscoveryList: Array<Maybe<Discovery>>;
-  getDiscoveryStep: Step;
-  getDiscoverySummary: Summary;
-  getSubjectList: Array<Maybe<Subject>>;
+  getArticles: Array<Maybe<Article>>;
+  getAudience: Audience;
+  getAudienceSubjects: Array<Maybe<Subject>>;
+  getAudiences: Array<Maybe<Audience>>;
+  getGuide?: Maybe<Guide>;
+  getGuideStep: GuideStep;
+  getGuideStepSummary: GuideStepSummary;
+  getGuides: Array<Maybe<Guide>>;
+  getSubjects: Array<Maybe<Subject>>;
   getUploadUrl: UploadOutput;
   isAuthorized: Scalars['Boolean'];
 };
+
 
 export type QueryGetArticleArgs = {
   articleId: Scalars['Int'];
 };
 
-export type QueryGetDiscoveryArgs = {
-  discoveryId: Scalars['Int'];
+
+export type QueryGetAudienceArgs = {
+  audienceId: Scalars['Int'];
 };
 
-export type QueryGetDiscoveryStepArgs = {
+
+export type QueryGetAudienceSubjectsArgs = {
+  audienceId: Scalars['Int'];
+};
+
+
+export type QueryGetAudiencesArgs = {
+  language?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryGetGuideArgs = {
+  guideId: Scalars['Int'];
+};
+
+
+export type QueryGetGuideStepArgs = {
   stepId: Scalars['Int'];
 };
 
-export type QueryGetDiscoverySummaryArgs = {
+
+export type QueryGetGuideStepSummaryArgs = {
   summaryId: Scalars['Int'];
 };
 
-export type QueryGetSubjectListArgs = {
+
+export type QueryGetSubjectsArgs = {
   language: Scalars['String'];
 };
+
 
 export type QueryGetUploadUrlArgs = {
   filename: Scalars['String'];
@@ -155,277 +187,291 @@ export type QueryGetUploadUrlArgs = {
 
 export enum Upload_Folder {
   Cms = 'CMS',
-  Order = 'ORDER',
+  Order = 'ORDER'
 }
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addArticleAudience: Scalars['String'];
   addArticleEdition: Scalars['String'];
-  addDiscoveryAudience: Scalars['String'];
-  addDiscoveryEdition: Scalars['String'];
+  addGuideEdition: Scalars['String'];
   addServiceAudience: Scalars['String'];
   addServiceEdition: Scalars['String'];
   auth: AuthOutput;
   createArticle: Article;
-  createDiscovery: Discovery;
-  createStep: Step;
+  createGuide: Guide;
+  createGuideStep: GuideStep;
+  createGuideStepSummary: GuideStepSummary;
   createSubject: Subject;
-  createSummary: Summary;
   deleteArticle: Scalars['String'];
-  deleteDiscovery: Scalars['String'];
+  deleteGuide: Scalars['String'];
+  deleteGuideStep: Scalars['Boolean'];
+  deleteGuideStepSummary: Scalars['Boolean'];
   deleteS3Object: Scalars['String'];
-  deleteStep: Scalars['String'];
-  deleteSubject: Scalars['String'];
-  deleteSummary: Scalars['String'];
-  removeArticleAudience: Scalars['String'];
+  deleteSubject: Scalars['Boolean'];
   removeArticleEdition: Scalars['String'];
-  removeDiscoveryAudience: Scalars['String'];
-  removeDiscoveryEdition: Scalars['String'];
+  removeGuideEdition: Scalars['String'];
   removeServiceAudience: Scalars['String'];
   removeServiceEdition: Scalars['String'];
   setAuthorized: Scalars['Boolean'];
-  sortDiscoverySteps: Scalars['Boolean'];
-  sortDiscoverySummaries: Scalars['Boolean'];
+  sortArticles: Scalars['Boolean'];
+  sortGuideStepSummaries: Scalars['Boolean'];
+  sortGuideSteps: Scalars['Boolean'];
+  sortSubjects: Scalars['Boolean'];
   updateArticle: Article;
-  updateDiscovery: Discovery;
-  updateDiscoveryStep: Scalars['Boolean'];
+  updateGuide: Guide;
+  updateGuideStep: Scalars['Boolean'];
+  updateGuideStepSummary: GuideStepSummary;
   updateSubject: Subject;
-  updateSummary: Summary;
 };
 
-export type MutationAddArticleAudienceArgs = {
-  audience: Audiences;
-  articleId: Scalars['Int'];
-};
 
 export type MutationAddArticleEditionArgs = {
   edition: Edition;
   articleId: Scalars['Int'];
 };
 
-export type MutationAddDiscoveryAudienceArgs = {
-  audience: Audiences;
-  discoveryId: Scalars['Int'];
+
+export type MutationAddGuideEditionArgs = {
+  edition: Edition;
+  guideId: Scalars['Int'];
 };
 
-export type MutationAddDiscoveryEditionArgs = {
-  edition: Edition;
-  discoveryId: Scalars['Int'];
-};
 
 export type MutationAddServiceAudienceArgs = {
   audience: Audiences;
   serviceId: Scalars['Int'];
 };
 
+
 export type MutationAddServiceEditionArgs = {
   edition: Edition;
   serviceId: Scalars['Int'];
 };
+
 
 export type MutationAuthArgs = {
   password: Scalars['String'];
   identity: Scalars['String'];
 };
 
+
 export type MutationCreateArticleArgs = {
   article: CreateArticleInput;
 };
 
-export type MutationCreateDiscoveryArgs = {
-  discovery: CreateDiscoveryInput;
+
+export type MutationCreateGuideArgs = {
+  input: CreateGuideInput;
 };
 
-export type MutationCreateStepArgs = {
-  input: CreateDiscoveryStepInput;
+
+export type MutationCreateGuideStepArgs = {
+  input: CreateGuideStepInput;
 };
+
+
+export type MutationCreateGuideStepSummaryArgs = {
+  input: CreateGuideStepSummaryInput;
+};
+
 
 export type MutationCreateSubjectArgs = {
-  subject: CreateSubjectInput;
+  input: CreateSubjectInput;
 };
 
-export type MutationCreateSummaryArgs = {
-  summary: CreateDiscoverySummaryInput;
-};
 
 export type MutationDeleteArticleArgs = {
   articleId: Scalars['Int'];
 };
 
-export type MutationDeleteDiscoveryArgs = {
-  discoveryId: Scalars['Int'];
+
+export type MutationDeleteGuideArgs = {
+  guideId: Scalars['Int'];
 };
+
+
+export type MutationDeleteGuideStepArgs = {
+  stepId: Scalars['Int'];
+};
+
+
+export type MutationDeleteGuideStepSummaryArgs = {
+  summaryId: Scalars['Int'];
+};
+
 
 export type MutationDeleteS3ObjectArgs = {
   path: Scalars['String'];
 };
 
-export type MutationDeleteStepArgs = {
-  stepId: Scalars['Int'];
-};
 
 export type MutationDeleteSubjectArgs = {
   subjectId: Scalars['Int'];
 };
 
-export type MutationDeleteSummaryArgs = {
-  summaryId: Scalars['Int'];
-};
-
-export type MutationRemoveArticleAudienceArgs = {
-  audience: Audiences;
-  articleId: Scalars['Int'];
-};
 
 export type MutationRemoveArticleEditionArgs = {
   edition: Edition;
   articleId: Scalars['Int'];
 };
 
-export type MutationRemoveDiscoveryAudienceArgs = {
-  audience: Audiences;
-  discoveryId: Scalars['Int'];
+
+export type MutationRemoveGuideEditionArgs = {
+  edition: Edition;
+  guideId: Scalars['Int'];
 };
 
-export type MutationRemoveDiscoveryEditionArgs = {
-  edition: Edition;
-  discoveryId: Scalars['Int'];
-};
 
 export type MutationRemoveServiceAudienceArgs = {
   audience: Audiences;
   serviceId: Scalars['Int'];
 };
 
+
 export type MutationRemoveServiceEditionArgs = {
   edition: Edition;
   serviceId: Scalars['Int'];
 };
 
+
 export type MutationSetAuthorizedArgs = {
   isAuthorized: Scalars['Boolean'];
 };
 
-export type MutationSortDiscoveryStepsArgs = {
-  order: Array<DiscoveryStepOrderInput>;
+
+export type MutationSortArticlesArgs = {
+  order: Array<OrderArticleInput>;
 };
 
-export type MutationSortDiscoverySummariesArgs = {
-  order: Array<DiscoverySummaryOrderInput>;
+
+export type MutationSortGuideStepSummariesArgs = {
+  order: Array<GuideStepSummaryOrderInput>;
 };
+
+
+export type MutationSortGuideStepsArgs = {
+  order: Array<GuideStepOrderInput>;
+};
+
+
+export type MutationSortSubjectsArgs = {
+  order: Array<OrderSubjectInput>;
+  audienceId: Scalars['Int'];
+};
+
 
 export type MutationUpdateArticleArgs = {
   article: UpdateArticleInput;
   articleId: Scalars['Int'];
 };
 
-export type MutationUpdateDiscoveryArgs = {
-  discovery: UpdateDiscoveryInput;
-  discoveryId: Scalars['Int'];
+
+export type MutationUpdateGuideArgs = {
+  input: UpdateGuideInput;
+  guideId: Scalars['Int'];
 };
 
-export type MutationUpdateDiscoveryStepArgs = {
-  input: UpdateDiscoveryStepInput;
+
+export type MutationUpdateGuideStepArgs = {
+  input: UpdateGuideStepInput;
   stepId: Scalars['Int'];
 };
 
-export type MutationUpdateSubjectArgs = {
-  subject: UpdateSubjectInput;
+
+export type MutationUpdateGuideStepSummaryArgs = {
+  input: UpdateGuideStepSummaryInput;
+  summaryId: Scalars['Int'];
 };
 
-export type MutationUpdateSummaryArgs = {
-  summary: UpdateDiscoverySummaryInput;
+
+export type MutationUpdateSubjectArgs = {
+  input: UpdateSubjectInput;
+  subjectId: Scalars['Int'];
 };
 
 export type CreateSubjectInput = {
+  audienceIDs: Array<Maybe<Scalars['Int']>>;
   title: Scalars['String'];
   description?: Maybe<Scalars['String']>;
-  language: Scalars['String'];
+  language: Language;
 };
 
 export type UpdateSubjectInput = {
-  id: Scalars['Int'];
-  title: Scalars['String'];
+  title?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
-  language: Scalars['String'];
+  language?: Maybe<Language>;
 };
 
-export type CreateDiscoveryInput = {
+export type OrderSubjectInput = {
+  id: Scalars['Int'];
+  orderNum: Scalars['Int'];
+};
+
+export type CreateGuideInput = {
   subjectIDs: Array<Scalars['Int']>;
   title: Scalars['String'];
-  image: Scalars['String'];
-  language: Scalars['String'];
+  headerImage: Scalars['String'];
+  language: Language;
   isPublished?: Maybe<Scalars['Boolean']>;
   actualTime: Scalars['Timestamp'];
   orderNum: Scalars['Int'];
   link?: Maybe<Scalars['String']>;
   stepCount?: Maybe<Scalars['Int']>;
-  audiences: Array<Audiences>;
   editions?: Maybe<Array<Edition>>;
 };
-
-export enum Audiences {
-  NewJob = 'NEW_JOB',
-  Develop = 'DEVELOP',
-  Profile = 'PROFILE',
-  Gigging = 'GIGGING',
-  Help = 'HELP',
-  SwedenJob = 'SWEDEN_JOB',
-}
 
 export enum Edition {
   Beginner = 'BEGINNER',
   Boss = 'BOSS',
-  Government = 'GOVERNMENT',
+  Government = 'GOVERNMENT'
 }
 
-export type UpdateDiscoveryInput = {
+export type UpdateGuideInput = {
   subjectIDs: Array<Scalars['Int']>;
   title: Scalars['String'];
-  image: Scalars['String'];
-  language: Scalars['String'];
+  headerImage: Scalars['String'];
+  language: Language;
   isPublished?: Maybe<Scalars['Boolean']>;
   actualTime: Scalars['Timestamp'];
   orderNum: Scalars['Int'];
   link?: Maybe<Scalars['String']>;
-  audiences: Array<Audiences>;
   editions?: Maybe<Array<Edition>>;
 };
 
-export type CreateDiscoverySummaryInput = {
+export type CreateGuideStepSummaryInput = {
   stepId: Scalars['Int'];
   title: Scalars['String'];
   content: Scalars['String'];
   orderNum: Scalars['Float'];
 };
 
-export type UpdateDiscoverySummaryInput = {
+export type UpdateGuideStepSummaryInput = {
   stepId: Scalars['Int'];
   title: Scalars['String'];
   content: Scalars['String'];
   orderNum: Scalars['Float'];
-  id: Scalars['Int'];
 };
 
-export type DiscoverySummaryOrderInput = {
+export type GuideStepSummaryOrderInput = {
   id: Scalars['Int'];
   orderNum: Scalars['Int'];
 };
 
-export type CreateDiscoveryStepInput = {
-  discoveryId: Scalars['Int'];
+export type CreateGuideStepInput = {
+  guideId: Scalars['Int'];
   title: Scalars['String'];
   description?: Maybe<Scalars['String']>;
+  image: Scalars['String'];
   orderNum: Scalars['Int'];
 };
 
-export type UpdateDiscoveryStepInput = {
+export type UpdateGuideStepInput = {
   title: Scalars['String'];
   description?: Maybe<Scalars['String']>;
+  image: Scalars['String'];
 };
 
-export type DiscoveryStepOrderInput = {
+export type GuideStepOrderInput = {
   id: Scalars['Int'];
   orderNum: Scalars['Int'];
 };
@@ -434,12 +480,14 @@ export type CreateArticleInput = {
   subjectIDs: Array<Scalars['Int']>;
   title: Scalars['String'];
   subTitle?: Maybe<Scalars['String']>;
+  headerImage: Scalars['String'];
   image: Scalars['String'];
   content: Scalars['String'];
-  language: Scalars['String'];
-  isPublished?: Maybe<Scalars['Boolean']>;
+  language: Language;
   actualTime: Scalars['Timestamp'];
-  audiences: Array<Audiences>;
+  readDuration: Scalars['Int'];
+  isPublished?: Maybe<Scalars['Boolean']>;
+  orderNum?: Maybe<Scalars['Int']>;
   editions?: Maybe<Array<Edition>>;
 };
 
@@ -447,331 +495,286 @@ export type UpdateArticleInput = {
   subjectIDs: Array<Scalars['Int']>;
   title: Scalars['String'];
   subTitle?: Maybe<Scalars['String']>;
+  headerImage: Scalars['String'];
   image: Scalars['String'];
   content: Scalars['String'];
-  language: Scalars['String'];
-  isPublished?: Maybe<Scalars['Boolean']>;
+  language: Language;
   actualTime: Scalars['Timestamp'];
-  audiences: Array<Audiences>;
+  readDuration: Scalars['Int'];
+  isPublished?: Maybe<Scalars['Boolean']>;
+  orderNum?: Maybe<Scalars['Int']>;
   editions?: Maybe<Array<Edition>>;
 };
 
-export type GetSubjectListForBothLangQueryVariables = Exact<{ [key: string]: never }>;
-
-export type GetSubjectListForBothLangQuery = {
-  __typename?: 'Query';
-  enSubjects: Array<
-    Maybe<{
-      __typename?: 'Subject';
-      id: number;
-      title: string;
-      description?: Maybe<string>;
-      language: string;
-    }>
-  >;
-  svSubjects: Array<
-    Maybe<{
-      __typename?: 'Subject';
-      id: number;
-      title: string;
-      description?: Maybe<string>;
-      language: string;
-    }>
-  >;
+export type OrderArticleInput = {
+  id: Scalars['Int'];
+  orderNum: Scalars['Int'];
 };
 
-export type GetArticleListQueryVariables = Exact<{ [key: string]: never }>;
+export enum Audiences {
+  NewJob = 'NEW_JOB',
+  Develop = 'DEVELOP',
+  Profile = 'PROFILE',
+  Gigging = 'GIGGING',
+  Help = 'HELP',
+  SwedenJob = 'SWEDEN_JOB'
+}
 
-export type GetArticleListQuery = {
-  __typename?: 'Query';
-  getArticleList: Array<Maybe<{ __typename?: 'Article' } & ArticleFragmentFragment>>;
-};
+export type GetSubjectListForBothLangQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetSubjectListForBothLangQuery = { __typename?: 'Query', enSubjects: Array<Maybe<{ __typename?: 'Subject', id: number, title: string, description?: Maybe<string>, language: Language }>>, svSubjects: Array<Maybe<{ __typename?: 'Subject', id: number, title: string, description?: Maybe<string>, language: Language }>> };
+
+export type GetArticlesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetArticlesQuery = { __typename?: 'Query', getArticles: Array<Maybe<(
+    { __typename?: 'Article' }
+    & ArticleFragmentFragment
+  )>> };
 
 export type DeleteArticleMutationVariables = Exact<{
   articleId: Scalars['Int'];
 }>;
 
-export type DeleteArticleMutation = { __typename?: 'Mutation'; deleteArticle: string };
+
+export type DeleteArticleMutation = { __typename?: 'Mutation', deleteArticle: string };
 
 export type CreateArticleMutationVariables = Exact<{
   article: CreateArticleInput;
 }>;
 
-export type CreateArticleMutation = {
-  __typename?: 'Mutation';
-  createArticle: { __typename?: 'Article' } & ArticleFragmentFragment;
-};
 
-export type CreateDiscoveryMutationVariables = Exact<{
-  discovery: CreateDiscoveryInput;
+export type CreateArticleMutation = { __typename?: 'Mutation', createArticle: (
+    { __typename?: 'Article' }
+    & ArticleFragmentFragment
+  ) };
+
+export type CreateGuideMutationVariables = Exact<{
+  input: CreateGuideInput;
 }>;
 
-export type CreateDiscoveryMutation = {
-  __typename?: 'Mutation';
-  createDiscovery: { __typename?: 'Discovery' } & DiscoveryFragmentFragment;
-};
 
-export type GetDiscoveryListQueryVariables = Exact<{ [key: string]: never }>;
+export type CreateGuideMutation = { __typename?: 'Mutation', createGuide: (
+    { __typename?: 'Guide' }
+    & GuideFragmentFragment
+  ) };
 
-export type GetDiscoveryListQuery = {
-  __typename?: 'Query';
-  getDiscoveryList: Array<
-    Maybe<{ __typename?: 'Discovery' } & DiscoveryFragmentFragment>
-  >;
-};
+export type GetGuidesQueryVariables = Exact<{ [key: string]: never; }>;
 
-export type DeleteDiscoveryMutationVariables = Exact<{
-  discoveryId: Scalars['Int'];
+
+export type GetGuidesQuery = { __typename?: 'Query', getGuides: Array<Maybe<(
+    { __typename?: 'Guide' }
+    & GuideFragmentFragment
+  )>> };
+
+export type DeleteGuideMutationVariables = Exact<{
+  guideId: Scalars['Int'];
 }>;
 
-export type DeleteDiscoveryMutation = {
-  __typename?: 'Mutation';
-  deleteDiscovery: string;
-};
+
+export type DeleteGuideMutation = { __typename?: 'Mutation', deleteGuide: string };
 
 export type GetUploadUrlQueryVariables = Exact<{
   folder: Upload_Folder;
   filename: Scalars['String'];
 }>;
 
-export type GetUploadUrlQuery = {
-  __typename?: 'Query';
-  getUploadUrl: {
-    __typename?: 'UploadOutput';
-    uploadUrl: string;
-    path: string;
-    exp: number;
-  };
-};
+
+export type GetUploadUrlQuery = { __typename?: 'Query', getUploadUrl: { __typename?: 'UploadOutput', uploadUrl: string, path: string, exp: number } };
 
 export type SignInMutationVariables = Exact<{
   identity: Scalars['String'];
   password: Scalars['String'];
 }>;
 
-export type SignInMutation = {
-  __typename?: 'Mutation';
-  auth: { __typename?: 'AuthOutput'; token: string };
-};
+
+export type SignInMutation = { __typename?: 'Mutation', auth: { __typename?: 'AuthOutput', token: string } };
 
 export type SetAuthorizedMutationVariables = Exact<{
   isAuthorized: Scalars['Boolean'];
 }>;
 
-export type SetAuthorizedMutation = { __typename?: 'Mutation'; setAuthorized: boolean };
+
+export type SetAuthorizedMutation = { __typename?: 'Mutation', setAuthorized: boolean };
+
+export type GetAudiencesForBothLangQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAudiencesForBothLangQuery = { __typename?: 'Query', enAudiences: Array<Maybe<{ __typename?: 'Audience', id: number, title: string, language: Language }>>, svAudiences: Array<Maybe<{ __typename?: 'Audience', id: number, title: string, language: Language }>> };
 
 export type CreateSubjectMutationVariables = Exact<{
-  subject: CreateSubjectInput;
+  input: CreateSubjectInput;
 }>;
 
-export type CreateSubjectMutation = {
-  __typename?: 'Mutation';
-  createSubject: { __typename?: 'Subject' } & SubjectFragmentFragment;
-};
+
+export type CreateSubjectMutation = { __typename?: 'Mutation', createSubject: (
+    { __typename?: 'Subject' }
+    & SubjectFragmentFragment
+  ) };
 
 export type UpdateSubjectMutationVariables = Exact<{
-  subject: UpdateSubjectInput;
+  input: UpdateSubjectInput;
+  subjectId: Scalars['Int'];
 }>;
 
-export type UpdateSubjectMutation = {
-  __typename?: 'Mutation';
-  updateSubject: { __typename?: 'Subject' } & SubjectFragmentFragment;
-};
+
+export type UpdateSubjectMutation = { __typename?: 'Mutation', updateSubject: (
+    { __typename?: 'Subject' }
+    & SubjectFragmentFragment
+  ) };
 
 export type DeleteSubjectMutationVariables = Exact<{
   subjectId: Scalars['Int'];
 }>;
 
-export type DeleteSubjectMutation = { __typename?: 'Mutation'; deleteSubject: string };
+
+export type DeleteSubjectMutation = { __typename?: 'Mutation', deleteSubject: boolean };
 
 export type GetArticleQueryVariables = Exact<{
   articleId: Scalars['Int'];
 }>;
 
-export type GetArticleQuery = {
-  __typename?: 'Query';
-  getArticle?: Maybe<{ __typename?: 'Article' } & ArticleFragmentFragment>;
-};
+
+export type GetArticleQuery = { __typename?: 'Query', getArticle?: Maybe<(
+    { __typename?: 'Article' }
+    & ArticleFragmentFragment
+  )> };
 
 export type UpdateArticleMutationVariables = Exact<{
   article: UpdateArticleInput;
   articleId: Scalars['Int'];
 }>;
 
-export type UpdateArticleMutation = {
-  __typename?: 'Mutation';
-  updateArticle: { __typename?: 'Article' } & ArticleFragmentFragment;
-};
 
-export type CreateSummaryMutationVariables = Exact<{
-  summary: CreateDiscoverySummaryInput;
+export type UpdateArticleMutation = { __typename?: 'Mutation', updateArticle: (
+    { __typename?: 'Article' }
+    & ArticleFragmentFragment
+  ) };
+
+export type CreateGuideStepSummaryMutationVariables = Exact<{
+  input: CreateGuideStepSummaryInput;
 }>;
 
-export type CreateSummaryMutation = {
-  __typename?: 'Mutation';
-  createSummary: { __typename?: 'Summary' } & SummaryFragmentFragment;
-};
 
-export type DeleteSummaryMutationVariables = Exact<{
+export type CreateGuideStepSummaryMutation = { __typename?: 'Mutation', createGuideStepSummary: (
+    { __typename?: 'GuideStepSummary' }
+    & SummaryFragmentFragment
+  ) };
+
+export type DeleteGuideStepSummaryMutationVariables = Exact<{
   summaryId: Scalars['Int'];
 }>;
 
-export type DeleteSummaryMutation = { __typename?: 'Mutation'; deleteSummary: string };
 
-export type CreateStepMutationVariables = Exact<{
-  input: CreateDiscoveryStepInput;
+export type DeleteGuideStepSummaryMutation = { __typename?: 'Mutation', deleteGuideStepSummary: boolean };
+
+export type CreateGuideStepMutationVariables = Exact<{
+  input: CreateGuideStepInput;
 }>;
 
-export type CreateStepMutation = {
-  __typename?: 'Mutation';
-  createStep: {
-    __typename?: 'Step';
-    id: number;
-    discoveryId?: Maybe<number>;
-    title: string;
-    description: string;
-    orderNum: number;
-  };
-};
 
-export type DeleteStepMutationVariables = Exact<{
+export type CreateGuideStepMutation = { __typename?: 'Mutation', createGuideStep: { __typename?: 'GuideStep', id: number, guideId: number, title: string, description: string, orderNum: number } };
+
+export type DeleteGuideStepMutationVariables = Exact<{
   stepId: Scalars['Int'];
 }>;
 
-export type DeleteStepMutation = { __typename?: 'Mutation'; deleteStep: string };
 
-export type SortDiscoverySummariesMutationVariables = Exact<{
-  order: Array<DiscoverySummaryOrderInput>;
+export type DeleteGuideStepMutation = { __typename?: 'Mutation', deleteGuideStep: boolean };
+
+export type SortGuideSummariesMutationVariables = Exact<{
+  order: Array<GuideStepSummaryOrderInput>;
 }>;
 
-export type SortDiscoverySummariesMutation = {
-  __typename?: 'Mutation';
-  sortDiscoverySummaries: boolean;
-};
 
-export type SortDiscoveryStepsMutationVariables = Exact<{
-  order: Array<DiscoveryStepOrderInput>;
+export type SortGuideSummariesMutation = { __typename?: 'Mutation', sortGuideStepSummaries: boolean };
+
+export type SortGuideStepsMutationVariables = Exact<{
+  order: Array<GuideStepOrderInput>;
 }>;
 
-export type SortDiscoveryStepsMutation = {
-  __typename?: 'Mutation';
-  sortDiscoverySteps: boolean;
-};
+
+export type SortGuideStepsMutation = { __typename?: 'Mutation', sortGuideSteps: boolean };
 
 export type GetGuideQueryVariables = Exact<{
-  discoveryId: Scalars['Int'];
+  guideId: Scalars['Int'];
 }>;
 
-export type GetGuideQuery = {
-  __typename?: 'Query';
-  getDiscovery?: Maybe<{ __typename?: 'Discovery' } & DiscoveryFragmentFragment>;
-};
 
-export type UpdateDiscoveryMutationVariables = Exact<{
-  discovery: UpdateDiscoveryInput;
-  discoveryId: Scalars['Int'];
+export type GetGuideQuery = { __typename?: 'Query', getGuide?: Maybe<(
+    { __typename?: 'Guide' }
+    & GuideFragmentFragment
+  )> };
+
+export type UpdateGuideMutationVariables = Exact<{
+  input: UpdateGuideInput;
+  guideId: Scalars['Int'];
 }>;
 
-export type UpdateDiscoveryMutation = {
-  __typename?: 'Mutation';
-  updateDiscovery: { __typename?: 'Discovery' } & DiscoveryFragmentFragment;
-};
 
-export type UpdateSummaryMutationVariables = Exact<{
-  summary: UpdateDiscoverySummaryInput;
+export type UpdateGuideMutation = { __typename?: 'Mutation', updateGuide: (
+    { __typename?: 'Guide' }
+    & GuideFragmentFragment
+  ) };
+
+export type UpdateGuideStepSummaryMutationVariables = Exact<{
+  input: UpdateGuideStepSummaryInput;
+  summaryId: Scalars['Int'];
 }>;
 
-export type UpdateSummaryMutation = {
-  __typename?: 'Mutation';
-  updateSummary: { __typename?: 'Summary' } & SummaryFragmentFragment;
-};
 
-export type UpdateDiscoveryStepMutationVariables = Exact<{
-  input: UpdateDiscoveryStepInput;
+export type UpdateGuideStepSummaryMutation = { __typename?: 'Mutation', updateGuideStepSummary: (
+    { __typename?: 'GuideStepSummary' }
+    & SummaryFragmentFragment
+  ) };
+
+export type UpdateGuideStepMutationVariables = Exact<{
+  input: UpdateGuideStepInput;
   stepId: Scalars['Int'];
 }>;
 
-export type UpdateDiscoveryStepMutation = {
-  __typename?: 'Mutation';
-  updateDiscoveryStep: boolean;
-};
 
-export type SubjectFragmentFragment = {
-  __typename?: 'Subject';
-  id: number;
-  title: string;
-  description?: Maybe<string>;
-  language: string;
-};
+export type UpdateGuideStepMutation = { __typename?: 'Mutation', updateGuideStep: boolean };
 
-export type EditionFragmentFragment = {
-  __typename?: 'SpecialEdition';
-  id: number;
-  type: string;
-};
+export type AudienceFragmentFragment = { __typename?: 'Audience', id: number, title: string, language: Language };
 
-export type AudienceFragmentFragment = {
-  __typename?: 'Audience';
-  id: number;
-  type: string;
-};
+export type EditionFragmentFragment = { __typename?: 'SpecialEdition', id: number, type: string };
 
-export type ArticleFragmentFragment = {
-  __typename?: 'Article';
-  id: number;
-  title: string;
-  subTitle?: Maybe<string>;
-  image: string;
-  content: string;
-  language: string;
-  actualTime: any;
-  isPublished: boolean;
-  audiences: Array<Maybe<{ __typename?: 'Audience' } & AudienceFragmentFragment>>;
-  editions: Array<Maybe<{ __typename?: 'SpecialEdition' } & EditionFragmentFragment>>;
-  subjects: Array<Maybe<{ __typename?: 'Subject' } & SubjectFragmentFragment>>;
-};
+export type SubjectFragmentFragment = { __typename?: 'Subject', id: number, title: string, description?: Maybe<string>, language: Language };
 
-export type SummaryFragmentFragment = {
-  __typename?: 'Summary';
-  id: number;
-  stepId: number;
-  orderNum: number;
-  title: string;
-  content: string;
-};
+export type ArticleFragmentFragment = { __typename?: 'Article', id: number, title: string, subTitle?: Maybe<string>, image: string, content: string, language: Language, actualTime: any, isPublished: boolean, readDuration: number, editions: Array<Maybe<(
+    { __typename?: 'SpecialEdition' }
+    & EditionFragmentFragment
+  )>>, subjects: Array<Maybe<(
+    { __typename?: 'Subject' }
+    & SubjectFragmentFragment
+  )>> };
 
-export type StepFragmentFragment = {
-  __typename?: 'Step';
-  id: number;
-  discoveryId?: Maybe<number>;
-  title: string;
-  description: string;
-  orderNum: number;
-  summaries: Array<Maybe<{ __typename?: 'Summary' } & SummaryFragmentFragment>>;
-};
+export type SummaryFragmentFragment = { __typename?: 'GuideStepSummary', id: number, stepId: number, orderNum: number, title: string, content: string };
 
-export type DiscoveryFragmentFragment = {
-  __typename?: 'Discovery';
-  id: number;
-  title: string;
-  image: string;
-  language: string;
-  orderNum: number;
-  link?: Maybe<string>;
-  isPublished: boolean;
-  actualTime: any;
-  steps: Array<Maybe<{ __typename?: 'Step' } & StepFragmentFragment>>;
-  audiences?: Maybe<Array<Maybe<{ __typename?: 'Audience' } & AudienceFragmentFragment>>>;
-  editions?: Maybe<
-    Array<Maybe<{ __typename?: 'SpecialEdition' } & EditionFragmentFragment>>
-  >;
-  subjects: Array<Maybe<{ __typename?: 'Subject' } & SubjectFragmentFragment>>;
-};
+export type StepFragmentFragment = { __typename?: 'GuideStep', id: number, guideId: number, title: string, description: string, image: string, orderNum: number, summaries: Array<Maybe<(
+    { __typename?: 'GuideStepSummary' }
+    & SummaryFragmentFragment
+  )>> };
 
-export type Unnamed_1_QueryVariables = Exact<{ [key: string]: never }>;
+export type GuideFragmentFragment = { __typename?: 'Guide', id: number, title: string, headerImage: string, language: Language, orderNum: number, link?: Maybe<string>, isPublished: boolean, steps: Array<Maybe<(
+    { __typename?: 'GuideStep' }
+    & StepFragmentFragment
+  )>>, editions?: Maybe<Array<Maybe<(
+    { __typename?: 'SpecialEdition' }
+    & EditionFragmentFragment
+  )>>>, subjects: Array<Maybe<(
+    { __typename?: 'Subject' }
+    & SubjectFragmentFragment
+  )>> };
 
-export type Unnamed_1_Query = { __typename?: 'Query'; isAuthorized: boolean };
+export type Unnamed_1_QueryVariables = Exact<{ [key: string]: never; }>;
 
-export type IsAuthorizedQueryVariables = Exact<{ [key: string]: never }>;
 
-export type IsAuthorizedQuery = { __typename?: 'Query'; isAuthorized: boolean };
+export type Unnamed_1_Query = { __typename?: 'Query', isAuthorized: boolean };
+
+export type IsAuthorizedQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type IsAuthorizedQuery = { __typename?: 'Query', isAuthorized: boolean };

@@ -5,6 +5,7 @@ import { Upload, message } from 'antd';
 import { UploadChangeParam, UploadFile } from 'antd/lib/upload/interface';
 import ImgCrop from 'antd-img-crop';
 import Compressor from 'compressorjs';
+import { LoadingOutlined, UploadOutlined } from '@ant-design/icons';
 
 import { useImperativeQuery } from 'core/hooks/apollo';
 import {
@@ -13,7 +14,6 @@ import {
   Upload_Folder,
   UploadOutput,
 } from 'core/models/generated';
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 
 import sty from './ImageUpload.module.scss';
 
@@ -88,7 +88,7 @@ const ImageUpload = React.forwardRef<Upload, ImageUploadProps>(
         quality: 1,
         success: (resultFile: any) => {
           uploadToTheServer(action, resultFile, onSuccess, onError);
-        }
+        },
       });
 
       // uploadToTheServer(action, file, onSuccess, onError);
@@ -106,8 +106,8 @@ const ImageUpload = React.forwardRef<Upload, ImageUploadProps>(
 
     const uploadButton = (
       <div>
-        {isLoading ? <LoadingOutlined /> : <PlusOutlined />}
-        <div className="ant-upload-text">Upload</div>
+        {isLoading ? <LoadingOutlined /> : <UploadOutlined />}{' '}
+        <span className="ant-upload-text">Upload</span>
       </div>
     );
 

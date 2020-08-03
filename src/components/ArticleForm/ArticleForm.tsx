@@ -1,36 +1,37 @@
 import React from 'react';
 import { useQuery } from '@apollo/react-hooks';
-import { Form, Input, Select, Checkbox, Card, Row, Col, Switch, InputNumber } from 'antd';
+import {
+  Form,
+  Input,
+  Select,
+  Checkbox,
+  Card,
+  Row,
+  Col,
+  Switch,
+  InputNumber,
+} from 'antd';
 import { gql } from 'apollo-boost';
 import { useForm } from 'antd/lib/form/Form';
 
-import { FormProps, Option } from 'core/models';
-import {
-  langOptions,
-  audienceOptions,
-  editionOptions,
-  Language,
-  Audiences,
-} from 'core/global';
+import { FormProps } from 'core/models';
+import { langOptions, editionOptions, Language } from 'core/global';
+import { SubjectFragment } from 'core/graphql/fragments';
+
 import RichEditor from 'components/RichEditor';
 import RadioButtons from 'components/RadioButtons';
 import ImageUpload from 'components/ImageUpload';
 
-export const GET_SUBJECTS_LIST = gql`
+export const GET_SUBJECTS = gql`
   query GetSubjectListForBothLang {
-    enSubjects: getSubjectList(language: "en") {
-      id
-      title
-      description
-      language
+    enSubjects: getSubjects(language: "en") {
+      ...SubjectFragment
     }
-    svSubjects: getSubjectList(language: "sv") {
-      id
-      title
-      description
-      language
+    svSubjects: getSubjects(language: "sv") {
+      ...SubjectFragment
     }
   }
+  ${SubjectFragment}
 `;
 
 export interface ArticleFormProps extends FormProps {}
@@ -47,36 +48,32 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
   const [internalForm] = useForm(form);
 
   const [isEnglish, setEnglish] = React.useState(initialValues.language === Language.EN);
-  const subjectsStatus = useQuery(GET_SUBJECTS_LIST);
+  const subjectsStatus = useQuery(GET_SUBJECTS);
 
   const subjectOptions = React.useMemo(() => {
-    const { data } = subjectsStatus;
-    return (
-      (isEnglish ? data?.enSubjects : data?.svSubjects) || []
-    ).map(({ title, id }) => ({ label: title, value: id }));
-  }, [isEnglish, subjectsStatus]);
+    const subjects = isEnglish
+      ? subjectsStatus.data?.enSubjects
+      : subjectsStatus.data?.svSubjects;
+    return (subjects || []).map(sbj => ({ label: sbj.title, value: sbj.id }));
+  }, [isEnglish, subjectsStatus.data]);
 
-  console.log('subjectOptions: ', subjectOptions);
+  // const curAudienceOptions = React.useMemo<Option[]>(() => {
+  //   return audienceOptions.map(audience => {
+  //     if (isEnglish) {
+  //       return { ...audience, disabled: true };
+  //     }
 
-  const curAudienceOptions = React.useMemo<Option[]>(() => {
-    return audienceOptions.map(audience => {
-      if (isEnglish) {
-        return { ...audience, disabled: true };
-      }
+  //     if (audience.value === Audiences.SWEDEN_JOB) {
+  //       return { ...audience, disabled: true };
+  //     }
 
-      if (audience.value === Audiences.SWEDEN_JOB) {
-        return { ...audience, disabled: true };
-      }
-
-      return audience;
-    });
-  }, [isEnglish]);
+  //     return audience;
+  //   });
+  // }, [isEnglish]);
 
   const handleLangChange = ({ target }) => {
-    const nextIsEnglish = target.value === Language.EN;
-    const audiences = nextIsEnglish ? [Audiences.SWEDEN_JOB] : [];
-    internalForm.setFieldsValue({ audiences });
-    setEnglish(nextIsEnglish);
+    setEnglish(target.value === Language.EN);
+    internalForm.setFieldsValue({ subjectIDs: [] });
   };
 
   return (
@@ -130,15 +127,23 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
             </Form.Item>
 
             <Form.Item
-              label="Image"
-              name="image"
-              rules={[{ required: true, message: 'Please add image!' }]}
+              label="Header Image"
+              name="headerImage"
+              rules={[{ required: true, message: 'Please add header image!' }]}
             >
               <ImageUpload />
             </Form.Item>
 
             <Form.Item
-              label="Duration"
+              label="Preview Image"
+              name="image"
+              rules={[{ required: true, message: 'Please add preview image!' }]}
+            >
+              <ImageUpload />
+            </Form.Item>
+
+            <Form.Item
+              label="Minutes Read"
               name="readDuration"
               rules={[{ required: true, message: 'Please set duration!' }]}
             >
@@ -153,7 +158,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
               />
             </Form.Item>
 
-            <Form.Item
+            {/*<Form.Item
               label="Audiences"
               name="audiences"
               rules={[{ required: true, message: 'Please select at least 1 audience!' }]}
@@ -169,7 +174,8 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
                   ))}
                 </Row>
               </Checkbox.Group>
-            </Form.Item>
+            </Form.Item> */}
+
             <Form.Item
               label="Subject"
               name="subjectIDs"

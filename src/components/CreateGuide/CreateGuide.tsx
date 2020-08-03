@@ -5,23 +5,19 @@ import { useMutation } from '@apollo/react-hooks';
 import { Button } from 'antd';
 import { useHistory } from 'react-router-dom';
 
-import { DiscoveryFragment } from 'core/graphql/fragments';
-import {
-  CreateDiscoveryMutationVariables,
-  CreateDiscoveryMutation,
-} from 'core/models/generated';
+import { GuideFragment } from 'core/graphql/fragments';
 
 import Toolbar, { Breadcrumb } from 'components/Toolbar';
 import GuidesForm from 'components/GuidesForm';
-import { GET_GUIDES_LIST } from 'components/Guides';
+import { GET_GUIDES } from 'components/Guides';
 
 export const CREATE_GUIDE = gql`
-  mutation CreateDiscovery($discovery: CreateDiscoveryInput!) {
-    createDiscovery(discovery: $discovery) {
-      ...DiscoveryFragment
+  mutation CreateGuide($input: CreateGuideInput!) {
+    createGuide(input: $input) {
+      ...GuideFragment
     }
   }
-  ${DiscoveryFragment}
+  ${GuideFragment}
 `;
 
 export interface CreateGuideProps {}
@@ -30,12 +26,9 @@ const CreateGuide: React.FC<CreateGuideProps> = () => {
   const history = useHistory();
   const [form] = useForm();
 
-  const [createGuide, createGuideStatus] = useMutation<
-    CreateDiscoveryMutation,
-    CreateDiscoveryMutationVariables
-  >(CREATE_GUIDE, {
-    refetchQueries: [{ query: GET_GUIDES_LIST }],
-    onCompleted: ({ createDiscovery: { id } }) => {
+  const [createGuide, createGuideStatus] = useMutation(CREATE_GUIDE, {
+    refetchQueries: [{ query: GET_GUIDES }],
+    onCompleted: ({ createGuide: { id } }) => {
       history.push(`/guides/${id}`);
     },
   });

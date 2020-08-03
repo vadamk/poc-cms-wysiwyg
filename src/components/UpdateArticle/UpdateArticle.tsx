@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
-import { Spin, message, Button } from 'antd';
+import { Spin, message, Button, Empty } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { useHistory } from 'react-router-dom';
 
@@ -47,18 +47,22 @@ const UpdateArticle: React.FC<UpdateArticleProps> = () => {
   const { data, loading } = useQuery(GET_ARTICLE, {
     variables: { articleId: Number(slug) },
     onCompleted: data => {
-      const { editions, audiences, subjects, ...rest } = data?.getArticle;
+      if (!data?.getArticle) {
+        return null;
+      }
+
+      const { editions, subjects, ...rest } = data?.getArticle;
 
       const formData = {
         ...rest,
         editions: editions.map(ed => Edition[ed.type.trim()]),
-        audiences: audiences.map(ad => ad.type),
         subjectIDs: subjects.map(s => s.id),
       };
 
       setFormData(formData);
     },
   });
+  console.log('data: ', data);
 
   const breadcrumbs = React.useMemo<Breadcrumb[]>(() => {
     return [{ path: '/articles', breadcrumbName: 'Articles' }];
@@ -85,16 +89,20 @@ const UpdateArticle: React.FC<UpdateArticleProps> = () => {
 
   return (
     <>
-      <Toolbar title="Update Article" breadcrumbs={breadcrumbs} extra={actionButtons} />
+      <Toolbar
+        title="Update Article"
+        breadcrumbs={breadcrumbs}
+        extra={formData && actionButtons}
+      />
       <Spin spinning={loading}>
-        {formData && (
+        {formData ? (
           <ArticleForm
             form={form}
             initialValues={formData}
             isSubmitting={updateArticleStatus.loading}
             onSubmit={handleSubmit}
           />
-        )}
+        ) : <Empty description="Article has not been found." />}
       </Spin>
     </>
   );

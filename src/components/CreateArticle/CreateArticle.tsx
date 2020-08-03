@@ -9,7 +9,7 @@ import { ArticleFragment } from 'core/graphql/fragments';
 
 import Toolbar, { Breadcrumb } from 'components/Toolbar';
 import ArticleForm from 'components/ArticleForm';
-import { GET_ARTICLES_LIST } from 'components/Articles';
+import { GET_ARTICLES } from 'components/Articles';
 
 export const CREATE_ARTICLE = gql`
   mutation CreateArticle($article: CreateArticleInput!) {
@@ -31,7 +31,7 @@ const CreateArticle: React.FC<CreateArticleProps> = () => {
       message.success('Article has been created.');
       history.push('/articles');
     },
-    refetchQueries: [{ query: GET_ARTICLES_LIST }],
+    refetchQueries: [{ query: GET_ARTICLES }],
   });
 
   const breadcrumbs = React.useMemo<Breadcrumb[]>(() => {

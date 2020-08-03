@@ -4,6 +4,7 @@ import { Form, Input } from 'antd';
 import { FormProps } from 'core/models';
 
 import { useForm } from 'antd/lib/form/Form';
+import ImageUpload from 'components/ImageUpload';
 
 export interface StepFormProps extends FormProps {}
 
@@ -35,6 +36,15 @@ const StepForm: React.FC<StepFormProps> = ({
           placeholder="Please input title"
         />
       </Form.Item>
+
+      <Form.Item
+        label="Preview Image"
+        name="image"
+        rules={[{ required: true, message: 'Please add image!' }]}
+      >
+        <ImageUpload />
+      </Form.Item>
+
       <Form.Item
         label="Description"
         name="description"

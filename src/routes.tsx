@@ -24,6 +24,16 @@ import UpdateGuide from 'components/UpdateGuide';
 const GET_AUTHORIZED = gql`
   query IsAuthorized {
     isAuthorized @client
+    enAudiences: getAudiences(language: "en") {
+      id
+      title
+      language
+    }
+    svAudiences: getAudiences(language: "sv") {
+      id
+      title
+      language
+    }
   }
 `;
 
@@ -40,6 +50,10 @@ const CustomRoute = ({ children, allow = true, redirect, ...rest }: PrivatRouteP
 
 const Routes = () => {
   const { data } = useQuery(GET_AUTHORIZED);
+
+  if (data === undefined) {
+    return null;
+  }
 
   return (
     <Router>
