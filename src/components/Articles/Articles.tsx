@@ -14,7 +14,7 @@ import {
 import { getFromLocalStorage, saveInLocalStorage } from 'core/services/browser';
 import { ArticleFragment } from 'core/graphql/fragments';
 import { localStorageKeys, Language } from 'core/global';
-import { getEditionOptions, getAudienceOptions } from 'core/utils';
+import { getEditionOptions, getSubjectsOptions } from 'core/utils';
 import { RadioChangeEvent } from 'antd/lib/radio';
 
 import Toolbar from 'components/Toolbar';
@@ -39,9 +39,9 @@ const viewOptions = [
   { label: 'Table', value: ViewMode.TABLE },
 ];
 
-export const GET_ARTICLES_LIST = gql`
-  query GetArticleList {
-    getArticleList {
+export const GET_ARTICLES = gql`
+  query GetArticles {
+    getArticles {
       ...ArticleFragment
     }
   }
@@ -60,7 +60,7 @@ const Articles: React.FC<ArticlesProps> = () => {
   const history = useHistory();
 
   const [viewMode, setViewMode] = React.useState<ViewMode>(ViewMode.TABLE);
-  const { data, loading, refetch } = useQuery(GET_ARTICLES_LIST, {
+  const { data, loading, refetch } = useQuery(GET_ARTICLES, {
     pollInterval: 10000,
   });
 
@@ -79,7 +79,7 @@ const Articles: React.FC<ArticlesProps> = () => {
   });
 
   const articles = React.useMemo(() => {
-    return (data?.getArticleList || []).sort((a, b) => b.actualTime - a.actualTime);
+    return (data?.getArticles || []).sort((a, b) => b.actualTime - a.actualTime);
   }, [data]);
 
   const deleteRequest = (article: any) => {
@@ -193,11 +193,11 @@ const Articles: React.FC<ArticlesProps> = () => {
             )}
           />
           <Column
-            title="Audiences"
-            dataIndex="audiences"
-            key="audiences"
+            title="Subjects"
+            dataIndex="subjects"
+            key="subjects"
             width={220}
-            render={text => <Tags options={getAudienceOptions(text)} />}
+            render={subjects => <Tags options={getSubjectsOptions(subjects)} />}
           />
           <Column
             title="Editions"

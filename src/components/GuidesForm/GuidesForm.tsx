@@ -1,31 +1,13 @@
 import React from 'react';
 import { useQuery } from '@apollo/react-hooks';
-import {
-  Form,
-  Input,
-  Select,
-  Button,
-  Space,
-  Checkbox,
-  InputNumber,
-  Switch,
-  Card,
-  Col,
-  Row,
-} from 'antd';
+import { Form, Input, Select, Checkbox, InputNumber, Switch, Card, Col, Row } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { Link } from 'react-router-dom';
 // import slugify from 'slugify';
 
-import { FormProps, Option } from 'core/models';
-import {
-  langOptions,
-  audienceOptions,
-  editionOptions,
-  Language,
-  Audiences,
-} from 'core/global';
-import { GET_SUBJECTS_LIST } from 'components/ArticleForm';
+import { FormProps } from 'core/models';
+import { langOptions, editionOptions, Language, Audiences } from 'core/global';
+import { GET_SUBJECTS } from 'components/ArticleForm';
 import RadioButtons from 'components/RadioButtons';
 import ImageUpload from 'components/ImageUpload';
 
@@ -47,29 +29,28 @@ const GuideForm: React.FC<GuideFormProps> = ({
 
   const [isEnglish, setEnglish] = React.useState(initialValues.language === Language.EN);
   // const [title, setTitle] = React.useState(initialValues.title);
-  const subjectsStatus = useQuery(GET_SUBJECTS_LIST);
+  const subjectsStatus = useQuery(GET_SUBJECTS);
 
   const subjectOptions = React.useMemo(() => {
     const { data } = subjectsStatus;
-    console.log('data: ', data);
     return (
       (isEnglish ? data?.enSubjects : data?.svSubjects) || []
     ).map(({ title, id }) => ({ label: title, value: id }));
   }, [isEnglish, subjectsStatus]);
 
-  const curAudienceOptions = React.useMemo<Option[]>(() => {
-    return audienceOptions.map(audience => {
-      if (isEnglish) {
-        return { ...audience, disabled: true };
-      }
+  // const curAudienceOptions = React.useMemo<Option[]>(() => {
+  //   return audienceOptions.map(audience => {
+  //     if (isEnglish) {
+  //       return { ...audience, disabled: true };
+  //     }
 
-      if (audience.value === Audiences.SWEDEN_JOB) {
-        return { ...audience, disabled: true };
-      }
+  //     if (audience.value === Audiences.SWEDEN_JOB) {
+  //       return { ...audience, disabled: true };
+  //     }
 
-      return audience;
-    });
-  }, [isEnglish]);
+  //     return audience;
+  //   });
+  // }, [isEnglish]);
 
   // const slug = React.useMemo(() => {
   //   return slugify(title || '', {
@@ -137,8 +118,8 @@ const GuideForm: React.FC<GuideFormProps> = ({
             )}
 
             <Form.Item
-              label="Image"
-              name="image"
+              label="Header Image"
+              name="headerImage"
               rules={[{ required: true, message: 'Please add image!' }]}
             >
               <ImageUpload />
@@ -151,7 +132,7 @@ const GuideForm: React.FC<GuideFormProps> = ({
                 onChange={handleLangChange}
               />
             </Form.Item>
-
+            {/* 
             <Form.Item
               label="Audiences"
               name="audiences"
@@ -168,7 +149,7 @@ const GuideForm: React.FC<GuideFormProps> = ({
                   ))}
                 </Row>
               </Checkbox.Group>
-            </Form.Item>
+            </Form.Item> */}
 
             <Form.Item
               label="Subject"

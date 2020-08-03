@@ -13,21 +13,21 @@ import { removeTypeName } from 'core/utils';
 
 import Toolbar from 'components/Toolbar';
 import CrudMenu from 'components/CrudMenu';
+import { GET_SUBJECTS } from 'components/ArticleForm';
 
 import CreateSubjectForm from './CreateSubjectForm';
 
 import sty from './Subjects.module.scss';
-import { GET_SUBJECTS_LIST } from 'components/ArticleForm';
 
 const { TabPane } = Tabs;
 
 const isEmptySubject = (subject: Subject) => {
-  return ![subject.articles, subject.discoveries].some(arr => arr && arr.length);
+  return ![subject.articles, subject.guides].some(arr => arr && arr.length);
 };
 
 export const CREATE_SUBJECT = gql`
-  mutation CreateSubject($subject: CreateSubjectInput!) {
-    createSubject(subject: $subject) {
+  mutation CreateSubject($input: CreateSubjectInput!) {
+    createSubject(input: $input) {
       ...SubjectFragment
     }
   }
@@ -35,8 +35,8 @@ export const CREATE_SUBJECT = gql`
 `;
 
 export const UPDATE_SUBJECT = gql`
-  mutation UpdateSubject($subject: UpdateSubjectInput!) {
-    updateSubject(subject: $subject) {
+  mutation UpdateSubject($input: UpdateSubjectInput!, $subjectId: Int!) {
+    updateSubject(input: $input, subjectId: $subjectId) {
       ...SubjectFragment
     }
   }
@@ -59,12 +59,14 @@ const Subjects: React.FC<SubjectsProps> = () => {
   const [createForm] = useForm();
   const [updateForm] = useForm();
 
-  const { data, loading, refetch } = useQuery(GET_SUBJECTS_LIST);
+  const { data, loading, refetch } = useQuery(GET_SUBJECTS);
 
   const [createSubject, createSubjectStatus] = useMutation(CREATE_SUBJECT, {
-    onCompleted: () => {
+    onCompleted: ({ createSubject: { language } }) => {
+      console.log('language: ', language);
       refetch();
       cancelCreating();
+      setActiveTab(language);
       message.success('Subject has been created.');
     },
   });
@@ -86,12 +88,13 @@ const Subjects: React.FC<SubjectsProps> = () => {
   });
 
   const subjects = React.useMemo(() => {
-    return (activeTab === 'en' ? data?.enSubjects : data?.svSubjects) || [];
+    return (activeTab === 'en' ? data?.enSubjects : data?.svSubjects)?.reverse() || [];
   }, [activeTab, data]);
 
-  const startCreating = () => {
+  const startCreating = React.useCallback(() => {
     setCreating(true);
-  };
+    updateForm.setFieldsValue({ language: activeTab });
+  }, [activeTab, updateForm]);
 
   const cancelCreating = () => {
     createForm.resetFields();
@@ -100,13 +103,14 @@ const Subjects: React.FC<SubjectsProps> = () => {
 
   const handleCreate = () => {
     createForm.validateFields().then((values: FormValues) => {
-      createSubject({ variables: { subject: values } });
+      createSubject({ variables: { input: values } });
     });
   };
 
   const startUpdating = (subject: any) => {
     setEditableSubject(subject);
-    updateForm.setFieldsValue(subject);
+    const { audiences, ...rest } = subject;
+    updateForm.setFieldsValue({ audienceIDs: audiences.map(a => a.id), ...rest });
   };
 
   const cancelUpdating = () => {
@@ -116,16 +120,38 @@ const Subjects: React.FC<SubjectsProps> = () => {
 
   const handleUpdate = () => {
     updateForm.validateFields().then((values: FormValues) => {
+      console.log('values: ', values);
+      const { id: subjectId, ...rest } = editableSubject;
       updateSubject({
         variables: {
-          subject: { ...removeTypeName(editableSubject), ...values },
+          input: { ...removeTypeName(rest), ...values },
+          subjectId,
         },
       });
     });
   };
 
   const deleteRequest = React.useCallback(
-    (subject: any) => {
+    (subject?: Subject) => {
+      if (!subject) {
+        console.warn('No Subject to delete');
+        return;
+      }
+
+      const { articles, guides } = subject;
+
+      if (articles.length !== 0 || guides.length !== 0) {
+        Modal.warn({
+          title: (
+            <span>
+              You can not delete this subjects!{' '}
+              This subject is assigned to articles or guides.
+              <Typography.Text mark>{subject.title}</Typography.Text>?
+            </span>
+          ),
+        });
+      }
+
       Modal.confirm({
         title: (
           <span>
@@ -155,7 +181,7 @@ const Subjects: React.FC<SubjectsProps> = () => {
         Create
       </Button>
     ),
-    [],
+    [startCreating],
   );
 
   return (
@@ -164,7 +190,7 @@ const Subjects: React.FC<SubjectsProps> = () => {
         title="Subject"
         footer={
           <div className={sty.pageHeader}>
-            <Tabs defaultActiveKey={String(activeTab)} onChange={handleChangeTab}>
+            <Tabs activeKey={String(activeTab)} onChange={handleChangeTab}>
               <TabPane tab="Swedish" key="sv" />
               <TabPane tab="English" key="en" />
             </Tabs>
@@ -184,11 +210,11 @@ const Subjects: React.FC<SubjectsProps> = () => {
           dataIndex="action"
           key="action"
           width={45}
-          render={(_, record: Subject) => (
+          render={(_, subject: Subject) => (
             <CrudMenu
-              data={record}
+              data={subject}
               onEdit={startUpdating}
-              onDelete={isEmptySubject(record) ? deleteRequest : undefined}
+              onDelete={deleteRequest}
             >
               <Button type="text" icon={<MoreOutlined />} shape="circle" />
             </CrudMenu>
@@ -198,6 +224,7 @@ const Subjects: React.FC<SubjectsProps> = () => {
 
       {/* Create Subject Modal */}
       <Modal
+        destroyOnClose
         style={{ top: 30 }}
         width={640}
         title="Create a new subject"

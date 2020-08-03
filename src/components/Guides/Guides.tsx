@@ -5,11 +5,10 @@ import { gql } from 'apollo-boost';
 import { PlusOutlined, MoreOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 
-import { getAudienceOptions, getEditionOptions } from 'core/utils';
-import { DiscoveryFragment } from 'core/graphql/fragments';
+import { getEditionOptions } from 'core/utils';
+import { GuideFragment } from 'core/graphql/fragments';
 
 import Toolbar from 'components/Toolbar';
-import { Discovery, GetDiscoveryListQuery } from 'core/models/generated';
 import { Language } from 'core/global';
 import CrudMenu from 'components/CrudMenu';
 import DateTime from 'components/DateTime';
@@ -20,18 +19,18 @@ import sty from './Guides.module.scss';
 const { Column } = Table;
 const { Text } = Typography;
 
-export const GET_GUIDES_LIST = gql`
-  query GetDiscoveryList {
-    getDiscoveryList {
-      ...DiscoveryFragment
+export const GET_GUIDES = gql`
+  query GetGuides {
+    getGuides {
+      ...GuideFragment
     }
   }
-  ${DiscoveryFragment}
+  ${GuideFragment}
 `;
 
 export const DELETE_GUIDE = gql`
-  mutation DeleteDiscovery($discoveryId: Int!) {
-    deleteDiscovery(discoveryId: $discoveryId)
+  mutation DeleteGuide($guideId: Int!) {
+    deleteGuide(guideId: $guideId)
   }
 `;
 
@@ -40,7 +39,7 @@ export interface GuidesProps {}
 const Guides: React.FC<GuidesProps> = () => {
   const history = useHistory();
 
-  const { data, loading, refetch } = useQuery<GetDiscoveryListQuery>(GET_GUIDES_LIST, {
+  const { data, loading, refetch } = useQuery(GET_GUIDES, {
     pollInterval: 10000,
   });
 
@@ -52,7 +51,7 @@ const Guides: React.FC<GuidesProps> = () => {
   });
 
   const guides = React.useMemo(() => {
-    return (data?.getDiscoveryList || []).sort((a, b) => b?.actualTime - a?.actualTime);
+    return (data?.getGuides || []).sort((a, b) => b?.actualTime - a?.actualTime);
   }, [data]);
 
   const deleteRequest = (guide: any) => {
@@ -67,12 +66,12 @@ const Guides: React.FC<GuidesProps> = () => {
       okText: 'Delete',
       okButtonProps: { loading: deleteGuideStatus.loading },
       onOk: () => {
-        deleteGuide({ variables: { discoveryId: guide.id } });
+        deleteGuide({ variables: { guideId: guide.id } });
       },
     });
   };
 
-  const redirectToUpdate = (guide?: Discovery) => {
+  const redirectToUpdate = (guide?) => {
     if (guide) {
       history.push(`/guides/${guide.id}`);
     }
@@ -93,12 +92,12 @@ const Guides: React.FC<GuidesProps> = () => {
     <>
       <Toolbar title="Guides" extra={actionButtons} />
       <Table rowKey="id" loading={loading} dataSource={guides as any} pagination={false}>
-        <Column<Discovery>
+        <Column
           title="Title"
           dataIndex="title"
           key="title"
           width={200}
-          render={(text, r) => <Link to={`/guides/${r.id}`}>{text}</Link>}
+          render={(text, r: any) => <Link to={`/guides/${r.id}`}>{text}</Link>}
         />
         <Column
           title="Editions"
@@ -106,13 +105,6 @@ const Guides: React.FC<GuidesProps> = () => {
           key="editions"
           width={220}
           render={text => <Tags options={getEditionOptions(text)} color="magenta" />}
-        />
-        <Column
-          title="Audiences"
-          dataIndex="audiences"
-          key="audiences"
-          width={220}
-          render={text => <Tags options={getAudienceOptions(text)} />}
         />
         <Column
           title="Language"
@@ -144,16 +136,12 @@ const Guides: React.FC<GuidesProps> = () => {
             </>
           )}
         />
-        <Column<Discovery>
+        <Column
           dataIndex="actions"
           key="actions"
           width={45}
           render={(_, guide) => (
-            <CrudMenu<Discovery>
-              data={guide}
-              onEdit={redirectToUpdate}
-              onDelete={deleteRequest}
-            >
+            <CrudMenu data={guide} onEdit={redirectToUpdate} onDelete={deleteRequest}>
               <Button type="text" icon={<MoreOutlined />} shape="circle" />
             </CrudMenu>
           )}

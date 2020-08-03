@@ -2,14 +2,14 @@ import React from 'react';
 import { Spin, Row, Col, Card, Space, Typography, Button } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
 
-import { Article } from 'core/models/generated';
+import { Article, SpecialEdition } from 'core/models/generated';
 
 import Tags from 'components/Tags';
 import DateTime from 'components/DateTime';
 import CrudMenu from 'components/CrudMenu';
 
 import sty from './CardsView.module.scss';
-import { getAudienceOptions, getEditionOptions } from 'core/utils';
+import { getEditionOptions } from 'core/utils';
 
 const { Paragraph, Text } = Typography;
 
@@ -41,12 +41,6 @@ const CardsView: React.FC<CardsViewProps> = ({
           >
             <Space direction="vertical">
               <Paragraph ellipsis={{ rows: 3 }}>{article.subTitle}</Paragraph>
-              <Space align="start">
-                <Text type="secondary" className={sty.label}>
-                  Audiences:
-                </Text>
-                <Tags options={getAudienceOptions(article.audiences || [])} />
-              </Space>
               {Boolean(article?.editions?.length) && (
                 <Space align="start">
                   <Text type="secondary" className={sty.label}>
@@ -54,7 +48,7 @@ const CardsView: React.FC<CardsViewProps> = ({
                   </Text>
                   <Tags
                     color="magenta"
-                    options={getEditionOptions(article.editions || [])}
+                    options={getEditionOptions(article.editions as SpecialEdition[])}
                   />
                 </Space>
               )}

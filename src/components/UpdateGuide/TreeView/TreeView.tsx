@@ -10,7 +10,7 @@ import {
   ExclamationCircleOutlined,
 } from '@ant-design/icons';
 
-import { QueryGetDiscoveryArgs, Step, Summary } from 'core/models/generated';
+import { GuideStep, GuideStepSummary } from 'core/models/generated';
 import { SummaryFragment } from 'core/graphql/fragments';
 import { GET_GUIDE } from 'components/UpdateGuide';
 import TreeViewNode from 'components/UpdateGuide/TreeViewNode';
@@ -19,17 +19,21 @@ import ConfirmInput from 'components/ConfirmInput';
 
 import sty from './TreeView.module.scss';
 
-const normalizeTree = (steps: Step[]) =>
+const normalizeTree = (steps: GuideStep[]) =>
   (steps || [])
     .sort((a, b) => a.orderNum - b.orderNum)
     .map(step => ({
       ...step,
-      summaries: (step.summaries as Summary[]).sort((a, b) => a.orderNum - b.orderNum),
+      summaries: (step.summaries as GuideStepSummary[]).sort(
+        (a, b) => a.orderNum - b.orderNum,
+      ),
     }));
 
 export const CREATE_SUMMARY = gql`
-  mutation CreateSummary($summary: CreateDiscoverySummaryInput!) {
-    createSummary(summary: $summary) {
+  mutation CreateGuideStepSummary(
+    $input: CreateGuideStepSummaryInput!
+  ) {
+    createGuideStepSummary(input: $input) {
       ...SummaryFragment
     }
   }
@@ -37,16 +41,16 @@ export const CREATE_SUMMARY = gql`
 `;
 
 export const DELETE_SUMMARY = gql`
-  mutation DeleteSummary($summaryId: Int!) {
-    deleteSummary(summaryId: $summaryId)
+  mutation DeleteGuideStepSummary($summaryId: Int!) {
+    deleteGuideStepSummary(summaryId: $summaryId)
   }
 `;
 
 export const CREATE_STEP = gql`
-  mutation CreateStep($input: CreateDiscoveryStepInput!) {
-    createStep(input: $input) {
+  mutation CreateGuideStep($input: CreateGuideStepInput!) {
+    createGuideStep(input: $input) {
       id
-      discoveryId
+      guideId
       title
       description
       orderNum
@@ -55,132 +59,143 @@ export const CREATE_STEP = gql`
 `;
 
 export const DELETE_STEP = gql`
-  mutation DeleteStep($stepId: Int!) {
-    deleteStep(stepId: $stepId)
+  mutation DeleteGuideStep($stepId: Int!) {
+    deleteGuideStep(stepId: $stepId)
   }
 `;
 
 export const SET_SUMMRY_ORDER = gql`
-  mutation SortDiscoverySummaries($order: [DiscoverySummaryOrderInput!]!) {
-    sortDiscoverySummaries(order: $order)
+  mutation SortGuideSummaries($order: [GuideStepSummaryOrderInput!]!) {
+    sortGuideStepSummaries(order: $order)
   }
 `;
 
 export const SET_STEP_ORDER = gql`
-  mutation SortDiscoverySteps($order: [DiscoveryStepOrderInput!]!) {
-    sortDiscoverySteps(order: $order)
+  mutation SortGuideSteps($order: [GuideStepOrderInput!]!) {
+    sortGuideSteps(order: $order)
   }
 `;
 
 export interface TreeViewProps {
-  onChange: (summary?: Summary | Step) => void;
+  onChange: (summary?: GuideStepSummary | GuideStep) => void;
 }
 
 const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
   const { slug } = useParams();
 
-  const [steps, setSteps] = React.useState<Step[]>([]);
-  const [current, setCurent] = React.useState<Step | Summary | null>(null);
-  // const [currentSummary, setCurentSummary] = React.useState<Summary | null>(null);
-  const [stepForCreating, setStepForCreating] = React.useState<Step | null>(null);
-  const [isCreatingStep, setCreatingStep] = React.useState(false);
+  const [steps, setGuideSteps] = React.useState<GuideStep[]>([]);
+  const [current, setCurent] = React.useState<GuideStep | GuideStepSummary | null>(null);
+  // const [currentGuideStepSummary, setCurentGuideStepSummary] = React.useState<GuideStepSummary | null>(null);
+  const [stepForCreating, setGuideStepForCreating] = React.useState<GuideStep | null>(
+    null,
+  );
+  const [isCreatingGuideStep, setCreatingGuideStep] = React.useState(false);
 
-  const discoveryId = React.useMemo(() => Number(slug), [slug]);
+  const guideId = React.useMemo(() => Number(slug), [slug]);
 
-  const { data } = useQuery<any, QueryGetDiscoveryArgs>(GET_GUIDE, {
-    variables: { discoveryId: Number(slug) },
-    onCompleted: ({ getDiscovery: { steps } }) => {
+  const { data } = useQuery(GET_GUIDE, {
+    variables: { guideId: Number(slug) },
+    onCompleted: ({ getGuide: { steps } }) => {
       if (steps[0].summaries.length) {
         chooseCurrent(steps[0].summaries[0]);
       }
     },
   });
 
-  const [createStep, createStepStatus] = useMutation(CREATE_STEP, {
-    refetchQueries: [{ query: GET_GUIDE, variables: { discoveryId } }],
-    onCompleted: ({ createStep: step }) => {
-      setCreatingStep(false);
+  const [createGuideStep, createGuideStepStatus] = useMutation(CREATE_STEP, {
+    refetchQueries: [{ query: GET_GUIDE, variables: { guideId } }],
+    onCompleted: ({ createGuideStep: step }) => {
+      setCreatingGuideStep(false);
 
       // optimistic strategy
-      const nextSteps = update(steps, { $push: [{ ...step, summaries: [] }] });
-      console.log('nextSteps: ', nextSteps);
-      setSteps(nextSteps);
+      const nextGuideSteps = update(steps, { $push: [{ ...step, summaries: [] }] });
+      console.log('nextGuideSteps: ', nextGuideSteps);
+      setGuideSteps(nextGuideSteps);
     },
   });
 
-  const [deleteStep, deleteStepStatus] = useMutation(DELETE_STEP, {
-    refetchQueries: [{ query: GET_GUIDE, variables: { discoveryId } }],
+  const [deleteGuideStep, deleteGuideStepStatus] = useMutation(DELETE_STEP, {
+    refetchQueries: [{ query: GET_GUIDE, variables: { guideId } }],
     onCompleted: () => {
-      message.success('Step has been deleted.');
+      message.success('GuideStep has been deleted.');
     },
   });
 
-  const [setStepsOrder, setStepsOrderStatus] = useMutation(SET_STEP_ORDER, {
-    refetchQueries: [{ query: GET_GUIDE, variables: { discoveryId } }],
+  const [setGuideStepsOrder, setGuideStepsOrderStatus] = useMutation(SET_STEP_ORDER, {
+    refetchQueries: [{ query: GET_GUIDE, variables: { guideId } }],
   });
 
-  const [setSummaryOrder, setSummaryOrderStatus] = useMutation(SET_SUMMRY_ORDER, {
-    refetchQueries: [{ query: GET_GUIDE, variables: { discoveryId } }],
-  });
-
-  const [createSummary, createSummaryStatus] = useMutation(CREATE_SUMMARY, {
-    refetchQueries: [{ query: GET_GUIDE, variables: { discoveryId } }],
-    onCompleted: ({ createSummary }) => {
-      setStepForCreating(null);
-
-      // optimistic strategy
-      const summary: Summary = createSummary;
-      const stepIndex = steps.findIndex(st => st.id === summary.stepId);
-
-      if (stepIndex !== -1) {
-        const nextSteps = update(steps, {
-          [stepIndex]: step =>
-            update(step, {
-              summaries: summaries =>
-                update(summaries, {
-                  $push: [summary],
-                }),
-            }),
-        });
-
-        setSteps(nextSteps);
-      }
+  const [setGuideStepSummaryOrder, setGuideStepSummaryOrderStatus] = useMutation(
+    SET_SUMMRY_ORDER,
+    {
+      refetchQueries: [{ query: GET_GUIDE, variables: { guideId } }],
     },
-  });
+  );
 
-  const [deleteSummary, deleteSummaryStatus] = useMutation(DELETE_SUMMARY, {
-    refetchQueries: [{ query: GET_GUIDE, variables: { discoveryId } }],
-    onCompleted: () => {
-      message.success('Summary has been deleted.');
+  const [createGuideStepSummary, createGuideStepSummaryStatus] = useMutation(
+    CREATE_SUMMARY,
+    {
+      refetchQueries: [{ query: GET_GUIDE, variables: { guideId } }],
+      onCompleted: ({ createGuideStepSummary }) => {
+        setGuideStepForCreating(null);
+
+        // optimistic strategy
+        const summary: GuideStepSummary = createGuideStepSummary;
+        const stepIndex = steps.findIndex(st => st.id === summary.stepId);
+
+        if (stepIndex !== -1) {
+          const nextGuideSteps = update(steps, {
+            [stepIndex]: step =>
+              update(step, {
+                summaries: summaries =>
+                  update(summaries, {
+                    $push: [summary],
+                  }),
+              }),
+          });
+
+          setGuideSteps(nextGuideSteps);
+        }
+      },
     },
-  });
+  );
+
+  const [deleteGuideStepSummary, deleteGuideStepSummaryStatus] = useMutation(
+    DELETE_SUMMARY,
+    {
+      refetchQueries: [{ query: GET_GUIDE, variables: { guideId } }],
+      onCompleted: () => {
+        message.success('GuideStepSummary has been deleted.');
+      },
+    },
+  );
 
   const chooseCurrent = React.useCallback(
-    (node?: Step | Summary) => {
+    (node?: GuideStep | GuideStepSummary) => {
       setCurent(node || null);
       onChange(node);
     },
     [onChange],
   );
 
-  const startCreatingStep = React.useCallback(() => {
-    setCreatingStep(true);
+  const startCreatingGuideStep = React.useCallback(() => {
+    setCreatingGuideStep(true);
   }, []);
 
-  const cancelCreatingStep = React.useCallback(() => {
-    setCreatingStep(false);
+  const cancelCreatingGuideStep = React.useCallback(() => {
+    setCreatingGuideStep(false);
   }, []);
 
   React.useEffect(() => {
-    setSteps(normalizeTree(data?.getDiscovery.steps));
+    setGuideSteps(normalizeTree(data?.getGuide.steps));
   }, [data]);
 
-  const handleCreateStep = React.useCallback(
+  const handleCreateGuideStep = React.useCallback(
     value => {
-      createStep({
+      createGuideStep({
         variables: {
           input: {
-            discoveryId,
+            guideId,
             orderNum: steps.length + 1,
             title: value,
             description: `${value} description`,
@@ -188,18 +203,18 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
         },
       });
     },
-    [createStep, discoveryId, steps.length],
+    [createGuideStep, guideId, steps.length],
   );
 
-  const startCreatingSummary = React.useCallback((step: Step) => {
-    setStepForCreating(step);
+  const startCreatingGuideStepSummary = React.useCallback((step: GuideStep) => {
+    setGuideStepForCreating(step);
   }, []);
 
-  const cancelCreatingSummary = React.useCallback(() => {
-    setStepForCreating(null);
+  const cancelCreatingGuideStepSummary = React.useCallback(() => {
+    setGuideStepForCreating(null);
   }, []);
 
-  const handleCreateSummary = React.useCallback(
+  const handleCreateGuideStepSummary = React.useCallback(
     (value: string) => {
       if (stepForCreating) {
         const summary = {
@@ -209,33 +224,36 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
           orderNum: stepForCreating?.summaries.length + 1,
         };
 
-        createSummary({ variables: { summary } });
+        createGuideStepSummary({ variables: { summary } });
       }
     },
-    [createSummary, stepForCreating],
+    [createGuideStepSummary, stepForCreating],
   );
 
-  const startDeletingStep = React.useCallback(
-    (step: Step, index: number) => {
+  const startDeletingGuideStep = React.useCallback(
+    (step: GuideStep, index: number) => {
       Modal.confirm({
         title: (
           <>
             Are you sure you want to delete{' '}
-            <Typography.Text mark>{step.title || `Step ${index + 1}`}</Typography.Text>?
+            <Typography.Text mark>
+              {step.title || `GuideStep ${index + 1}`}
+            </Typography.Text>
+            ?
           </>
         ),
         icon: <ExclamationCircleOutlined />,
         width: 640,
         okText: 'Delete',
-        okButtonProps: { loading: deleteStepStatus.loading },
-        onOk: () => deleteStep({ variables: { stepId: step.id } }),
+        okButtonProps: { loading: deleteGuideStepStatus.loading },
+        onOk: () => deleteGuideStep({ variables: { stepId: step.id } }),
       });
     },
-    [deleteStep, deleteStepStatus.loading],
+    [deleteGuideStep, deleteGuideStepStatus.loading],
   );
 
-  const startDeletingSummary = React.useCallback(
-    (summary: Summary) => {
+  const startDeletingGuideStepSummary = React.useCallback(
+    (summary: GuideStepSummary) => {
       Modal.confirm({
         title: (
           <>
@@ -246,9 +264,9 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
         icon: <ExclamationCircleOutlined />,
         width: 640,
         okText: 'Delete',
-        okButtonProps: { loading: deleteSummaryStatus.loading },
+        okButtonProps: { loading: deleteGuideStepSummaryStatus.loading },
         onOk: () => {
-          deleteSummary({ variables: { summaryId: summary.id } });
+          deleteGuideStepSummary({ variables: { summaryId: summary.id } });
 
           if (summary.id === current?.id) {
             chooseCurrent(); // deselect summary that going to be deleted
@@ -256,13 +274,18 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
         },
       });
     },
-    [chooseCurrent, current, deleteSummary, deleteSummaryStatus.loading],
+    [
+      chooseCurrent,
+      current,
+      deleteGuideStepSummary,
+      deleteGuideStepSummaryStatus.loading,
+    ],
   );
 
-  const moveSummary = React.useCallback(
+  const moveGuideStepSummary = React.useCallback(
     (stepIndex: number, dragIndex: number, hoverIndex: number) => {
       const dragCard = steps[stepIndex].summaries[dragIndex];
-      const nextSteps = update(steps, {
+      const nextGuideSteps = update(steps, {
         [stepIndex]: step =>
           update(step, {
             summaries: summaries =>
@@ -275,15 +298,15 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
           }),
       });
 
-      setSteps(nextSteps);
+      setGuideSteps(nextGuideSteps);
     },
     [steps],
   );
 
-  const dropSummary = React.useCallback(
+  const dropGuideStepSummary = React.useCallback(
     (stepIndex: number, dragIndex: number, hoverIndex: number) => {
       const dragCard = steps[stepIndex].summaries[dragIndex];
-      const nextSteps = update(steps, {
+      const nextGuideSteps = update(steps, {
         [stepIndex]: step =>
           update(step, {
             summaries: summaries =>
@@ -296,69 +319,75 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
           }),
       });
 
-      setSteps(nextSteps);
+      setGuideSteps(nextGuideSteps);
 
-      const order = (steps[stepIndex].summaries as Summary[]).map((sum, index) => ({
-        id: sum.id,
-        orderNum: index + 1,
-      }));
+      const order = (steps[stepIndex].summaries as GuideStepSummary[]).map(
+        (sum, index) => ({
+          id: sum.id,
+          orderNum: index + 1,
+        }),
+      );
 
-      setSummaryOrder({ variables: { order } });
+      setGuideStepSummaryOrder({ variables: { order } });
     },
-    [setSummaryOrder, steps],
+    [setGuideStepSummaryOrder, steps],
   );
 
-  const moveStep = React.useCallback(
+  const moveGuideStep = React.useCallback(
     (dragIndex: number, hoverIndex: number) => {
       const dragCard = steps[dragIndex];
-      const nextSteps = update(steps, {
+      const nextGuideSteps = update(steps, {
         $splice: [
           [dragIndex, 1],
           [hoverIndex, 0, dragCard],
         ],
       });
 
-      setSteps(nextSteps);
+      setGuideSteps(nextGuideSteps);
     },
     [steps],
   );
 
-  const dropStep = React.useCallback(
+  const dropGuideStep = React.useCallback(
     (dragIndex: number, hoverIndex: number) => {
       const dragCard = steps[dragIndex];
-      const nextSteps = update(steps, {
+      const nextGuideSteps = update(steps, {
         $splice: [
           [dragIndex, 1],
           [hoverIndex, 0, dragCard],
         ],
       });
 
-      setSteps(nextSteps);
+      setGuideSteps(nextGuideSteps);
 
-      const order = nextSteps.map((step, index) => ({
+      const order = nextGuideSteps.map((step, index) => ({
         id: step.id,
         orderNum: index + 1,
       }));
 
-      setStepsOrder({ variables: { order } });
+      setGuideStepsOrder({ variables: { order } });
     },
-    [setStepsOrder, steps],
+    [setGuideStepsOrder, steps],
   );
 
   return (
     <div className={sty.wrapper}>
-      <Spin spinning={setStepsOrderStatus.loading || setSummaryOrderStatus.loading}>
+      <Spin
+        spinning={
+          setGuideStepsOrderStatus.loading || setGuideStepSummaryOrderStatus.loading
+        }
+      >
         {steps?.map((step, stIndex) => (
           <DndCard
             key={step.id}
             id={step.id}
             index={stIndex}
-            type={String(discoveryId)}
-            moveCard={moveStep}
-            onDrop={dropStep}
+            type={String(guideId)}
+            moveCard={moveGuideStep}
+            onDrop={dropGuideStep}
           >
             <TreeViewNode
-              title={step.title || `Step ${stIndex + 1}`}
+              title={step.title || `GuideStep ${stIndex + 1}`}
               defaultExpanded={stIndex === 0}
               isActive={step.id === current?.id}
               onClick={() => chooseCurrent(step)}
@@ -368,19 +397,19 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
                     shape="circle"
                     type="text"
                     icon={<DeleteOutlined />}
-                    onClick={() => startDeletingStep(step, stIndex)}
+                    onClick={() => startDeletingGuideStep(step, stIndex)}
                   />
                 ),
               ]}
             >
-              {(step.summaries as Summary[])?.map((sum, sumIndex) => (
+              {(step.summaries as GuideStepSummary[])?.map((sum, sumIndex) => (
                 <DndCard
                   key={sum.id}
                   id={sum.id}
                   index={sumIndex}
                   type={String(sum.stepId)}
-                  moveCard={(...atrs) => moveSummary(stIndex, ...atrs)}
-                  onDrop={(...atrs) => dropSummary(stIndex, ...atrs)}
+                  moveCard={(...atrs) => moveGuideStepSummary(stIndex, ...atrs)}
+                  onDrop={(...atrs) => dropGuideStepSummary(stIndex, ...atrs)}
                 >
                   <TreeViewNode
                     title={sum?.title}
@@ -391,7 +420,7 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
                         shape="circle"
                         type="text"
                         icon={<DeleteOutlined />}
-                        onClick={() => startDeletingSummary(sum)}
+                        onClick={() => startDeletingGuideStepSummary(sum)}
                       />,
                     ]}
                   />
@@ -401,9 +430,9 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
                 <div className={sty.createSection}>
                   {stepForCreating?.id === step.id ? (
                     <ConfirmInput
-                      isLoading={createSummaryStatus.loading}
-                      onOk={handleCreateSummary}
-                      onCancel={cancelCreatingSummary}
+                      isLoading={createGuideStepSummaryStatus.loading}
+                      onOk={handleCreateGuideStepSummary}
+                      onCancel={cancelCreatingGuideStepSummary}
                     />
                   ) : (
                     <Button
@@ -411,9 +440,9 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
                       type="dashed"
                       icon={<PlusOutlined />}
                       style={{ width: '100%' }}
-                      onClick={() => startCreatingSummary(step)}
+                      onClick={() => startCreatingGuideStepSummary(step)}
                     >
-                      Add Summary
+                      Add GuideStepSummary
                     </Button>
                   )}
                 </div>
@@ -423,20 +452,20 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
         ))}
         {steps?.length < 5 && (
           <div className={sty.createSection}>
-            {isCreatingStep ? (
+            {isCreatingGuideStep ? (
               <ConfirmInput
-                isLoading={createStepStatus.loading}
-                onOk={handleCreateStep}
-                onCancel={cancelCreatingStep}
+                isLoading={createGuideStepStatus.loading}
+                onOk={handleCreateGuideStep}
+                onCancel={cancelCreatingGuideStep}
               />
             ) : (
               <Button
                 type="dashed"
                 icon={<PlusOutlined />}
                 style={{ width: '100%' }}
-                onClick={() => startCreatingStep()}
+                onClick={() => startCreatingGuideStep()}
               >
-                Add Step
+                Add GuideStep
               </Button>
             )}
           </div>

@@ -3,7 +3,6 @@ import { Form, Input } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 
 import { FormProps } from 'core/models';
-import { Summary } from 'core/models/generated';
 import RichEditor from 'components/RichEditor';
 
 export interface SummaryFormProps extends FormProps {}

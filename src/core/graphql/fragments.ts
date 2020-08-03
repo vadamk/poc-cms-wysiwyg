@@ -1,10 +1,10 @@
+import { AdminEntity } from './../models/generated';
 import { gql } from 'apollo-boost';
 
-export const SubjectFragment = gql`
-  fragment SubjectFragment on Subject {
+export const AudienceFragment = gql`
+  fragment AudienceFragment on Audience {
     id
     title
-    description
     language
   }
 `;
@@ -16,11 +16,25 @@ export const EditionFragment = gql`
   }
 `;
 
-export const AudienceFragment = gql`
-  fragment AudienceFragment on Audience {
+export const SubjectFragment = gql`
+  fragment SubjectFragment on Subject {
     id
-    type
+    title
+    description
+    language
+    audiences {
+      ...AudienceFragment
+    }
+    articles {
+      id
+      title
+    }
+    guides {
+      id
+      title
+    }
   }
+  ${AudienceFragment}
 `;
 
 export const ArticleFragment = gql`
@@ -34,9 +48,6 @@ export const ArticleFragment = gql`
     actualTime
     isPublished
     readDuration
-    audiences {
-      ...AudienceFragment
-    }
     editions {
       ...EditionFragment
     }
@@ -46,11 +57,10 @@ export const ArticleFragment = gql`
   }
   ${SubjectFragment}
   ${EditionFragment}
-  ${AudienceFragment}
 `;
 
 export const SummaryFragment = gql`
-  fragment SummaryFragment on Summary {
+  fragment SummaryFragment on GuideStepSummary {
     id
     stepId
     orderNum
@@ -60,11 +70,12 @@ export const SummaryFragment = gql`
 `;
 
 export const StepFragment = gql`
-  fragment StepFragment on Step {
+  fragment StepFragment on GuideStep {
     id
-    discoveryId
+    guideId
     title
     description
+    image
     orderNum
     summaries {
       ...SummaryFragment
@@ -73,11 +84,11 @@ export const StepFragment = gql`
   ${SummaryFragment}
 `;
 
-export const DiscoveryFragment = gql`
-  fragment DiscoveryFragment on Discovery {
+export const GuideFragment = gql`
+  fragment GuideFragment on Guide {
     id
     title
-    image
+    headerImage
     language
     orderNum
     link
@@ -85,9 +96,6 @@ export const DiscoveryFragment = gql`
     # actualTime
     steps {
       ...StepFragment
-    }
-    audiences {
-      ...AudienceFragment
     }
     editions {
       ...EditionFragment
@@ -99,5 +107,4 @@ export const DiscoveryFragment = gql`
   ${StepFragment}
   ${SubjectFragment}
   ${EditionFragment}
-  ${AudienceFragment}
 `;
