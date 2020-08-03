@@ -14,7 +14,7 @@ import {
 import { getFromLocalStorage, saveInLocalStorage } from 'core/services/browser';
 import { ArticleFragment } from 'core/graphql/fragments';
 import { localStorageKeys, Language } from 'core/global';
-import { getEditionOptions, getSubjectsOptions } from 'core/utils';
+import { getEditionOptions, getSubjectsOptions, basicReorder } from 'core/utils';
 import { RadioChangeEvent } from 'antd/lib/radio';
 
 import Toolbar from 'components/Toolbar';
@@ -23,6 +23,7 @@ import DateTime from 'components/DateTime';
 import CrudMenu from 'components/CrudMenu';
 import RadioButtons from 'components/RadioButtons';
 
+import DragableBodyRow from './DragableBodyRow';
 import CardsView from './CardsView';
 
 import sty from './Articles.module.scss';
@@ -54,12 +55,20 @@ export const DELETE_ARTICLE = gql`
   }
 `;
 
+export const SET_ARTICLES_ORDER = gql`
+  mutation SortArticles($order: [OrderArticleInput!]!) {
+    sortArticles(order: $order)
+  }
+`;
+
 export interface ArticlesProps {}
 
 const Articles: React.FC<ArticlesProps> = () => {
   const history = useHistory();
 
   const [viewMode, setViewMode] = React.useState<ViewMode>(ViewMode.TABLE);
+  const [articles, setArticles] = React.useState<any[]>([]);
+
   const { data, loading, refetch } = useQuery(GET_ARTICLES, {
     pollInterval: 10000,
   });
@@ -67,6 +76,12 @@ const Articles: React.FC<ArticlesProps> = () => {
   React.useEffect(() => {
     setViewMode(getFromLocalStorage(localStorageKeys.articlesView) || ViewMode.TABLE);
   }, []);
+
+  React.useEffect(() => {
+    if (data) {
+      setArticles(data?.getArticles || [])
+    }
+  }, [data]);
 
   const [deleteArticle, deleteArticleStatus] = useMutation<
     DeleteArticleMutation,
@@ -78,9 +93,9 @@ const Articles: React.FC<ArticlesProps> = () => {
     },
   });
 
-  const articles = React.useMemo(() => {
-    return (data?.getArticles || []).sort((a, b) => b.actualTime - a.actualTime);
-  }, [data]);
+  const [setArticlesOrder, setArticlesOrderStatus] = useMutation(SET_ARTICLES_ORDER, {
+    refetchQueries: [{ query: GET_ARTICLES }]
+  });
 
   const deleteRequest = (article: any) => {
     Modal.confirm({
@@ -128,6 +143,18 @@ const Articles: React.FC<ArticlesProps> = () => {
     [viewMode],
   );
 
+  const moveRow = React.useCallback((dragIndex: number, hoverIndex: number) => {
+    const nextArticles = basicReorder(articles, dragIndex, hoverIndex);
+    setArticles(nextArticles);
+
+    const order = nextArticles.map((article, index) => ({
+      id: article.id,
+      orderNum: index + 1,
+    }));
+
+    setArticlesOrder({ variables: { order } })
+  }, [articles, setArticlesOrder]);
+
   return (
     <>
       <Toolbar title="Articles" extra={actionButtons} />
@@ -142,9 +169,14 @@ const Articles: React.FC<ArticlesProps> = () => {
       ) : (
         <Table
           rowKey="id"
-          loading={loading}
+          loading={loading || setArticlesOrderStatus.loading}
           dataSource={articles as any}
           pagination={false}
+          components={{ body: { row: DragableBodyRow } }}
+          onRow={(record, index) => ({
+            index,
+            moveRow,
+          }) as any}
         >
           <Column<Article>
             title="Title"

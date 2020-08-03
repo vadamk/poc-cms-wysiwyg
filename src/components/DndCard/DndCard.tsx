@@ -14,8 +14,8 @@ const style: React.CSSProperties = {
 export interface DndCardProps {
   id: any;
   index: number;
-  type: string;
   originalIndex?: number;
+  type: string;
   moveCard: (dragIndex: number, hoverIndex: number) => void;
   beginDragging?: (item) => void;
   onDrop: (dragIndex: number, hoverIndex: number) => void;
@@ -30,10 +30,10 @@ interface DragItem {
 
 const DndCard: React.FC<DndCardProps> = ({
   id,
-  children,
   index,
   originalIndex,
   type = ItemTypes.CARD,
+  children,
   moveCard = () => null,
   beginDragging = () => null,
   onDrop = () => null,

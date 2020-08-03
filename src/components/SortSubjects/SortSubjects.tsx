@@ -102,10 +102,10 @@ const SortSubjects: React.FC<SortSubjectsProps> = () => {
 
   const dropSubject = React.useCallback(
     (dragIndex: number, hoverIndex: number) => {
-      const nextSubjectOptions = basicReorder(subjectOptions, dragIndex, hoverIndex)
+      const nextSubjectOptions = basicReorder(subjectOptions, dragIndex, hoverIndex);
       setSubjectOptions(nextSubjectOptions);
 
-      const order = subjectOptions.map((subject, index) => ({
+      const order = nextSubjectOptions.map((subject, index) => ({
         id: subject.value,
         orderNum: index + 1,
       }));

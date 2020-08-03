@@ -51,11 +51,10 @@ export const ArticleFragment = gql`
     editions {
       ...EditionFragment
     }
-    subjects {
-      ...SubjectFragment
-    }
+    # subjects {
+    #   ...SubjectFragment
+    # }
   }
-  ${SubjectFragment}
   ${EditionFragment}
 `;
 
