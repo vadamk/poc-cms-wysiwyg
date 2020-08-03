@@ -55,12 +55,12 @@ const Routes = () => {
   return (
     <Router>
       <Switch>
-        <CustomRoute exact path="/login" redirect="/" allow={!data.isAuthorized}>
+        <CustomRoute exact path="/login" redirect="/" allow={!data?.isAuthorized}>
           <PureLayout>
             <SignIn />
           </PureLayout>
         </CustomRoute>
-        <CustomRoute path="/" allow={data.isAuthorized}>
+        <CustomRoute path="/" allow={data?.isAuthorized}>
           <CommonLayout>
             <Switch>
               <Route exact path="/">
