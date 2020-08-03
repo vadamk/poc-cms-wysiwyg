@@ -153,7 +153,6 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
   );
 
   const saveChanges = React.useCallback(() => {
-    console.log('activeTab: ', activeTab);
     if (activeTab === 1) {
       generalInfoForm.submit();
     } else {

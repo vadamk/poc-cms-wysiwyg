@@ -62,7 +62,6 @@ const UpdateArticle: React.FC<UpdateArticleProps> = () => {
       setFormData(formData);
     },
   });
-  console.log('data: ', data);
 
   const breadcrumbs = React.useMemo<Breadcrumb[]>(() => {
     return [{ path: '/articles', breadcrumbName: 'Articles' }];

@@ -1,6 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
 import { Button } from 'antd';
+import { MenuOutlined } from '@ant-design/icons';
 
 import ChevronDown from 'assets/ChevronDown';
 
@@ -9,7 +10,9 @@ import sty from './TreeViewNode.module.scss';
 export interface TreeViewNodeProps {
   title: string;
   actions?: React.ReactNode[];
+  size?: 'sm' | 'lg';
   data?: any;
+  showHandle?: boolean;
   isActive?: boolean;
   defaultExpanded?: boolean;
   onClick?: (data?: any) => void;
@@ -20,7 +23,9 @@ export interface TreeViewNodeProps {
 const TreeViewNode: React.FC<TreeViewNodeProps> = ({
   title,
   actions = [],
+  size = 'sm',
   data,
+  showHandle = false,
   isActive = false,
   defaultExpanded = false,
   onClick = () => null,
@@ -49,11 +54,19 @@ const TreeViewNode: React.FC<TreeViewNodeProps> = ({
   return (
     <>
       <div
-        className={cx(sty.treeViewItem, 'ripple', isActive && sty.active)}
+        className={cx(sty.treeViewItem, 'ripple', {
+          [sty.active]: isActive,
+          [sty.lg]: size,
+        })}
         onClick={handleItemClick}
       >
         <span>
-          {children && (
+          {showHandle && (
+            <span className={sty.handle}>
+              <MenuOutlined />
+            </span>
+          )}
+          {Boolean(children) && (
             <Button
               shape="circle"
               type="text"
