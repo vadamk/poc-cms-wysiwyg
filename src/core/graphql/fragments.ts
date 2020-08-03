@@ -103,10 +103,12 @@ export const GuideFragment = gql`
       ...EditionFragment
     }
     subjects {
-      ...SubjectFragment
+      id
+      title
+      description
+      language
     }
   }
   ${StepFragment}
-  ${SubjectFragment}
   ${EditionFragment}
 `;

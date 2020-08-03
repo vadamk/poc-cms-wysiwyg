@@ -5,7 +5,7 @@ import { gql } from 'apollo-boost';
 import { PlusOutlined, MoreOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 
-import { getEditionOptions } from 'core/utils';
+import { getEditionOptions, getSubjectsOptions } from 'core/utils';
 import { GuideFragment } from 'core/graphql/fragments';
 
 import Toolbar from 'components/Toolbar';
@@ -100,18 +100,23 @@ const Guides: React.FC<GuidesProps> = () => {
           render={(text, r: any) => <Link to={`/guides/${r.id}`}>{text}</Link>}
         />
         <Column
-          title="Editions"
-          dataIndex="editions"
-          key="editions"
-          width={220}
-          render={text => <Tags options={getEditionOptions(text)} color="magenta" />}
-        />
-        <Column
           title="Language"
           dataIndex="language"
           key="language"
           width={100}
           render={(key: Language) => <Tag>{key.toUpperCase()}</Tag>}
+        />
+        <Column
+          title="Visibility"
+          dataIndex="isPublished"
+          key="isPublished"
+          width={120}
+          render={isPublished => (
+            <>
+              <Badge status={isPublished ? 'success' : 'default'} />
+              {isPublished ? 'Public' : 'Private'}
+            </>
+          )}
         />
         <Column
           title="Edited"
@@ -125,16 +130,18 @@ const Guides: React.FC<GuidesProps> = () => {
           )}
         />
         <Column
-          title="Visibility"
-          dataIndex="isPublished"
-          key="isPublished"
-          width={120}
-          render={isPublished => (
-            <>
-              <Badge status={isPublished ? 'success' : 'default'} />
-              {isPublished ? 'Public' : 'Private'}
-            </>
-          )}
+          title="Subjects"
+          dataIndex="subjects"
+          key="subjects"
+          width={220}
+          render={subjects => <Tags options={getSubjectsOptions(subjects)} />}
+        />
+        <Column
+          title="Editions"
+          dataIndex="editions"
+          key="editions"
+          width={220}
+          render={text => <Tags options={getEditionOptions(text)} color="magenta" />}
         />
         <Column
           dataIndex="actions"
