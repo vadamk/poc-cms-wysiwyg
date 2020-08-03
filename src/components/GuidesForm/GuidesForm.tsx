@@ -35,22 +35,10 @@ const GuideForm: React.FC<GuideFormProps> = ({
     const { data } = subjectsStatus;
     return (
       (isEnglish ? data?.enSubjects : data?.svSubjects) || []
-    ).map(({ title, id }) => ({ label: title, value: id }));
+    )
+      .filter(subject => subject.guides.length === 0)
+      .map(({ title, id }) => ({ label: title, value: id }));
   }, [isEnglish, subjectsStatus]);
-
-  // const curAudienceOptions = React.useMemo<Option[]>(() => {
-  //   return audienceOptions.map(audience => {
-  //     if (isEnglish) {
-  //       return { ...audience, disabled: true };
-  //     }
-
-  //     if (audience.value === Audiences.SWEDEN_JOB) {
-  //       return { ...audience, disabled: true };
-  //     }
-
-  //     return audience;
-  //   });
-  // }, [isEnglish]);
 
   // const slug = React.useMemo(() => {
   //   return slugify(title || '', {
