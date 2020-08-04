@@ -218,14 +218,14 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
   const handleCreateGuideStepSummary = React.useCallback(
     (value: string) => {
       if (stepForCreating) {
-        const summary = {
+        const input = {
           stepId: stepForCreating?.id,
           title: value,
           content: `<p>${value} Content...</p>`,
           orderNum: stepForCreating?.summaries.length + 1,
         };
 
-        createGuideStepSummary({ variables: { summary } });
+        createGuideStepSummary({ variables: { input } });
       }
     },
     [createGuideStepSummary, stepForCreating],
