@@ -72,6 +72,7 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
   const [formData, setFormData] = React.useState();
   const [activeTab, setActiveTab] = React.useState(1);
   const [current, setCurent] = React.useState<GuideStep | GuideStepSummary>();
+  console.log('current: ', current, activeTab);
 
   const guideId = React.useMemo(() => Number(slug), [slug]);
 
@@ -189,7 +190,7 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
               <TabPane tab="General Info" key="1" />
               <TabPane tab="Manage Content" key="2" />
             </Tabs>
-            {((current && activeTab === 2) || activeTab === 1) && (
+            {(Boolean(current) || activeTab === 1) && (
               <Button type="primary" loading={isSubmitting} onClick={saveChanges}>
                 Save Changes
               </Button>
