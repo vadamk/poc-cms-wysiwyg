@@ -33,12 +33,17 @@ const GuideForm: React.FC<GuideFormProps> = ({
 
   const subjectOptions = React.useMemo(() => {
     const { data } = subjectsStatus;
-    return (
-      (isEnglish ? data?.enSubjects : data?.svSubjects) || []
-    )
+
+    if (!data) {
+      return [];
+    }
+
+    return (isEnglish ? data?.enSubjects : data?.svSubjects)
       .filter(subject => subject.guides.length === 0)
       .map(({ title, id }) => ({ label: title, value: id }));
   }, [isEnglish, subjectsStatus]);
+
+  console.log('subjectOptions: ', subjectOptions);
 
   // const slug = React.useMemo(() => {
   //   return slugify(title || '', {
@@ -49,8 +54,7 @@ const GuideForm: React.FC<GuideFormProps> = ({
 
   const handleLangChange = ({ target }) => {
     const nextIsEnglish = target.value === Language.EN;
-    const audiences = nextIsEnglish ? [Audiences.SWEDEN_JOB] : [];
-    internalForm.setFieldsValue({ audiences });
+    internalForm.setFieldsValue({ subjectIDs: [] });
     setEnglish(nextIsEnglish);
   };
 
@@ -151,9 +155,9 @@ const GuideForm: React.FC<GuideFormProps> = ({
                 loading={subjectsStatus.loading}
                 options={subjectOptions}
                 placeholder="Please choose subject"
-                filterOption={(input, option) =>
-                  String(option?.label).toLowerCase().indexOf(input.toLowerCase()) >= 0
-                }
+                // filterOption={(input, option) =>
+                //   String(option?.label).toLowerCase().indexOf(input.toLowerCase()) >= 0
+                // }
               />
             </Form.Item>
 

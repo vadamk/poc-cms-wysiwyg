@@ -39,13 +39,13 @@ const CreateGuide: React.FC<CreateGuideProps> = () => {
 
   const handleSubmit = React.useCallback(
     values => {
-      const discovery = {
+      const input = {
         ...values,
         orderNum: 1,
         actualTime: +new Date(),
       };
 
-      createGuide({ variables: { discovery } });
+      createGuide({ variables: { input } });
     },
     [createGuide],
   );

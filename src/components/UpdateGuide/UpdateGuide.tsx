@@ -189,7 +189,7 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
               <TabPane tab="General Info" key="1" />
               <TabPane tab="Manage Content" key="2" />
             </Tabs>
-            {current && (
+            {((current && activeTab === 2) || activeTab === 1) && (
               <Button type="primary" loading={isSubmitting} onClick={saveChanges}>
                 Save Changes
               </Button>
