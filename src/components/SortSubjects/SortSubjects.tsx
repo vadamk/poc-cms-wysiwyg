@@ -174,7 +174,7 @@ const SortSubjects: React.FC<SortSubjectsProps> = () => {
                         <TreeViewNode
                           size="lg"
                           showHandle
-                          title={`[${audience.value}] ${audience.label}`}
+                          title={audience.label}
                         />
                       </DndCard>
                     ))

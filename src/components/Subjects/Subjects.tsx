@@ -116,10 +116,10 @@ const Subjects: React.FC<SubjectsProps> = () => {
   const handleUpdate = () => {
     updateForm.validateFields().then((values: FormValues) => {
       console.log('values: ', values);
-      const { id: subjectId, ...rest } = editableSubject;
+      const { id: subjectId } = editableSubject;
       updateSubject({
         variables: {
-          input: { ...removeTypeName(rest), ...values },
+          input: values,
           subjectId,
         },
       });
