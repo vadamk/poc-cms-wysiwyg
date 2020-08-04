@@ -78,12 +78,11 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
   const { data, loading } = useQuery(GET_GUIDE, {
     variables: { guideId: Number(slug) },
     onCompleted: data => {
-      const { editions, audiences, subjects, ...rest } = data?.getGuide;
+      const { editions, subjects, ...rest } = data?.getGuide;
 
       const formData = {
         ...rest,
         editions: editions.map(ed => Edition[ed.type.trim()]),
-        audiences: audiences.map(ad => ad.type),
         subjectIDs: subjects.map(s => s.id),
       };
 

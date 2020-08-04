@@ -43,6 +43,7 @@ export const ArticleFragment = gql`
     title
     subTitle
     image
+    headerImage
     content
     language
     actualTime
