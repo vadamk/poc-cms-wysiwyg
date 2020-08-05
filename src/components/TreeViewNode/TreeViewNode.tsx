@@ -56,7 +56,7 @@ const TreeViewNode: React.FC<TreeViewNodeProps> = ({
       <div
         className={cx(sty.treeViewItem, 'ripple', {
           [sty.active]: isActive,
-          [sty.lg]: size,
+          [sty.lg]: size === 'lg',
         })}
         onClick={handleItemClick}
       >
