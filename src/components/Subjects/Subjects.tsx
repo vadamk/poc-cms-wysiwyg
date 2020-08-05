@@ -3,14 +3,19 @@ import { Link } from 'react-router-dom';
 import { gql } from 'apollo-boost';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { Typography, Table, Button, Modal, message, Tabs, Space } from 'antd';
-import { MoreOutlined, ExclamationCircleOutlined, PlusOutlined, SortAscendingOutlined } from '@ant-design/icons';
+import {
+  MoreOutlined,
+  ExclamationCircleOutlined,
+  PlusOutlined,
+  SortAscendingOutlined,
+} from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 import Column from 'antd/lib/table/Column';
 
 import { Subject } from 'core/models/generated';
 import { FormValues } from 'core/models';
 import { SubjectFragment } from 'core/graphql/fragments';
-import { removeTypeName } from 'core/utils';
+import { getAudienceOptions } from 'core/utils';
 
 import Toolbar from 'components/Toolbar';
 import CrudMenu from 'components/CrudMenu';
@@ -19,6 +24,7 @@ import { GET_SUBJECTS } from 'components/ArticleForm';
 import CreateSubjectForm from './CreateSubjectForm';
 
 import sty from './Subjects.module.scss';
+import Tags from 'components/Tags';
 
 const { TabPane } = Tabs;
 
@@ -115,7 +121,6 @@ const Subjects: React.FC<SubjectsProps> = () => {
 
   const handleUpdate = () => {
     updateForm.validateFields().then((values: FormValues) => {
-      console.log('values: ', values);
       const { id: subjectId } = editableSubject;
       updateSubject({
         variables: {
@@ -129,7 +134,7 @@ const Subjects: React.FC<SubjectsProps> = () => {
   const deleteRequest = React.useCallback(
     (subject?: Subject) => {
       if (!subject) {
-        console.warn('No Subject to delete');
+        console.error('No Subject to delete');
         return;
       }
 
@@ -210,6 +215,15 @@ const Subjects: React.FC<SubjectsProps> = () => {
       >
         <Column title="Title" dataIndex="title" key="title" width={200} />
         <Column title="Description" dataIndex="description" key="description" />
+        {activeTab === 'sv' && (
+          <Column
+            title="Audiences"
+            dataIndex="audiences"
+            key="audiences"
+            width={220}
+            render={text => <Tags options={getAudienceOptions(text)} />}
+          />
+        )}
         <Column
           dataIndex="action"
           key="action"
