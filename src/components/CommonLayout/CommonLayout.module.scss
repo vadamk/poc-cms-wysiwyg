@@ -27,7 +27,7 @@
   left: 0;
   height: 100vh;
   background-color: #fff;
-  z-index: 2;
+  z-index: 1;
   overflow: hidden;
   box-shadow: 0 1px 4px rgba(0,21,41,0.08);
 }
@@ -52,5 +52,9 @@
 
   .ant-menu-inline, .ant-menu-vertical, .ant-menu-vertical-left {
     border: 0 none;
+  }
+
+  .ant-layout.ant-layout-has-sider > .ant-layout {
+    overflow-x: initial;
   }
 }
