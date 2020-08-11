@@ -56,6 +56,10 @@ export const createClient = () => {
         return extensions?.exception?.status === 401;
       });
 
+      const videoNotFoundError = graphQLErrors?.some(({ extensions }) => {
+        return extensions?.exception;
+      });
+
       if (unauthorizedError) {
         cache.writeQuery({
           query: GET_AUTHORIZED,
@@ -63,6 +67,10 @@ export const createClient = () => {
         });
 
         removeFromLocalStorage(localStorageKeys.token);
+      }
+
+      if (videoNotFoundError) {
+        window.location.replace('/video-not-found'); 
       }
 
       graphQLErrors?.forEach(error => {
