@@ -62,7 +62,7 @@ const Routes = () => {
   return (
     <Router>
       <Switch>
-        <Route exact path="/video-not-found">
+        <Route path="/video-not-found">
           <VideoNotFound />
         </Route>
         <CustomRoute exact path="/login" redirect="/subjects" allow={!data?.isAuthorized}>
