@@ -166,7 +166,7 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
     }
   }, [activeTab, current, generalInfoForm, stepForm, summaryForm]);
 
-  const changeNode = (nextNode?: GuideStep | GuideStepSummary) => {
+  const changeNode = async (nextNode?: GuideStep | GuideStepSummary) => {
     if (nextNode) {
       setCurent(nextNode);
       const form = isStep(nextNode) ? stepForm : summaryForm;
@@ -176,16 +176,19 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
   }
 
   const requestChangeNode = (nextNode?: GuideStep | GuideStepSummary) => {
-    if (current) {
-      const prevForm = isStep(current) ? stepForm : summaryForm;
-      console.log(prevForm.isFieldsTouched());
-      if (prevForm.isFieldsTouched()) {
-        // show confirm modal
-        changeNode(nextNode)
-      }
-    } else {
+    if (!current) {
       changeNode(nextNode);
+      return;
     }
+
+    const prevForm = isStep(current) ? stepForm : summaryForm;
+    
+    if (!prevForm.isFieldsTouched()) {
+      changeNode(nextNode);
+      return;
+    } 
+    
+    // show confirm modal
   };
 
   const isSubmitting = React.useMemo(() => {
