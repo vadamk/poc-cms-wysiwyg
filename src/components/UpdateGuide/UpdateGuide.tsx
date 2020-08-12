@@ -164,12 +164,23 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
     }
   }, [activeTab, current, generalInfoForm, stepForm, summaryForm]);
 
-  const handleChange = async (node?: GuideStep | GuideStepSummary) => {
-    setCurent(node);
-    if (node) {
-      const form = isStep(node) ? stepForm : summaryForm;
+  const changeNode = (nextNode?: GuideStep | GuideStepSummary) => {
+    if (nextNode) {
+      setCurent(nextNode);
+      const form = isStep(nextNode) ? stepForm : summaryForm;
       form.resetFields();
-      form.setFieldsValue(node);
+      form.setFieldsValue(nextNode);
+    }
+  }
+
+  const requestChangeNode = (nextNode?: GuideStep | GuideStepSummary) => {
+    if (current) {
+      const prevForm = isStep(current) ? stepForm : summaryForm;
+      if (prevForm.isFieldsTouched()) {
+        // show confirm modal
+      }
+    } else {
+      changeNode(nextNode);
     }
   };
 
@@ -213,7 +224,7 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
             {Number(activeTab) === 2 && (
               <Row gutter={[10, 10]}>
                 <Col span={6}>
-                  <TreeView onChange={handleChange} />
+                  <TreeView onChange={requestChangeNode} />
                 </Col>
                 <Col span={18}>
                   <Card className={sty.form}>
