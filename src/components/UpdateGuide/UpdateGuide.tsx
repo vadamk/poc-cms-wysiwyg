@@ -114,18 +114,20 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
   const handleStepSubmit = values => {
     updateStep({
       variables: {
-        stepId: current?.id,
         input: values,
+        stepId: current?.id,
       },
     });
   };
 
   const handleSummarySubmit = values => {
     if (current) {
+      console.log('current: ', current);
       const { id: summaryId, ...rest } = current;
       updateSummary({
         variables: {
-          input: { ...removeTypeName(rest), ...values, summaryId },
+          input: { ...removeTypeName(rest), ...values },
+          summaryId,
         },
       });
     }
@@ -176,8 +178,10 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
   const requestChangeNode = (nextNode?: GuideStep | GuideStepSummary) => {
     if (current) {
       const prevForm = isStep(current) ? stepForm : summaryForm;
+      console.log(prevForm.isFieldsTouched());
       if (prevForm.isFieldsTouched()) {
         // show confirm modal
+        changeNode(nextNode)
       }
     } else {
       changeNode(nextNode);
