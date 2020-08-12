@@ -97,7 +97,7 @@ const Articles: React.FC<ArticlesProps> = () => {
     refetchQueries: [{ query: GET_ARTICLES }]
   });
 
-  const deleteRequest = (article: any) => {
+  const requestDelete = (article: any) => {
     Modal.confirm({
       title: (
         <span>
@@ -164,7 +164,7 @@ const Articles: React.FC<ArticlesProps> = () => {
           articles={articles}
           isLoading={loading}
           onEdit={redirectToUpdate}
-          onDelete={deleteRequest}
+          onDelete={requestDelete}
         />
       ) : (
         <Table
@@ -246,7 +246,7 @@ const Articles: React.FC<ArticlesProps> = () => {
               <CrudMenu<Article>
                 data={article}
                 onEdit={redirectToUpdate}
-                onDelete={deleteRequest}
+                onDelete={requestDelete}
               >
                 <Button type="text" icon={<MoreOutlined />} shape="circle" />
               </CrudMenu>
