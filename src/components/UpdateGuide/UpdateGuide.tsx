@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { gql } from 'apollo-boost';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { Tabs, Spin, message, Button, Row, Col, Card, Empty } from 'antd';
+import { Tabs, Spin, message, Button, Row, Col, Card, Empty, Modal } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 
 import { Edition } from 'core/global';
@@ -72,6 +72,7 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
   const [formData, setFormData] = React.useState();
   const [activeTab, setActiveTab] = React.useState(1);
   const [current, setCurent] = React.useState<GuideStep | GuideStepSummary>();
+ 
   console.log('current: ', current, activeTab);
 
   const guideId = React.useMemo(() => Number(slug), [slug]);
@@ -173,22 +174,46 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
       form.resetFields();
       form.setFieldsValue(nextNode);
     }
-  }
+  };
 
-  const requestChangeNode = (nextNode?: GuideStep | GuideStepSummary) => {
+  const requestChangeNode = (
+    nextNode?: GuideStep | GuideStepSummary,
+    changeCurrent?: (data: GuideStep | GuideStepSummary | undefined) => void,
+  ) => {
     if (!current) {
       changeNode(nextNode);
       return;
     }
 
     const prevForm = isStep(current) ? stepForm : summaryForm;
-    
+
     if (!prevForm.isFieldsTouched()) {
       changeNode(nextNode);
+      if (changeCurrent) {
+        changeCurrent(nextNode);
+      }
       return;
-    } 
-    
-    // show confirm modal
+    }
+
+    Modal.confirm({
+      title: (
+        <span>
+          If you switch to another tab without saving you will lose all data entered.
+          Are you sure?
+        </span>
+      ),
+      width: 640,
+      okText: 'No, I need these data',
+      cancelText: 'Yes',
+      onOk: () => {
+      },
+      onCancel: () => {
+        if (changeCurrent) {
+          changeCurrent(nextNode);
+        }
+        changeNode(nextNode);
+      },
+    });
   };
 
   const isSubmitting = React.useMemo(() => {
@@ -231,7 +256,9 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
             {Number(activeTab) === 2 && (
               <Row gutter={[10, 10]}>
                 <Col span={6}>
-                  <TreeView onChange={requestChangeNode} />
+                  <TreeView
+                    onChange={requestChangeNode}
+                  />
                 </Col>
                 <Col span={18}>
                   <Card className={sty.form}>
@@ -257,7 +284,9 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
               </Row>
             )}
           </>
-        ) : <Empty description="Guide has not been found." />}
+        ) : (
+          <Empty description="Guide has not been found." />
+        )}
       </Spin>
     </>
   );
