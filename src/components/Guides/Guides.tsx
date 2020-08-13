@@ -54,7 +54,7 @@ const Guides: React.FC<GuidesProps> = () => {
     return (data?.getGuides || []).sort((a, b) => b?.actualTime - a?.actualTime);
   }, [data]);
 
-  const deleteRequest = (guide: any) => {
+  const requestDelete = (guide: any) => {
     Modal.confirm({
       title: (
         <span>
@@ -148,7 +148,7 @@ const Guides: React.FC<GuidesProps> = () => {
           key="actions"
           width={45}
           render={(_, guide) => (
-            <CrudMenu data={guide} onEdit={redirectToUpdate} onDelete={deleteRequest}>
+            <CrudMenu data={guide} onEdit={redirectToUpdate} onDelete={requestDelete}>
               <Button type="text" icon={<MoreOutlined />} shape="circle" />
             </CrudMenu>
           )}

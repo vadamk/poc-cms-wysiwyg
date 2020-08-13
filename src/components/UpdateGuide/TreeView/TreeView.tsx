@@ -31,9 +31,7 @@ const normalizeTree = (steps: GuideStep[]) =>
     }));
 
 export const CREATE_SUMMARY = gql`
-  mutation CreateGuideStepSummary(
-    $input: CreateGuideStepSummaryInput!
-  ) {
+  mutation CreateGuideStepSummary($input: CreateGuideStepSummaryInput!) {
     createGuideStepSummary(input: $input) {
       ...SummaryFragment
     }
@@ -78,14 +76,23 @@ export const SET_STEP_ORDER = gql`
 `;
 
 export interface TreeViewProps {
+  value?: GuideStepSummary | GuideStep;
   onChange: (summary?: GuideStepSummary | GuideStep) => void;
+  isFieldsTouched?: boolean;
 }
 
-const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
+const TreeView: React.FC<TreeViewProps> = ({
+  value,
+  onChange = () => null,
+  isFieldsTouched,
+}) => {
   const { slug } = useParams();
 
   const [steps, setGuideSteps] = React.useState<GuideStep[]>([]);
-  const [current, setCurent] = React.useState<GuideStep | GuideStepSummary | null>(null);
+  const [current, setCurent] = React.useState<GuideStep | GuideStepSummary>();
+
+  React.useEffect(() => setCurent(value), [value]);
+
   // const [currentGuideStepSummary, setCurentGuideStepSummary] = React.useState<GuideStepSummary | null>(null);
   const [stepForCreating, setGuideStepForCreating] = React.useState<GuideStep | null>(
     null,
@@ -173,7 +180,6 @@ const TreeView: React.FC<TreeViewProps> = ({ onChange = () => null }) => {
 
   const chooseCurrent = React.useCallback(
     (node?: GuideStep | GuideStepSummary) => {
-      setCurent(node || null);
       onChange(node);
     },
     [onChange],

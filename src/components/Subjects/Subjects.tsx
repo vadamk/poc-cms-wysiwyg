@@ -131,7 +131,7 @@ const Subjects: React.FC<SubjectsProps> = () => {
     });
   };
 
-  const deleteRequest = React.useCallback(
+  const requestDelete = React.useCallback(
     (subject?: Subject) => {
       if (!subject) {
         console.error('No Subject to delete');
@@ -232,7 +232,7 @@ const Subjects: React.FC<SubjectsProps> = () => {
             <CrudMenu
               data={subject}
               onEdit={startUpdating}
-              onDelete={deleteRequest}
+              onDelete={requestDelete}
             >
               <Button type="text" icon={<MoreOutlined />} shape="circle" />
             </CrudMenu>

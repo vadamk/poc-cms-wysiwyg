@@ -43,8 +43,6 @@ const GuideForm: React.FC<GuideFormProps> = ({
       .map(({ title, id }) => ({ label: title, value: id }));
   }, [isEnglish, subjectsStatus]);
 
-  console.log('subjectOptions: ', subjectOptions);
-
   // const slug = React.useMemo(() => {
   //   return slugify(title || '', {
   //     lower: true,
