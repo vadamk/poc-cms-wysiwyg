@@ -21,6 +21,7 @@ import Guides from 'components/Guides';
 import CreateGuide from 'components/CreateGuide';
 import UpdateGuide from 'components/UpdateGuide';
 import SortSubjects from 'components/SortSubjects';
+import VideoNotFound from 'components/VideoNotFound';
 
 const GET_AUTHORIZED = gql`
   query IsAuthorized {
@@ -61,6 +62,9 @@ const Routes = () => {
   return (
     <Router>
       <Switch>
+        <Route path="/video-not-found">
+          <VideoNotFound />
+        </Route>
         <CustomRoute exact path="/login" redirect="/subjects" allow={!data?.isAuthorized}>
           <PureLayout>
             <SignIn />

@@ -51,10 +51,12 @@ export const createClient = () => {
         headers: createHeaders(token),
       });
     },
-    onError: ({ graphQLErrors }) => {
+    onError: ({ graphQLErrors, networkError }) => {
       const unauthorizedError = graphQLErrors?.some(({ extensions }) => {
         return extensions?.exception?.status === 401;
       });
+
+      const videoNotFoundError = networkError && networkError['statusCode'] === 400;
 
       if (unauthorizedError) {
         cache.writeQuery({
@@ -63,6 +65,10 @@ export const createClient = () => {
         });
 
         removeFromLocalStorage(localStorageKeys.token);
+      }
+
+      if (videoNotFoundError) {
+        window.location.replace('/video-not-found');
       }
 
       graphQLErrors?.forEach(error => {
