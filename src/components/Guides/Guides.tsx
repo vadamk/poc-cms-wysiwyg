@@ -7,9 +7,9 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 
 import { getEditionOptions, getSubjectsOptions } from 'core/utils';
 import { GuideFragment } from 'core/graphql/fragments';
+import { Language } from 'core/models';
 
 import Toolbar from 'components/Toolbar';
-import { Language } from 'core/global';
 import CrudMenu from 'components/CrudMenu';
 import DateTime from 'components/DateTime';
 import Tags from 'components/Tags';

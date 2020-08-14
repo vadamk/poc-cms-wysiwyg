@@ -20,3 +20,8 @@ export interface Option {
   disabled?: boolean;
   index?: number;
 }
+
+export enum Language {
+  EN = 'en',
+  SV = 'sv',
+}

@@ -13,7 +13,8 @@ import {
 } from 'core/models/generated';
 import { getFromLocalStorage, saveInLocalStorage } from 'core/services/browser';
 import { ArticleFragment } from 'core/graphql/fragments';
-import { localStorageKeys, Language } from 'core/global';
+import { localStorageKeys } from 'core/global';
+import { Language } from 'core/models';
 import { getEditionOptions, getSubjectsOptions, basicReorder } from 'core/utils';
 import { RadioChangeEvent } from 'antd/lib/radio';
 

@@ -1,7 +1,4 @@
-export enum Language {
-  EN = 'en',
-  SV = 'sv',
-}
+import { Language } from 'core/models';
 
 export enum Audiences {
   NEW_JOB = 'NEW_JOB',

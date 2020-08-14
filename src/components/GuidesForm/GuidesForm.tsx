@@ -5,8 +5,8 @@ import { useForm } from 'antd/lib/form/Form';
 import { Link } from 'react-router-dom';
 // import slugify from 'slugify';
 
-import { FormProps } from 'core/models';
-import { langOptions, editionOptions, Language, Audiences } from 'core/global';
+import { FormProps, Language } from 'core/models';
+import { langOptions, editionOptions } from 'core/global';
 import { GET_SUBJECTS } from 'components/ArticleForm';
 import RadioButtons from 'components/RadioButtons';
 import ImageUpload from 'components/ImageUpload';

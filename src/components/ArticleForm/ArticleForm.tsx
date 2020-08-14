@@ -14,8 +14,8 @@ import {
 import { gql } from 'apollo-boost';
 import { useForm } from 'antd/lib/form/Form';
 
-import { FormProps } from 'core/models';
-import { langOptions, editionOptions, Language } from 'core/global';
+import { FormProps, Language } from 'core/models';
+import { langOptions, editionOptions } from 'core/global';
 import { SubjectFragment } from 'core/graphql/fragments';
 
 import RichEditor from 'components/RichEditor';

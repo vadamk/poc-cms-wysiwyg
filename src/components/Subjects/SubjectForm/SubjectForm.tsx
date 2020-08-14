@@ -1,11 +1,11 @@
 import React from 'react';
 import { gql } from 'apollo-boost';
-import { Form, Input, Select, Checkbox, Row, Col, Tooltip, Spin } from 'antd';
+import { Form, Input, Checkbox, Row, Col, Tooltip, Spin } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 
-import { FormProps, Option } from 'core/models';
-import { langOptions, Language, Audiences } from 'core/global';
+import { FormProps, Option, Language } from 'core/models';
+import { langOptions, Audiences } from 'core/global';
 import { getAudienceOptions } from 'core/utils';
 import { useQuery } from '@apollo/react-hooks';
 import RadioButtons from 'components/RadioButtons';
@@ -30,19 +30,25 @@ export const GET_AUDIENCES = gql`
   }
 `;
 
-export interface CreateSubjectFormProps extends FormProps {
+export interface SubjectFormProps extends FormProps {
   mode?: 'create' | 'update';
+  language?: Language;
 }
 
-const CreateSubjectForm: React.FC<CreateSubjectFormProps> = ({
+const SubjectForm: React.FC<SubjectFormProps> = ({
   form,
   initialValues = { language: Language.SV },
   isSubmitting = false,
+  language = Language.SV,
 }) => {
   const [internalForm] = useForm(form);
 
-  const [isEnglish, setEnglish] = React.useState(initialValues.language === Language.EN);
+  const [isEnglish, setEnglish] = React.useState(language === Language.EN);
   const getAudiencesStatus = useQuery(GET_AUDIENCES);
+
+  React.useEffect(() => {
+    setEnglish(language === Language.EN);
+  }, [language]);
 
   const audiences = React.useMemo(() => {
     const { data } = getAudiencesStatus;
@@ -127,7 +133,7 @@ const CreateSubjectForm: React.FC<CreateSubjectFormProps> = ({
             <Row gutter={[0, 5]}>
               {curAudienceOptions.map(option => (
                 <Col key={option.label} span={12}>
-                  <Checkbox disabled={option.disabled} value={option.value}>
+                  <Checkbox disabled={option.disabled || isEnglish} value={option.value}>
                     {option.label}
                   </Checkbox>
                 </Col>
@@ -148,4 +154,4 @@ const CreateSubjectForm: React.FC<CreateSubjectFormProps> = ({
   );
 };
 
-export default CreateSubjectForm;
+export default SubjectForm;

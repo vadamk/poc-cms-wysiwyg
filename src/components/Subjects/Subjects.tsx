@@ -13,7 +13,7 @@ import { useForm } from 'antd/lib/form/Form';
 import Column from 'antd/lib/table/Column';
 
 import { Subject } from 'core/models/generated';
-import { FormValues } from 'core/models';
+import { FormValues, Language } from 'core/models';
 import { SubjectFragment } from 'core/graphql/fragments';
 import { getAudienceOptions } from 'core/utils';
 
@@ -21,7 +21,7 @@ import Toolbar from 'components/Toolbar';
 import CrudMenu from 'components/CrudMenu';
 import { GET_SUBJECTS } from 'components/ArticleForm';
 
-import CreateSubjectForm from './CreateSubjectForm';
+import SubjectForm from './SubjectForm';
 
 import sty from './Subjects.module.scss';
 import Tags from 'components/Tags';
@@ -90,7 +90,7 @@ const Subjects: React.FC<SubjectsProps> = () => {
   });
 
   const subjects = React.useMemo(() => {
-    return (activeTab === 'en' ? data?.enSubjects : data?.svSubjects)?.reverse() || [];
+    return (activeTab === Language.EN ? data?.enSubjects : data?.svSubjects)?.reverse() || [];
   }, [activeTab, data]);
 
   const startCreating = React.useCallback(() => {
@@ -111,7 +111,10 @@ const Subjects: React.FC<SubjectsProps> = () => {
   const startUpdating = (subject: any) => {
     setEditableSubject(subject);
     const { audiences, ...rest } = subject;
-    updateForm.setFieldsValue({ audienceIDs: audiences.map(a => a.id), ...rest });
+    updateForm.setFieldsValue({
+      ...rest,
+      audienceIDs: audiences.map(a => a.id)
+    });
   };
 
   const cancelUpdating = () => {
@@ -252,7 +255,7 @@ const Subjects: React.FC<SubjectsProps> = () => {
         onOk={handleCreate}
         onCancel={cancelCreating}
       >
-        <CreateSubjectForm form={createForm} isSubmitting={createSubjectStatus.loading} />
+        <SubjectForm form={createForm} isSubmitting={createSubjectStatus.loading} />
       </Modal>
 
       {/* Update Subject Modal */}
@@ -266,7 +269,11 @@ const Subjects: React.FC<SubjectsProps> = () => {
         onOk={handleUpdate}
         onCancel={cancelUpdating}
       >
-        <CreateSubjectForm form={updateForm} isSubmitting={createSubjectStatus.loading} />
+        <SubjectForm
+          form={updateForm}
+          isSubmitting={createSubjectStatus.loading}
+          language={editableSubject?.language}
+        />
       </Modal>
     </>
   );
