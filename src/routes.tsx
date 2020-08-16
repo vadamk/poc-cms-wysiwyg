@@ -17,11 +17,14 @@ import Subjects from 'components/Subjects';
 import Articles from 'components/Articles';
 import CreateArticle from 'components/CreateArticle';
 import UpdateArticle from 'components/UpdateArticle';
+import ServiceSubjects from 'components/ServiceSubjects';
 import Guides from 'components/Guides';
 import CreateGuide from 'components/CreateGuide';
 import UpdateGuide from 'components/UpdateGuide';
 import SortSubjects from 'components/SortSubjects';
 import VideoNotFound from 'components/VideoNotFound';
+import SortServiceSubjects from 'components/SortServiceSubjects';
+import Services from 'components/Services';
 
 const GET_AUTHORIZED = gql`
   query IsAuthorized {
@@ -100,6 +103,15 @@ const Routes = () => {
                 </Route>
                 <Route path="/articles/:slug">
                   <UpdateArticle />
+                </Route>
+                <Route exact path="/service-subjects">
+                  <ServiceSubjects />
+                </Route>
+                <Route path="/service-subjects/sort">
+                  <SortServiceSubjects />
+                </Route>
+                <Route exact path="/services">
+                  <Services />
                 </Route>
               </Switch>
             </Switch>

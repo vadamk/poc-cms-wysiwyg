@@ -1,4 +1,4 @@
-import { AdminEntity } from './../models/generated';
+import { AdminEntity, Service } from './../models/generated';
 import { gql } from 'apollo-boost';
 
 export const AudienceFragment = gql`
@@ -112,4 +112,37 @@ export const GuideFragment = gql`
   }
   ${StepFragment}
   ${EditionFragment}
+`;
+
+export const ServiceFragment = gql`
+  fragment ServiceFragment on Service {
+    id
+    image
+    price
+    currency
+    shortCode
+    type
+    isActive
+    orderNum
+    description {
+      title
+      subTitle
+      language
+    }
+    serviceSubjects {
+      id
+      title
+    }
+  }
+`;
+
+export const ServiceSubjectFragment = gql`
+  fragment ServiceSubjectFragment on ServiceSubject {
+    id
+    title
+    audiences {
+      ...AudienceFragment
+    }
+  }
+  ${AudienceFragment}
 `;

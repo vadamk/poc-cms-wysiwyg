@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { Breadcrumb, PageHeader } from 'antd';
-import { ArrowLeftOutlined } from '@ant-design/icons';
 
 import sty from './Toolbar.module.scss';
 import { Route } from 'antd/lib/breadcrumb/Breadcrumb';

@@ -53,12 +53,58 @@ export type GuideStep = {
   summaries: Array<Maybe<GuideStepSummary>>;
 };
 
+export type Audience = {
+  __typename?: 'Audience';
+  id: Scalars['Int'];
+  title: Scalars['String'];
+  language: Language;
+};
+
+export enum Language {
+  Sv = 'sv',
+  En = 'en'
+}
+
+export type ServiceSubject = {
+  __typename?: 'ServiceSubject';
+  id: Scalars['Int'];
+  title: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  language: Language;
+  services: Array<Maybe<Service>>;
+  audiences: Array<Maybe<Audience>>;
+};
+
+export type ServiceDescription = {
+  __typename?: 'ServiceDescription';
+  language: Language;
+  title: Scalars['String'];
+  subTitle: Scalars['String'];
+};
+
+export type Service = {
+  __typename?: 'Service';
+  id: Scalars['Int'];
+  image: Scalars['String'];
+  price: Scalars['Float'];
+  currency: Scalars['String'];
+  shortCode: Scalars['String'];
+  duration: Scalars['Int'];
+  type: Scalars['String'];
+  isActive: Scalars['Boolean'];
+  orderNum: Scalars['Int'];
+  description: Array<Maybe<ServiceDescription>>;
+  editions: Array<Maybe<SpecialEdition>>;
+  serviceSubjects: Array<Maybe<ServiceSubject>>;
+};
+
 export type SpecialEdition = {
   __typename?: 'SpecialEdition';
   id: Scalars['Int'];
   type: Scalars['String'];
   guides: Array<Maybe<Guide>>;
   articles: Array<Maybe<Article>>;
+  services: Array<Maybe<Service>>;
 };
 
 export type Article = {
@@ -76,18 +122,6 @@ export type Article = {
   orderNum: Scalars['Int'];
   editions: Array<Maybe<SpecialEdition>>;
   subjects: Array<Maybe<Subject>>;
-};
-
-export enum Language {
-  Sv = 'sv',
-  En = 'en'
-}
-
-export type Audience = {
-  __typename?: 'Audience';
-  id: Scalars['Int'];
-  title: Scalars['String'];
-  language: Language;
 };
 
 export type Subject = {
@@ -128,12 +162,15 @@ export type Query = {
   getArticle?: Maybe<Article>;
   getArticles: Array<Maybe<Article>>;
   getAudience: Audience;
+  getAudienceServiceSubjects: Array<Maybe<ServiceSubject>>;
   getAudienceSubjects: Array<Maybe<Subject>>;
   getAudiences: Array<Maybe<Audience>>;
   getGuide?: Maybe<Guide>;
   getGuideStep: GuideStep;
   getGuideStepSummary: GuideStepSummary;
   getGuides: Array<Maybe<Guide>>;
+  getServiceSubjects: Array<ServiceSubject>;
+  getServices: Array<Maybe<Service>>;
   getSubjects: Array<Maybe<Subject>>;
   getUploadUrl: UploadOutput;
   isAuthorized: Scalars['Boolean'];
@@ -146,6 +183,11 @@ export type QueryGetArticleArgs = {
 
 
 export type QueryGetAudienceArgs = {
+  audienceId: Scalars['Int'];
+};
+
+
+export type QueryGetAudienceServiceSubjectsArgs = {
   audienceId: Scalars['Int'];
 };
 
@@ -175,6 +217,11 @@ export type QueryGetGuideStepSummaryArgs = {
 };
 
 
+export type QueryGetServiceSubjectsArgs = {
+  language: Scalars['String'];
+};
+
+
 export type QueryGetSubjectsArgs = {
   language: Scalars['String'];
 };
@@ -194,7 +241,6 @@ export type Mutation = {
   __typename?: 'Mutation';
   addArticleEdition: Scalars['String'];
   addGuideEdition: Scalars['String'];
-  addServiceAudience: Scalars['String'];
   addServiceEdition: Scalars['String'];
   auth: AuthOutput;
   createArticle: Article;
@@ -210,12 +256,13 @@ export type Mutation = {
   deleteSubject: Scalars['Boolean'];
   removeArticleEdition: Scalars['String'];
   removeGuideEdition: Scalars['String'];
-  removeServiceAudience: Scalars['String'];
   removeServiceEdition: Scalars['String'];
   setAuthorized: Scalars['Boolean'];
   sortArticles: Scalars['Boolean'];
   sortGuideStepSummaries: Scalars['Boolean'];
   sortGuideSteps: Scalars['Boolean'];
+  sortServiceSubjects: Scalars['Boolean'];
+  sortServices: Scalars['Boolean'];
   sortSubjects: Scalars['Boolean'];
   updateArticle: Article;
   updateGuide: Guide;
@@ -234,12 +281,6 @@ export type MutationAddArticleEditionArgs = {
 export type MutationAddGuideEditionArgs = {
   edition: Edition;
   guideId: Scalars['Int'];
-};
-
-
-export type MutationAddServiceAudienceArgs = {
-  audience: Audiences;
-  serviceId: Scalars['Int'];
 };
 
 
@@ -322,12 +363,6 @@ export type MutationRemoveGuideEditionArgs = {
 };
 
 
-export type MutationRemoveServiceAudienceArgs = {
-  audience: Audiences;
-  serviceId: Scalars['Int'];
-};
-
-
 export type MutationRemoveServiceEditionArgs = {
   edition: Edition;
   serviceId: Scalars['Int'];
@@ -351,6 +386,17 @@ export type MutationSortGuideStepSummariesArgs = {
 
 export type MutationSortGuideStepsArgs = {
   order: Array<GuideStepOrderInput>;
+};
+
+
+export type MutationSortServiceSubjectsArgs = {
+  order: Array<OrderServiceSubjectInput>;
+  audienceId: Scalars['Int'];
+};
+
+
+export type MutationSortServicesArgs = {
+  order: Array<OrderServiceInput>;
 };
 
 
@@ -390,13 +436,14 @@ export type MutationUpdateSubjectArgs = {
 };
 
 export type CreateSubjectInput = {
-  audienceIDs: Array<Maybe<Scalars['Int']>>;
+  audienceIDs?: Maybe<Array<Maybe<Scalars['Int']>>>;
   title: Scalars['String'];
   description?: Maybe<Scalars['String']>;
   language: Language;
 };
 
 export type UpdateSubjectInput = {
+  audienceIDs?: Maybe<Array<Maybe<Scalars['Int']>>>;
   title?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   language?: Maybe<Language>;
@@ -511,19 +558,26 @@ export type OrderArticleInput = {
   orderNum: Scalars['Int'];
 };
 
-export enum Audiences {
-  NewJob = 'NEW_JOB',
-  Develop = 'DEVELOP',
-  Profile = 'PROFILE',
-  Gigging = 'GIGGING',
-  Help = 'HELP',
-  SwedenJob = 'SWEDEN_JOB'
-}
+export type OrderServiceInput = {
+  id: Scalars['Int'];
+  orderNum: Scalars['Int'];
+};
+
+export type OrderServiceSubjectInput = {
+  id: Scalars['Int'];
+  orderNum: Scalars['Int'];
+};
 
 export type GetSubjectListForBothLangQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetSubjectListForBothLangQuery = { __typename?: 'Query', enSubjects: Array<Maybe<{ __typename?: 'Subject', id: number, title: string, description?: Maybe<string>, language: Language }>>, svSubjects: Array<Maybe<{ __typename?: 'Subject', id: number, title: string, description?: Maybe<string>, language: Language }>> };
+export type GetSubjectListForBothLangQuery = { __typename?: 'Query', enSubjects: Array<Maybe<(
+    { __typename?: 'Subject' }
+    & SubjectFragmentFragment
+  )>>, svSubjects: Array<Maybe<(
+    { __typename?: 'Subject' }
+    & SubjectFragmentFragment
+  )>> };
 
 export type GetArticlesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -539,6 +593,13 @@ export type DeleteArticleMutationVariables = Exact<{
 
 
 export type DeleteArticleMutation = { __typename?: 'Mutation', deleteArticle: string };
+
+export type SortArticlesMutationVariables = Exact<{
+  order: Array<OrderArticleInput>;
+}>;
+
+
+export type SortArticlesMutation = { __typename?: 'Mutation', sortArticles: boolean };
 
 export type CreateArticleMutationVariables = Exact<{
   article: CreateArticleInput;
@@ -602,6 +663,24 @@ export type GetAudiencesForBothLangQueryVariables = Exact<{ [key: string]: never
 
 
 export type GetAudiencesForBothLangQuery = { __typename?: 'Query', enAudiences: Array<Maybe<{ __typename?: 'Audience', id: number, title: string, language: Language }>>, svAudiences: Array<Maybe<{ __typename?: 'Audience', id: number, title: string, language: Language }>> };
+
+export type GetAudienceSubjectsQueryVariables = Exact<{
+  audienceId: Scalars['Int'];
+}>;
+
+
+export type GetAudienceSubjectsQuery = { __typename?: 'Query', getAudienceSubjects: Array<Maybe<(
+    { __typename?: 'Subject' }
+    & SubjectFragmentFragment
+  )>> };
+
+export type SortSubjectsMutationVariables = Exact<{
+  order: Array<OrderSubjectInput>;
+  audienceId: Scalars['Int'];
+}>;
+
+
+export type SortSubjectsMutation = { __typename?: 'Mutation', sortSubjects: boolean };
 
 export type CreateSubjectMutationVariables = Exact<{
   input: CreateSubjectInput;
@@ -741,15 +820,15 @@ export type AudienceFragmentFragment = { __typename?: 'Audience', id: number, ti
 
 export type EditionFragmentFragment = { __typename?: 'SpecialEdition', id: number, type: string };
 
-export type SubjectFragmentFragment = { __typename?: 'Subject', id: number, title: string, description?: Maybe<string>, language: Language };
+export type SubjectFragmentFragment = { __typename?: 'Subject', id: number, title: string, description?: Maybe<string>, language: Language, audiences: Array<Maybe<(
+    { __typename?: 'Audience' }
+    & AudienceFragmentFragment
+  )>>, articles: Array<Maybe<{ __typename?: 'Article', id: number, title: string }>>, guides: Array<Maybe<{ __typename?: 'Guide', id: number, title: string }>> };
 
-export type ArticleFragmentFragment = { __typename?: 'Article', id: number, title: string, subTitle?: Maybe<string>, image: string, content: string, language: Language, actualTime: any, isPublished: boolean, readDuration: number, editions: Array<Maybe<(
+export type ArticleFragmentFragment = { __typename?: 'Article', id: number, title: string, subTitle?: Maybe<string>, image: string, headerImage: string, content: string, language: Language, actualTime: any, isPublished: boolean, readDuration: number, editions: Array<Maybe<(
     { __typename?: 'SpecialEdition' }
     & EditionFragmentFragment
-  )>>, subjects: Array<Maybe<(
-    { __typename?: 'Subject' }
-    & SubjectFragmentFragment
-  )>> };
+  )>>, subjects: Array<Maybe<{ __typename?: 'Subject', id: number, title: string, description?: Maybe<string>, language: Language }>> };
 
 export type SummaryFragmentFragment = { __typename?: 'GuideStepSummary', id: number, stepId: number, orderNum: number, title: string, content: string };
 
@@ -764,10 +843,7 @@ export type GuideFragmentFragment = { __typename?: 'Guide', id: number, title: s
   )>>, editions?: Maybe<Array<Maybe<(
     { __typename?: 'SpecialEdition' }
     & EditionFragmentFragment
-  )>>>, subjects: Array<Maybe<(
-    { __typename?: 'Subject' }
-    & SubjectFragmentFragment
-  )>> };
+  )>>>, subjects: Array<Maybe<{ __typename?: 'Subject', id: number, title: string, description?: Maybe<string>, language: Language }>> };
 
 export type Unnamed_1_QueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -778,3 +854,8 @@ export type IsAuthorizedQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type IsAuthorizedQuery = { __typename?: 'Query', isAuthorized: boolean };
+
+export type SharedDataQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SharedDataQuery = { __typename?: 'Query', enAudiences: Array<Maybe<{ __typename?: 'Audience', id: number, title: string, language: Language }>>, svAudiences: Array<Maybe<{ __typename?: 'Audience', id: number, title: string, language: Language }>> };

@@ -9,6 +9,7 @@ import {
   MenuUnfoldOutlined,
   LogoutOutlined,
   UserOutlined,
+  ShoppingOutlined,
 } from '@ant-design/icons';
 import { Link, useLocation } from 'react-router-dom';
 import { useMutation } from '@apollo/react-hooks';
@@ -49,7 +50,7 @@ const CommonLayout: React.FC = ({ children }) => {
   const layoutStyles = React.useMemo<React.CSSProperties>(
     () => ({
       marginLeft: isCollapsed ? 80 : 200,
-      height: '100vh',
+      minHeight: '100vh',
       transition: 'all 200ms',
     }),
     [isCollapsed],
@@ -94,6 +95,12 @@ const CommonLayout: React.FC = ({ children }) => {
           </Menu.Item>
           <Menu.Item key="/guides" icon={<FileProtectOutlined />}>
             <Link to="/guides">Guides</Link>
+          </Menu.Item>
+          <Menu.Item key="/service-subjects" icon={<ShoppingOutlined />}>
+            <Link to="/service-subjects">Service Subjects</Link>
+          </Menu.Item>
+          <Menu.Item key="/services" icon={<ShoppingOutlined />}>
+            <Link to="/services">Services</Link>
           </Menu.Item>
         </Menu>
         <Button type="text" style={switchButtonStyles} onClick={toggleCollapsed}>

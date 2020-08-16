@@ -56,7 +56,7 @@ export const createClient = () => {
         return extensions?.exception?.status === 401;
       });
 
-      const videoNotFoundError = networkError && networkError['statusCode'] === 400;
+      // const videoNotFoundError = networkError && networkError['statusCode'] === 400;
 
       if (unauthorizedError) {
         cache.writeQuery({
@@ -67,9 +67,9 @@ export const createClient = () => {
         removeFromLocalStorage(localStorageKeys.token);
       }
 
-      if (videoNotFoundError) {
-        window.location.replace('/video-not-found');
-      }
+      // if (videoNotFoundError) {
+      //   window.location.replace('/video-not-found');
+      // }
 
       graphQLErrors?.forEach(error => {
         notification.error({

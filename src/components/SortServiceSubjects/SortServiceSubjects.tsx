@@ -5,14 +5,14 @@ import { Row, Col, Typography, Spin, Empty } from 'antd';
 import { DoubleRightOutlined } from '@ant-design/icons';
 
 import { getAudienceOptions, getSubjectsOptions, basicReorder } from 'core/utils';
-import { SubjectFragment } from 'core/graphql/fragments';
+import { ServiceSubjectFragment } from 'core/graphql/fragments';
 import { Option } from 'core/models';
 
 import Toolbar, { Breadcrumb } from 'components/Toolbar';
 import TreeViewNode from 'components/TreeViewNode';
 import DndCard from 'components/DndCard';
 
-// import sty from './SortSubjects.module.scss';
+// import sty from './SortServiceSubjects.module.scss';
 
 const { Title } = Typography;
 
@@ -32,23 +32,23 @@ export const GET_AUDIENCES = gql`
 `;
 
 export const GET_AUDIENCE_SUBJECTS = gql`
-  query GetAudienceSubjects($audienceId: Int!) {
-    getAudienceSubjects(audienceId: $audienceId) {
-      ...SubjectFragment
+  query GetAudienceServiceSubjects($audienceId: Int!) {
+    getAudienceServiceSubjects(audienceId: $audienceId) {
+      ...ServiceSubjectFragment
     }
   }
-  ${SubjectFragment}
+  ${ServiceSubjectFragment}
 `;
 
 export const SET_SUBJECTS_ORDER = gql`
-  mutation SortSubjects($order: [OrderSubjectInput!]!, $audienceId: Int!) {
-    sortSubjects(order: $order, audienceId: $audienceId)
+  mutation SortServiceSubjects($order: [OrderServiceSubjectInput!]!, $audienceId: Int!) {
+    sortServiceSubjects(order: $order, audienceId: $audienceId)
   }
 `;
 
-export interface SortSubjectsProps {}
+export interface SortServiceSubjectsProps {}
 
-const SortSubjects: React.FC<SortSubjectsProps> = () => {
+const SortServiceSubjects: React.FC<SortServiceSubjectsProps> = () => {
   const [subjectOptions, setSubjectOptions] = React.useState<Option[]>([]);
   const [audienceOptions, setAudienceOptions] = React.useState<Option[]>([]);
   const [currentId, setCurrentId] = React.useState<number>();
@@ -67,7 +67,9 @@ const SortSubjects: React.FC<SortSubjectsProps> = () => {
     }
   });
 
-  const [getSubjects, getSubjectsStatus] = useLazyQuery(GET_AUDIENCE_SUBJECTS);
+  const [getSubjects, getSubjectsStatus] = useLazyQuery(GET_AUDIENCE_SUBJECTS, {
+    
+  });
 
   React.useEffect(() => {
     if (currentId) {
@@ -189,4 +191,4 @@ const SortSubjects: React.FC<SortSubjectsProps> = () => {
   );
 };
 
-export default SortSubjects;
+export default SortServiceSubjects;

@@ -23,8 +23,8 @@ import Tags from 'components/Tags';
 import DateTime from 'components/DateTime';
 import CrudMenu from 'components/CrudMenu';
 import RadioButtons from 'components/RadioButtons';
+import DragableBodyRow from 'components/DragableBodyRow';
 
-import DragableBodyRow from './DragableBodyRow';
 import CardsView from './CardsView';
 
 import sty from './Articles.module.scss';
