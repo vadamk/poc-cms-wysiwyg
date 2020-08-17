@@ -67,9 +67,7 @@ const SortServiceSubjects: React.FC<SortServiceSubjectsProps> = () => {
     }
   });
 
-  const [getSubjects, getSubjectsStatus] = useLazyQuery(GET_AUDIENCE_SUBJECTS, {
-    
-  });
+  const [getSubjects, getSubjectsStatus] = useLazyQuery(GET_AUDIENCE_SUBJECTS);
 
   React.useEffect(() => {
     if (currentId) {
@@ -79,7 +77,7 @@ const SortServiceSubjects: React.FC<SortServiceSubjectsProps> = () => {
 
   React.useEffect(() => {
     if (getSubjectsStatus.data) {
-      const { getAudienceSubjects: subjects } = getSubjectsStatus.data;
+      const { getAudienceServiceSubjects: subjects } = getSubjectsStatus.data;
       setSubjectOptions(
         getSubjectsOptions(subjects)
       );
