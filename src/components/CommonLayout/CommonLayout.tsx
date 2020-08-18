@@ -10,6 +10,7 @@ import {
   LogoutOutlined,
   UserOutlined,
   ShoppingOutlined,
+  ShoppingCartOutlined,
 } from '@ant-design/icons';
 import { Link, useLocation } from 'react-router-dom';
 import { useMutation } from '@apollo/react-hooks';
@@ -96,7 +97,7 @@ const CommonLayout: React.FC = ({ children }) => {
           <Menu.Item key="/guides" icon={<FileProtectOutlined />}>
             <Link to="/guides">Guides</Link>
           </Menu.Item>
-          <Menu.Item key="/service-subjects" icon={<ShoppingOutlined />}>
+          <Menu.Item key="/service-subjects" icon={<ShoppingCartOutlined />}>
             <Link to="/service-subjects">Service Subjects</Link>
           </Menu.Item>
           <Menu.Item key="/services" icon={<ShoppingOutlined />}>
