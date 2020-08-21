@@ -82,16 +82,16 @@ const ImageUpload = React.forwardRef<Upload, ImageUploadProps>(
     };
 
     const handleCustomRequest = ({ action, file, onSuccess, onError }) => {
-      new Compressor(file, {
-        maxWidth: 630,
-        convertSize: 0,
-        quality: 1,
-        success: (resultFile: any) => {
-          uploadToTheServer(action, resultFile, onSuccess, onError);
-        },
-      });
+      // new Compressor(file, {
+      //   maxWidth: 630,
+      //   convertSize: 0,
+      //   quality: 1,
+      //   success: (resultFile: any) => {
+      //     uploadToTheServer(action, resultFile, onSuccess, onError);
+      //   },
+      // });
 
-      // uploadToTheServer(action, file, onSuccess, onError);
+      uploadToTheServer(action, file, onSuccess, onError);
     };
 
     const beforeUpload = file => {
