@@ -29,13 +29,11 @@ export enum UploadFolder {
 type EnvPropTypes = {
   apiUrl: string;
   apiPath: string;
-  userAppUrl: string;
 };
 
 export const env: EnvPropTypes = {
   apiUrl: process.env.REACT_APP_API_URL as string,
   apiPath: process.env.REACT_APP_API_PATH as string,
-  userAppUrl: process.env.REACT_APP_USER_APP_URL as string,
 };
 
 export const editionOptions = [
