@@ -57,20 +57,6 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
     return (subjects || []).map(sbj => ({ label: sbj.title, value: sbj.id }));
   }, [isEnglish, subjectsStatus.data]);
 
-  // const curAudienceOptions = React.useMemo<Option[]>(() => {
-  //   return audienceOptions.map(audience => {
-  //     if (isEnglish) {
-  //       return { ...audience, disabled: true };
-  //     }
-
-  //     if (audience.value === Audiences.SWEDEN_JOB) {
-  //       return { ...audience, disabled: true };
-  //     }
-
-  //     return audience;
-  //   });
-  // }, [isEnglish]);
-
   const handleLangChange = ({ target }) => {
     setEnglish(target.value === Language.EN);
     internalForm.setFieldsValue({ subjectIDs: [] });
@@ -157,30 +143,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
                 onChange={handleLangChange}
               />
             </Form.Item>
-
-            {/*<Form.Item
-              label="Audiences"
-              name="audiences"
-              rules={[{ required: true, message: 'Please select at least 1 audience!' }]}
-            >
-              <Checkbox.Group>
-                <Row gutter={[0, 5]}>
-                  {curAudienceOptions.map(option => (
-                    <Col key={option.label} span={12}>
-                      <Checkbox disabled={option.disabled} value={option.value}>
-                        {option.label}
-                      </Checkbox>
-                    </Col>
-                  ))}
-                </Row>
-              </Checkbox.Group>
-            </Form.Item> */}
-
-            <Form.Item
-              label="Subject"
-              name="subjectIDs"
-              rules={[{ required: true, message: 'Please choose subject!' }]}
-            >
+            <Form.Item label="Subject" name="subjectIDs">
               <Select
                 showSearch
                 mode="multiple"

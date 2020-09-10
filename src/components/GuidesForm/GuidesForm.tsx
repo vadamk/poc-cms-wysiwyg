@@ -122,30 +122,8 @@ const GuideForm: React.FC<GuideFormProps> = ({
                 onChange={handleLangChange}
               />
             </Form.Item>
-            {/* 
-            <Form.Item
-              label="Audiences"
-              name="audiences"
-              rules={[{ required: true, message: 'Please select at least 1 audience!' }]}
-            >
-              <Checkbox.Group>
-                <Row gutter={[0, 5]}>
-                  {curAudienceOptions.map(option => (
-                    <Col key={option.label} span={12}>
-                      <Checkbox disabled={option.disabled} value={option.value}>
-                        {option.label}
-                      </Checkbox>
-                    </Col>
-                  ))}
-                </Row>
-              </Checkbox.Group>
-            </Form.Item> */}
 
-            <Form.Item
-              label="Subject"
-              name="subjectIDs"
-              rules={[{ required: true, message: 'Please choose subject!' }]}
-            >
+            <Form.Item label="Subject" name="subjectIDs">
               <Select
                 showSearch
                 mode="multiple"
@@ -153,9 +131,6 @@ const GuideForm: React.FC<GuideFormProps> = ({
                 loading={subjectsStatus.loading}
                 options={subjectOptions}
                 placeholder="Please choose subject"
-                // filterOption={(input, option) =>
-                //   String(option?.label).toLowerCase().indexOf(input.toLowerCase()) >= 0
-                // }
               />
             </Form.Item>
 
