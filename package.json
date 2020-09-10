@@ -40,8 +40,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "sh -ac '. .env; react-scripts build'",
-    "build:production": "sh -ac '. .env.production; react-scripts build'",
+    "build": "env-cmd -f ./.env react-scripts build",
+    "build:production": "env-cmd -f ./.env.production react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "codegen": "graphql-codegen",
@@ -68,6 +68,7 @@
     "@graphql-codegen/typescript-operations": "^1.17.0",
     "@types/react-router-dom": "^5.1.5",
     "babel-loader": "^8.1.0",
+    "env-cmd": "^10.1.0",
     "prettier": "2.0.5"
   }
 }
