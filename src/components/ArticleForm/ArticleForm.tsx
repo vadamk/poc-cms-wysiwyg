@@ -87,11 +87,11 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
                     placeholder="Please input title"
                   />
                 </Form.Item>
-                <Form.Item label="Subtitle" name="subTitle">
+                <Form.Item label="Description" name="description">
                   <Input.TextArea
                     rows={2}
                     disabled={isSubmitting}
-                    placeholder="Please input subtitle"
+                    placeholder="Please input description"
                   />
                 </Form.Item>
                 <Form.Item
