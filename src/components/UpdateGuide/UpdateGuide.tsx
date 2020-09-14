@@ -321,7 +321,7 @@ const UpdateGuide: React.FC<UpdateGuideProps> = () => {
                         />
                       )
                     ) : (
-                      <Empty description="Please choose summary or step" />
+                      <Empty description="Please choose section or step" />
                     )}
                   </Card>
                 </Col>
