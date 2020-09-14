@@ -64,27 +64,27 @@ export const langOptions = [
 
 export const audienceOptions = [
   {
-    label: 'New Job',
+    label: 'Get a new job',
     value: Audiences.NEW_JOB,
   },
   {
-    label: 'Develop',
+    label: 'Develop within your job',
     value: Audiences.DEVELOP,
   },
   {
-    label: 'Profile',
+    label: 'Profile yourself in the industry',
     value: Audiences.PROFILE,
   },
   {
-    label: 'Gigging',
+    label: 'Start gigging',
     value: Audiences.GIGGING,
   },
   {
-    label: 'Help',
+    label: 'Help! I dont know what I want',
     value: Audiences.HELP,
   },
   {
-    label: 'Sweden Job',
+    label: 'Get a job in Sweden',
     value: Audiences.SWEDEN_JOB,
   },
 ];
