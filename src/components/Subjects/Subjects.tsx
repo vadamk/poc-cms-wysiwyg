@@ -247,7 +247,7 @@ const Subjects: React.FC<SubjectsProps> = () => {
       <Modal
         destroyOnClose
         style={{ top: 30 }}
-        width={640}
+        width={780}
         title="Create a new subject"
         visible={isCreating}
         okText="Create"
