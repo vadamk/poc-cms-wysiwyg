@@ -420,7 +420,7 @@ const TreeView: React.FC<TreeViewProps> = ({
                   />
                 </DndCard>
               ))}
-              {step?.summaries?.length < 5 && (
+              {step?.summaries?.length && (
                 <div className={sty.createSection}>
                   {stepForCreating?.id === step.id ? (
                     <ConfirmInput
@@ -444,7 +444,7 @@ const TreeView: React.FC<TreeViewProps> = ({
             </TreeViewNode>
           </DndCard>
         ))}
-        {steps?.length < 5 && (
+        {steps?.length && (
           <div className={sty.createSection}>
             {isCreatingGuideStep ? (
               <ConfirmInput
