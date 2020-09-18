@@ -1,7 +1,7 @@
 import React from 'react';
 import { gql } from 'apollo-boost';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import update from 'immutability-helper';
 import { Button, Typography, Modal, message, Spin } from 'antd';
 import {
@@ -86,7 +86,7 @@ const TreeView: React.FC<TreeViewProps> = ({
   onChange = () => null,
   isFieldsTouched,
 }) => {
-  const { slug } = useParams();
+  const { slug } = useParams<any>();
 
   const [steps, setGuideSteps] = React.useState<GuideStep[]>([]);
   const [current, setCurent] = React.useState<GuideStep | GuideStepSummary>();
@@ -206,6 +206,7 @@ const TreeView: React.FC<TreeViewProps> = ({
             orderNum: steps.length + 1,
             title: value,
             description: `${value} description`,
+            image: `${document.location.origin}/fallback-step.jpg`
           },
         },
       });
@@ -420,27 +421,25 @@ const TreeView: React.FC<TreeViewProps> = ({
                   />
                 </DndCard>
               ))}
-              {step?.summaries?.length && (
-                <div className={sty.createSection}>
-                  {stepForCreating?.id === step.id ? (
-                    <ConfirmInput
-                      isLoading={createGuideStepSummaryStatus.loading}
-                      onOk={handleCreateGuideStepSummary}
-                      onCancel={cancelCreatingGuideStepSummary}
-                    />
-                  ) : (
-                    <Button
-                      key={`${step.id}_createButton`}
-                      type="dashed"
-                      icon={<PlusOutlined />}
-                      style={{ width: '100%' }}
-                      onClick={() => startCreatingGuideStepSummary(step)}
-                    >
-                      Add Summary
-                    </Button>
-                  )}
-                </div>
-              )}
+              <div className={sty.createSection}>
+                {stepForCreating?.id === step.id ? (
+                  <ConfirmInput
+                    isLoading={createGuideStepSummaryStatus.loading}
+                    onOk={handleCreateGuideStepSummary}
+                    onCancel={cancelCreatingGuideStepSummary}
+                  />
+                ) : (
+                  <Button
+                    key={`${step.id}_createButton`}
+                    type="dashed"
+                    icon={<PlusOutlined />}
+                    style={{ width: '100%' }}
+                    onClick={() => startCreatingGuideStepSummary(step)}
+                  >
+                    Add Summary
+                  </Button>
+                )}
+              </div>
             </TreeViewNode>
           </DndCard>
         ))}
