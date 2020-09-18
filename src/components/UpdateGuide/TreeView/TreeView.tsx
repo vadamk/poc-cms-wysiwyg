@@ -436,7 +436,7 @@ const TreeView: React.FC<TreeViewProps> = ({
                     style={{ width: '100%' }}
                     onClick={() => startCreatingGuideStepSummary(step)}
                   >
-                    Add Summary
+                    Add Section
                   </Button>
                 )}
               </div>
